@@ -1,0 +1,535 @@
+\documentclass[a4, landscape, slidesonly]{seminar}
+\usepackage{hyperref,amssymb, amsfonts, amsthm, amsmath, algorithm, algorithmic, verbatim, epsfig, multicol}
+\usepackage{psfig}
+\usepackage{latexsym}
+\usepackage{color}
+\slideframe{none}
+
+
+ \setlength{\parindent}{0pt} 
+
+% color definitions
+\definecolor{titlecolor}{rgb}{.6,.2,0}
+\definecolor{emphcolor}{rgb}{.6,.2,0}
+\renewcommand{\emph}[1]{{\color{emphcolor} #1}}
+\newcommand{\slidetitle}[1]{{\large \color{titlecolor} #1}}
+
+% font definitions
+\renewcommand{\slidefonts}{\sf}
+\newcommand{\logo}[0]{\begin{center}\epsfig{file=logo_epfl_coul.eps, width=1.5cm} ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \epsfig{file=logo_lasec_coul.eps, width=1.5cm}\end{center}}
+\newcommand{\supervisor}[4]{\begin{center}\begin{normalsize}{\bf #1}\\#2\\#4\end{normalsize}\end{center}}
+
+\begin{document}
+\begin{slide}
+ \begin{center}
+   {\Large \textbf{Generic Homomorphic Undeniable Signature Scheme: Optimizations}}\\[1cm]
+%Titel anpassen
+   \emph{Yvonne Anne Oswald}\\
+   
+   Semester Project February 2005\\[1cm]
+  
+\begin{tabular}{cc}
+\begin{tabular}{p{4.0cm}}
+\supervisor{Responsible}{Prof. Serge Vaudenay}{serge.vaudenay@epfl.ch}{}
+\end{tabular}&
+\begin{tabular}{p{4.0cm}}
+\supervisor{Supervisor}{Jean Monnerat}{jean.monnerat@epfl.ch}{}
+\end{tabular}
+\end{tabular}
+\end{center}
+\hrule
+\logo
+
+\end{slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Outline}
+\\[.2cm]\begin{itemize}
+\item Introduction generic homomorphic undeniable signatures
+\item Homomorphisms: quartic residue symbol, Jacobi symbol, discrete logarithm, RSA
+\item Comparison signature generation
+\item Conclusion
+\end{itemize}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Undeniable Signatures}
+\\[.2cm]
+\begin{itemize}
+\item Verification of validity of signature only by interaction with Signer
+\item Complete signature scheme consists of 
+\begin{itemize}
+\item Key generation algorithm
+\item Signature algorithm
+\item Confirmation protocol
+\item Denial Protocol
+\end{itemize}
+\end{itemize}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{GHI Problem}
+\\[.2cm]
+\emph{Definition:}
+$G, H$ Abelian groups, $S := \{(x_{1},y_{1}),\ldots,(x_{s},y_{s})\}$ $ \subseteq G\times H$. We say that $S$ \emph{interpolates in a group homomorphism} 
+ if there exists a homomorphism $\phi : G \to H$ such that $\phi (x_{i}) = y_{i}$ for $i = 1, \ldots, s$.\\[0.3cm]
+\emph{GHI Problem \big(Group Homomorphism Interpolation Problem\big)}
+\emph{Parameters:} two Abelian Groups $G$ and $H$, a set of $s$ points $S \subseteq G \times H$. \\
+\emph{Input:} $x \in G$\\ 
+\emph {Problem:} find $y \in H$ such that $\big( x,y\big)$ interpolates with $S$ in a group 
+ homomorphism.\\[0.3cm] 
+The GHI problem is the generalization of many cryptographic problem: discrete logarithm, Diffie-Hellmann, RSA.
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Generic homomorphic undeniable signatures}
+\\[0.5cm]
+\emph{Key generation:}
+\begin{itemize}
+\item Select $G, H$ Abelian groups and hom. $\phi : G \to H$ (private key)
+\item Compute public key $K := \{(x_{key1},\phi(x_{key1}),\ldots,(x_{keyk},\phi(x_{keyk}))\}$, $x_i$ generated from seed $\rho$ using det. pseudorandom generator
+\end{itemize}
+\emph{Signature and protocols:}
+\begin{itemize}
+\item Generate $(x_1, \ldots, x_s)$ from message $m$ using det. pseudorandom generator
+\item Compute signature $S:= \{(x_{sig1},\phi(x_{sig1}),\ldots,(x_{sigs},\phi(x_{sigs}))\}$
+\item Confirmation/denial protocol: proving/disproving that $K$ interpolates with $S$ in a homomorphism
+ \end{itemize} 
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Generic homomorphic undeniable signatures}
+\\[.2cm]
+\begin{itemize}
+\item Security of generic homomorphic undeniable signatures depends on hardness of GHI problem
+\item Various homomorphisms suitable (hard characters, discrete logarithm, RSA exponentiation)
+\item Summer 2004: Demonstrator for MOVA signature scheme using quartic residue symbol as homomorphism
+\end{itemize}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Description of project}
+\\[.2cm]
+\begin{itemize}
+\item Optimize existing implementation of quartic residue symbol
+\item Implement 3 additional homomorphisms (Jacobi symbol, discrete logarithm, RSA exponentiation) and compare them to each other
+\item Programming language C, GNU Multiple Precision Arithmetic Library GMP
+\end{itemize}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}_{\beta}(\alpha)$}
+\\[0.5cm]
+\emph{Definition}
+Let $\alpha,\beta \in \mathbb{Z}[{i}]$ be such that $(1+i) \nmid \beta$ and $\gcd(\beta,\alpha) = 1$. \\
+The \emph{quartic residue symbol} is defined as $ 
+ \mathbf{\chi}_{\beta} : \mathbb{Z}[{i}] \to \{ 0,\pm 1, \pm i\}$ 
+ \begin{displaymath} 
+ \mathbf{\chi}_{\beta}(\alpha) = \left\{ 
+ \begin{array}{ll} 
+     \big(\alpha^{\frac{N(\beta)-1}{4}}\big)\bmod \beta & 
+         \textrm{if $\beta$ prime}\\ 
+     \prod _{i} ~\mathbf{\chi}_{\beta _{i}}(\alpha) & 
+         \textrm{if $\beta = \prod _ {i} \beta _{i},~ \beta_{i}$ prime} 
+ \end{array} \right. 
+ \end{displaymath}
+ 
+ \emph{Properties}
+  \begin{itemize} 
+ \item[-] Modularity: $\chi_{\beta}(\alpha) = \chi_{\beta}(\alpha \bmod \beta)$ 
+ \item[-] Multiplicativity: $\chi_{\beta}(\alpha\alpha') = \chi_{\beta}(\alpha)\chi_{\beta}(\alpha')$ 
+ \item[-] Reciprocity Law: if $\alpha,~\beta$ primary:\\ $~~~~~~~~~~~~~\chi_{\beta}(\alpha) = \chi_{\alpha}(\beta)\cdot 
+     (-1)^{\frac{N(\alpha)-1}{4}\cdot \frac{N(\beta)-1}{4}}~~~$ 
+ \end{itemize} 
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}_{\beta}(\alpha)$}
+\\[0.5cm]
+\emph{Basic algorithm}\\[.2cm]
+$t \gets 0$\\
+{WHILE} $(N(\alpha) > 1)$ DO\begin{itemize}
+\item[] $\alpha \gets \alpha \bmod \beta~$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~(Modularity)
+\item[] find $\alpha'$ primary such that $i^j \cdot (1+i)^k \cdot \alpha'$
+\item[] set $\alpha \gets \alpha'$ and adjust $t$~~~~~~~~~~~~~~~~~~~~~~~~~(Multiplicativity)
+\item[] swap $\alpha$ and $\beta$ and adjust $t$~~~~~~~~~~~~~~~~~~~~~(Reciprocity)
+\end{itemize} 
+{IF} $(N(\alpha) = 1)$ return $i^t$
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}$}
+\\[0.5cm]
+\emph{Damg\aa rd's algorithm}\\[0.2cm]
+$t \gets 0$\\
+{WHILE} $(\alpha \ne \beta)$ DO\begin{itemize}
+\item[] $\alpha \gets \alpha - \beta~$
+\item[] find $\alpha'$ primary such that $i^j \cdot (1+i)^k \cdot \alpha'$
+\item[] $\alpha \gets \alpha'$ and adjust $t$~~~~~~~~~~~~~~~~~~~~~~~~~(Multiplicativity)
+\item[] {IF} $(N(\alpha) > N(\beta))$ \begin{itemize}
+\item[] swap $\alpha$ and $\beta$ and adjust $t$~~~~~~~~~~~~~(Reciprocity)
+\end{itemize} 
+\end{itemize}
+{IF} $(\alpha = 1)$ return $i^t$
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}$}
+\\[0.8cm]
+\emph{Implementation}\\[.2cm]
+Basic functions in $\mathbb{Z}[i]$  \begin{itemize} 
+ \item Multiplication: $\alpha \cdot \beta$ 
+ \item Modulo: $\alpha \bmod \beta$ 
+ \item Norm: $N(\alpha)$ 
+ \item Division by $(1+i)^r$ 
+ \item Primarization: transforms $\alpha$ into its primary associate if possible 
+ \end{itemize}
+
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}$}
+\\[0.8cm]
+\emph{Optimization}
+\begin{itemize} 
+\item Scrutinize every line of code 
+\item Implement faster algorithms
+\item Remove unnecessary function calls
+\item Use faster, more sophisticated GMP functions
+\item Reduce the number of GMP variables 
+\item Examine different implementation variants
+\item Apply general optimization techniques \\
+ \end{itemize}
+ Number of lines of code: not optimized 1162, optimized 603
+\end{slide}
+\begin{slide}
+\slidetitle{Division by $(1+i)^r$}
+\\[.5cm]
+ \[\frac{\alpha }{(1+i)} = \frac{Re(\alpha)+Im(\alpha)}{2} + \frac{Im(\alpha)- Re(\alpha)}{2} i\]
+\[\frac{\alpha}{(1+i)^r} =  \frac{i^{3k} \Big(\frac{Re(\alpha)}{2{^k}} + \frac{Im(\alpha)}{2{^k}}i\Big) }{(1+i)^b}~~,~~r = 2k + b\]
+\setlength{\columnseprule}{0pt}
+\setlength{\columnsep}{.5cm}
+\begin{multicols}{2}
+Not optimized: 
+\begin{itemize} 
+\item Compute $(1+i)^r$ 
+\item Divide $\alpha$ by result\\[.5cm]
+ \end{itemize}
+Optimized: 
+\begin{itemize} 
+\item Rightshift $Re(\alpha)$ and $Im(\alpha)$ by $k+b$ considering $3k$
+\item If $b=1$ perform necessary addition and subtraction
+ \end{itemize}
+\end{multicols}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}$}
+\\[0.8cm]
+\emph{Tests}
+\begin{itemize}
+\item Time measurements under Windows and Linux
+\item Windows platform Intel(R)4 1.4 GHz Desktop Computer,\\ 256 MB RAM, Windows XP
+\item Average values produced by test series of 1000 tests
+\item 512 bit random numbers generated with a GMP function \\
+Gaussian integers: real and imaginary part 512 bit random numbers 
+\end{itemize}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}$}
+\\[0.8cm]
+\emph{Results subfunctions}\\
+ \begin{table}[htb] 
+  \begin{tabular}{|l c c c|} 
+ \hline 
+  Running time (in ms)&  {not optimized} &  {optimized} & {GMP (in $\mathbb{Z}$)} \\ 
+ \hline  
+ Multiplication in $\mathbb{Z}[i]$ & 0.078  & 0.049 & 0.010\\
+ Modulo in $\mathbb{Z}[i]$ &  0.141 & 0.104& 0.001\\ 
+ Division by $(1+i)^r$  &  0.061 & 0.015 & 0.001\\ 
+ Primarization &  0.071& 0.006 & \\ 
+ \hline 
+ \end{tabular}
+ \end{table} 
+ 
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}$}
+\\[0.8cm]
+\emph{Results quartic residue symbol}\\
+ \begin{table}[htb] 
+ \begin{tabular}{|l c c|} 
+ \hline 
+ Running time and iterations &  {time in ms} &  {iterations}\\ 
+ \hline  
+ Basic algorithm not optimized & 62.79 & 249.27\\
+ Basic algorithm optimized & 31.57 & 249.27\\
+ Damg\aa rd's algorithm  &  24.22 & 512.84\\
+ \hline 
+ \end{tabular}
+ \end{table}  
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}$}
+\\[0.8cm]
+\emph{MOVA signature scheme}
+\begin{itemize}
+\item $n = pq$ where $p,~q$ rational primes, $p\equiv q\equiv 1 \pmod 4$
+\item Find $\pi,\sigma$ such that $p=\pi\bar{\pi}$ and $q = \sigma\bar{\sigma}$ with algorithms by Tonelli and Cornacchia
+\item Select $G := \mathbb{Z}[i]/\beta\mathbb{Z}[i],~ G \cong \mathbb{Z}_n^*$ with $\beta= \pi \sigma$, $G \cong \mathbb{Z}_p^*$ with $\beta= \pi$
+\end{itemize}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}$}
+\\[0.8cm]
+\emph{Results MOVA Setup}\\
+ \begin{table}[htb]  
+ \begin{tabular}{|l c c|} 
+ \hline 
+Running time and iterations&  {time in ms} &  {iterations}\\ 
+ \hline  
+ $\beta= \pi \sigma$ & &\\
+ \hline
+ Basic algorithm optimized & 32.12 & 248.81\\
+ Damg\aa rd's algorithm  &  50.63 & 766.12\\
+ \hline  
+ $\beta= \pi$ & &\\
+ \hline
+ Basic algorithm optimized & 14.31 & 2123.87\\
+ Damg\aa rd's algorithm  &  38.59 & 640.71\\
+ \hline 
+ \end{tabular}
+ \end{table}  
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}$}
+\\[.5cm]
+
+%Damg\aa rd's algorithm slower because 
+
+\emph{Mixed Algorithm}
+\begin{itemize}
+\item[] $\alpha \gets \alpha \bmod \beta~$
+\item[] return Damg\aa rd$(\alpha,\beta)$
+\end{itemize}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Quartic residue symbol $\mathbf{\chi}$}
+\\[0.7cm]
+\emph{Results including mixed algorithm}
+ \begin{table}[htb] 
+ \begin{tabular}{|l c c|} 
+ \hline 
+MOVA setup running time and iterations &  {time in ms} &  {iterations}\\ 
+  \hline  
+ $\beta= \pi \sigma$ & &\\
+ \hline  
+ Basic algorithm optimized & 32.12 & 248.81\\
+ Damg\aa rd's algorithm  &  50.63 & 766.12\\
+ Mixed algorithm & 24.65 & 511.92\\
+ \hline 
+ $\beta= \pi$ & &\\
+ \hline
+ Basic algorithm optimized & 14.31 & 2123.87\\
+ Damg\aa rd's algorithm  &  38.59 & 640.71\\
+ Mixed algorithm & 9.03 & 255.95\\
+ \hline 
+ \end{tabular}
+ \end{table}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Jacobi Symbol $(\frac{a}{m})$}
+\\[0.3cm]
+\begin{itemize}
+\item Jacobi symbol equivalent of quartic residue symbol in $\mathbb{Z}$
+\item Implement basic algorithm (modulo for reduction)
+\item Compare with GMP function \ttfamily mpz\_jacobi \sffamily (binary algorithm)
+\item MOVA setup: $n=pq, ~p,q$ prime, $a \in \mathbb{Z}^*_n, m = p$\\
+\end{itemize}
+\emph{Results Jacobi symbol}
+ \begin{table}[htb] 
+ \begin{tabular}{|l c c|} 
+ \hline 
+Running time and iterations  &  {time in ms} &  {iterations}\\ 
+ \hline  
+ Basic algorithm & 1.261 & 187.71\\
+ Binary algorithm (GMP) & 0.116 & \\
+ \hline 
+ \end{tabular}
+ \end{table}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Homomorphism based on discrete logarithm}
+\\[0.5cm]
+\begin{itemize}
+\item $n = pq$ with $p = rd + 1$, $q$, $d$ prime, $\gcd(q-1,d)=1,~\gcd(r,d)= 1$
+\item $g$ generating a subgroup of $\mathbb{Z}^{*}_{p}$ of order $d$ \\
+\end{itemize}
+Construct a homomorphism suitable for the generic homomorphic signature scheme by computing a discrete logarithm in a small subgroup of $\mathbb{Z}^{*}_{n}$ like this: 
+ \begin{displaymath} 
+     \phi : \mathbb{Z}^{*}_{n} \to \mathbb{Z}_{d} ~~~\phi (x) = \log_g(x^r \bmod~ p) 
+ \end{displaymath} \\ 
+GMP provides a function for exponentiation modulo an integer\\
+$\longrightarrow$ only discrete logarithm to implement
+ 
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Homomorphism based on discrete logarithm}
+\\[0.8cm]
+\emph{Precomputed table}\\
+Construct table containing discrete logarithm for all elements\\
+Size of table: $2^{20}$ 20 bit integers, key 512 bits long 
+\begin{itemize}
+\item Hash table: array of integers (32 bits)
+\item Key management: key not saved, index into array
+\item Collision management: 24 LSB of key, key $>$$>$ 24, \ldots
+\item Insertion/Retrieval methods: collision check, correctness check
+\item Preprocessing time: $O(d)$, running time: $O(1)$
+\end{itemize} 
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Homomorphism based on discrete logarithm}
+\\[0.8cm]
+\emph{Baby step giant step algorithm (BSGS)}
+\begin{itemize}
+\item Store $O(\sqrt d)$  elements in hashtable (baby steps)
+\item Loop from 0 to $O(\sqrt d)$ to find logarithm (giant steps)
+\item Use hash table from previous algorithm, less collisions
+\item Preprocessing time: $O(\sqrt d)$, running time: $O(\sqrt d)$
+\end{itemize}
+\begin{comment}
+Compute $x = \log_g(y)$\begin{itemize}
+\item[] Set $m \gets \lceil \sqrt d \rceil$ 
+\item[] Construct a hash table with entries $(g^j,j)$ for $0 \le j \le m$ 
+\item[] FOR $i$ from $0$ to $m-1$ DO 
+	\begin{itemize} 
+ 	\item[] Check if there is an entry $j$ for $y$ in hash table
+ 	\item[] IF $(\gamma = g^j)$ return $x \gets im + j$ 
+ 	\item[] Set $y \gets y ^{-m}$
+ 	\end{itemize}
+\item[] END FOR
+\end{itemize}
+\end{comment}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Homomorphism based on discrete logarithm}
+\\[0.5cm]
+\emph{Pollard's rho algorithm}\begin{itemize}
+\item Group G partitioned into three sets $S_0, S_1, S_2$ of roughly  equal size
+\item Define sequence of group elements $x_i$ and integers $a_i, b_i$  satisfying \emph{$x_i = g^{a_i}y^{b_i}$} $\forall i \ge 0$ by $x_0 = 1, ~a_0 = 0, ~b_0 = 0$ and  \[x_{i+1} = \left\{\begin{array}{lr} 
+         y x_i \bmod p & ~~~~~\textrm{if } x_i \in S_0\\ 
+         ~x_i^2 \bmod p & ~~~~~\textrm{if } x_i \in S_1\\ 
+         g x_i \bmod p & ~~~~~\textrm{if } x_i \in S_2\\ 
+     \end{array} \right. \] 
+\item Compute iteratively $x_i$ and $x_{2i}$ until $x_i = x_{2i}$
+\item Derive logarithm from representation $x_i = g^{a_i}y^{b_i}$
+\item Running time: $O(\sqrt d)$    
+\end{itemize}  
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Homomorphism based on discrete logarithm}
+\\[0.5cm]
+\emph{Results}
+ \begin{table}[htb] 
+ \begin{tabular}{|l c c|} 
+ \hline 
+Table construction  &  {time in s} &  {collisions}\\ 
+ \hline  
+ Precomputed table & 16.616 & 14 274\\
+ Baby step giant step & 6.023 & 0 \\
+ \hline 
+ & &  \\
+Running time and iterations  &  {time in ms} &  {iterations}\\ 
+ \hline   
+ GMP \ttfamily mpz\_powm \sffamily & 9.44 & ~~~~~~\\
+ \hline
+ Precomputed table & 9.66 & 1.04\\
+ Baby step giant step & 19.47 & 388.36 \\
+ Pollard's rho & 74.92 & 1037.49 \\
+ \hline 
+ \end{tabular}
+ \end{table}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{RSA}
+\\[0.2cm]
+\begin{itemize}
+\item Select $n=pq,~ p,q$ prime, $\phi(n) = (p-1)(q-1)$
+\item Choose $e$ such that $1 < e < \phi(n)$ and $ \gcd(e,\phi(n))=1$ 
+\item Compute $ d=e^{-1}\bmod \phi(n)$ \\
+\end{itemize}
+
+Homomorphism $\phi$ suitable for generic homomorphic signature scheme:
+ \begin{displaymath} 
+     \phi : \mathbb{Z}^{*}_{n} \to \mathbb{Z}^*_{n} ~~~\phi (x) = (x^d \bmod~ n) 
+ \end{displaymath}
+\emph{Results}
+ \begin{table}[htb] 
+ \begin{tabular}{|l c|} 
+ \hline 
+Running time&  {time in ms}\\ 
+ \hline  
+ RSA exponentiation ~~~~~~~~~~~& ~~33.87\\
+ \hline 
+ \end{tabular}
+ \end{table}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Signature Generation}
+\\[1.0cm] 
+\emph{Security parameters}
+\begin{itemize}
+\item Quartic residue symbol $n$ 1024 bits, $s = 20$
+\item Jacobi symbol $n$ 1024 bits, $s=20$
+\item Hom. based on discrete logarithm $d$ 20 bits, $n$ 1024 bits, $s=1$
+\item RSA $n$ 1024 bits, $s=1$
+\end{itemize}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Signature generation}
+\\[1.0cm] 
+\emph{Results}
+ \begin{table}[htb] 
+ \begin{tabular}{|l c|} 
+ \hline 
+Signature generation time&  {time in ms}\\ 
+ \hline  
+ Quartic residue symbol $(\beta=\pi\sigma)$ & 493.01\\ 
+ Quartic residue symbol $(\beta=\pi)$ & 180.64\\
+ Jacobi symbol (basic algorithm) & 25.22\\ 
+ Jacobi Symbol (GMP) & 2.32\\  
+ Discrete logarithm (Precomputed Table) & 9.66\\ 
+ Discrete logarithm (BSGS) & 19.47\\ 
+ Discrete logarithm (Pollard's rho) & 74.93\\ 
+ RSA & 33.87\\
+ \hline 
+ \end{tabular}
+ \end{table}
+\end{slide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{slide}
+\slidetitle{Conclusion}\\[1cm]
+\begin{itemize}
+\item Reduced computation time for quartic residue symbol by more than half
+\item $\mathbb{Z}[i]$ computations prevent quartic residue symbol from being competitive with Jacobi symbol
+\item Compared implementations of additional homomorphisms by storage requirement and speed
+\end{itemize}
+
+\end{slide}
+\end{document}

@@ -1,0 +1,27 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 1
+\BOOKMARK [0][-]{chapter.2}{Preliminaries}{}% 2
+\BOOKMARK [1][-]{section.2.1}{Hash Function}{chapter.2}% 3
+\BOOKMARK [1][-]{section.2.2}{Pseudorandom Generator}{chapter.2}% 4
+\BOOKMARK [1][-]{section.2.3}{Commitment Scheme}{chapter.2}% 5
+\BOOKMARK [1][-]{section.2.4}{Digital Signature}{chapter.2}% 6
+\BOOKMARK [0][-]{chapter.3}{MOVA Signature Scheme}{}% 7
+\BOOKMARK [1][-]{section.3.1}{Undeniable Signatures}{chapter.3}% 8
+\BOOKMARK [1][-]{section.3.2}{MOVA}{chapter.3}% 9
+\BOOKMARK [2][-]{subsection.3.2.1}{Definition}{section.3.2}% 10
+\BOOKMARK [2][-]{subsection.3.2.2}{Interactive Proofs}{section.3.2}% 11
+\BOOKMARK [2][-]{subsection.3.2.3}{Advantages of MOVA}{section.3.2}% 12
+\BOOKMARK [0][-]{chapter.4}{The Application}{}% 13
+\BOOKMARK [1][-]{section.4.1}{Overview}{chapter.4}% 14
+\BOOKMARK [1][-]{section.4.2}{Security Overview}{chapter.4}% 15
+\BOOKMARK [1][-]{section.4.3}{Threat Model}{chapter.4}% 16
+\BOOKMARK [1][-]{section.4.4}{Problems}{chapter.4}% 17
+\BOOKMARK [1][-]{section.4.5}{Using Classical Signatures}{chapter.4}% 18
+\BOOKMARK [0][-]{chapter.5}{Application Design}{}% 19
+\BOOKMARK [1][-]{section.5.1}{Architecture}{chapter.5}% 20
+\BOOKMARK [2][-]{subsection.5.1.1}{The Android Application}{section.5.1}% 21
+\BOOKMARK [2][-]{subsection.5.1.2}{The Servers}{section.5.1}% 22
+\BOOKMARK [1][-]{section.5.2}{Implementation}{chapter.5}% 23
+\BOOKMARK [2][-]{subsection.5.2.1}{MOVA}{section.5.2}% 24
+\BOOKMARK [2][-]{subsection.5.2.2}{Other Cryptographic Primitives}{section.5.2}% 25
+\BOOKMARK [1][-]{section.5.3}{The Code}{chapter.5}% 26
+\BOOKMARK [0][-]{chapter.6}{Conclusion}{}% 27

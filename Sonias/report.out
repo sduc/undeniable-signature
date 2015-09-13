@@ -1,0 +1,14 @@
+\BOOKMARK [1][-]{section.0.1}{Introduction and Motivation}{}
+\BOOKMARK [1][-]{section.0.2}{Background}{}
+\BOOKMARK [2][-]{subsection.0.2.1}{Characters of order 2}{section.0.2}
+\BOOKMARK [2][-]{subsection.0.2.2}{Characters of order 4}{section.0.2}
+\BOOKMARK [2][-]{subsection.0.2.3}{Characters of other orders}{section.0.2}
+\BOOKMARK [2][-]{subsection.0.2.4}{Related Computational Problems}{section.0.2}
+\BOOKMARK [1][-]{section.0.3}{Probabilistic Encryption Scheme}{}
+\BOOKMARK [2][-]{subsection.0.3.1}{Correctness}{section.0.3}
+\BOOKMARK [2][-]{subsection.0.3.2}{Security}{section.0.3}
+\BOOKMARK [1][-]{section.0.4}{New Proposal}{}
+\BOOKMARK [2][-]{subsection.0.4.1}{Key Agreement}{section.0.4}
+\BOOKMARK [2][-]{subsection.0.4.2}{Probabilistic Encryption Scheme}{section.0.4}
+\BOOKMARK [2][-]{subsection.0.4.3}{Using characters of order 4}{section.0.4}
+\BOOKMARK [1][-]{section.0.5}{Conclusions}{}

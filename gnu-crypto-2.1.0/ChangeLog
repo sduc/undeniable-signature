@@ -1,0 +1,699 @@
+2005-10-23  Casey Marshall  <csm@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): remove 'build.xml,' 'init.sh.'
+	(bin-dist): add 'tar.bz2' target.
+	(gnu-crypto-$(VERSION)-bin.tar.gz, gnu-crypto-$(VERSION)-bin.tar.bz2,
+	gnu-crypto-$(VERSION)-bin.zip): fix documentation generation.
+	* configure.ac (AC_INIT): set version to '2.1.0.'
+	(VERSION): set to '2.1.0.'
+	* source/Makefile.am (main_sources): add 'Fortuna.java' and related
+	source files.
+
+2005-10-23  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/prng/Fortuna.java (Generator.resetKey): call
+	'cipher.reset' before re-initializing.
+
+2005-10-22  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/prng/Fortuna.java (fillBlock): reset 'pool0Count.'
+	(Generator.incrementCounter): fix the loop.
+
+2005-10-06  Casey Marshall  <csm@gnu.org>
+
+	* README.bin: new file.
+	* source/Makefile.am (check-local): don't treat mauve errors
+	as errors.
+	(check-pkits): likewise.
+
+2005-10-05  Casey Marshall  <csm@gnu.org>
+
+	* source/Makefile.am (generated_sources): new variable.
+	(main_sources): remove 'gnu/crypto/Registry.java.'
+	(generated_mauve_sources): new variable.
+	(mauve_sources): remove 'gnu/testlet/config.java.'
+	(check-pkits): don't use '-u' option with 'cp.'
+	(classes/gnu/crypto/Registry.class): new target.
+	($(main_jar)): add 'classes/gnu/crypto/Registry.class' to
+	dependency list.
+	(test_classes): fix 'choose_classes' usage for different build
+	dir.
+	(pkits_classes): likewise.
+
+2005-10-02  Casey Marshall  <csm@gnu.org>
+
+	* configure.ac (AC_CONFIG_FILES): add 'Registry.java.'
+	* source/gnu/crypto/Registry.java: removed.
+
+2005-10-02  Casey Marshall  <csm@gnu.org>
+
+	* Makefile.am: removed conditionals on jce, security, jgss.
+	(DISTCHECK_CONFIGURE_FLAGS): removed.
+	(SUBDIRS): only set to 'source' and 'docs.'
+	(EXTRA_DIST): remove gcj files.
+	(bin-dist, gnu-crypto-$(VERSION)-bin.tar.gz,
+	gnu-crypto-$(VERSION)-bin.zip, BUILD, .FORCE): new targets.
+	* acinclude.m4 (AC_PROG_JAVAC): don't check gcj, guavac.
+	* autogen.sh: allow setting of programs by environment variables.
+	* configure.ac (AC_INIT): set version to '2.1.0-rc1.'
+	(AC_CONFIG_SRCDIR): use 'Properties.java.'
+	(AM_INIT_AUTOMAKE): require 1.9+, ustar tar format.
+	(VERSION): set to '2.1.0-rc1.'
+	(GNU_CRYPTO_WITH_JCE, GNU_CRYPTO_WITH_SASL, GNU_CRYPTO_WITH_JGSS):
+	calls removed.
+	(FOUND_SECURIT_JAR, WITH_INCLUDED_GETOPT): set to true.
+	(AC_CONFIG_FILES): remove jce, security, jgss makefiles.
+	* source/Makefile.am: fix EXTRA_DIST, remove conditional compilation,
+	fix compilations by using 'sourcepath.'
+	* source/gnu/crypto/auth/callback/MessagesBundle.properties:
+	fix English descriptions.
+	* source/gnu/crypto/sasl/ClientMechanism.java
+	(getNegotiatedProperty): don't declare to throw 'SaslException;'
+	throw 'IllegalStateException.'
+	* source/gnu/crypto/sasl/ServerMechanism.java
+	(getNegotiatedProperty): don't declare to throw 'SaslException;'
+	throw 'IllegalStateException.'
+	* source/gnu/testlet/gnu/crypto/jce/TestOfMac.java
+	(testEquality): handle 'CloneNotSupportedException.'
+	* etc/gnu-crypto-2.1.0-1-rh.spec: new file.
+
+2005-10-02  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/jce/cipher/CipherAdapter.java
+	(engineInit): call 'reset.'
+	(engineDoFinal): call 'reset.'
+	(reset): new method.
+
+2004-10-12  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/auth/callback/GnuCallbacks.java
+	(<init>): don't reference AWT callbacks statically.
+	
+	* source/gnu/crypto/mac/TMMH16.java
+	(<init>): removed copying constructor.
+	(clone): removed.
+
+	* build.xml: added gcjlib targets.
+
+2004-10-11  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/jce/GnuCrypto.java
+	(<init>): added more Hmac aliases.
+
+2004-10-10  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/jce/GnuCrypto.java
+	(<init>): added SecretKeyFactoryImpl classes; Hmac aliases.
+	* source/gnu/crypto/jce/mac/MacAdapter.java: implement Cloneable.
+	(<init>): removed 'copying' constructor.
+	(clone): call 'super.clone'; declare to throw
+	CloneNotSupportedException.
+	* source/gnu/crypto/mac/BaseMac.java
+	(clone): implemented using 'Object.clone'.
+	* source/gnu/crypto/mac/HMac.java: implement Cloneable.
+	(clone): removed.
+	* source/gnu/crypto/mac/IMac.java: don't extend Cloneable.
+	(clone): declare to throw CloneNotSupportedException.
+	* source/gnu/crypto/prng/ARCFour.java: implement Cloneable.
+	(clone): removed.
+	* source/gnu/crypto/prng/BasePRNG.java
+	(clone): implement using 'Object.clone'.
+	* source/gnu/crypto/prng/Fortuna.java
+	(clone): removed.
+	(Generator.clone): removed.
+	* source/gnu/crypto/prng/ICMGenerator.java: implement Cloneable.
+	(<init>): removed copying constructor.
+	(clone): removed.
+	* source/gnu/crypto/prng/IRandom.java
+	(clone): declare to throw CloneNotSupportedException.
+	* source/gnu/crypto/prng/MDGenerator.java: implement Cloneable.
+	(<init>): removed copying constructor.
+	(clone): removed.
+	* source/gnu/crypto/prng/PBKDF2.java
+	(clone): removed.
+	* source/gnu/crypto/prng/UMacGenerator.java: implement Cloneable.
+	(<init>): removed copying constructor.
+	(clone): removed.
+	* source/gnu/crypto/mode/EAX.java
+	(<init>): don't use IMac.clone to create mac instances.
+
+	* source/gnu/crypto/jce/key/AnubisSecretKeyFactoryImpl.java
+	* source/gnu/crypto/jce/key/RijndaelSecretKeyFactoryImpl.java
+	* source/gnu/crypto/jce/key/BlowfishSecretKeyFactoryImpl.java
+	* source/gnu/crypto/jce/key/SecretKeyFactoryImpl.java
+	* source/gnu/crypto/jce/key/Cast5SecretKeyFactoryImpl.java
+	* source/gnu/crypto/jce/key/SerpentSecretKeyFactoryImpl.java
+	* source/gnu/crypto/jce/key/DESSecretKeyFactoryImpl.java
+	* source/gnu/crypto/jce/key/SquareSecretKeyFactoryImpl.java
+	* source/gnu/crypto/jce/key/DESedeSecretKeyFactoryImpl.java
+	* source/gnu/crypto/jce/key/TwofishSecretKeyFactoryImpl.java
+	* source/gnu/crypto/jce/key/KhazadSecretKeyFactoryImpl.java
+	New files.
+
+2004-10-10  Casey Marshall  <csm@gnu.org>
+
+	* build.xml: fixed Ant build.
+
+2004-08-20  Casey Marshall <csm@gnu.org>
+
+	* source/gnu/testlet/gnu/crypto/jce/TestOfMac.java
+	(testEquality): use appropriate-length keys for OMAC.
+
+2004-08-20  Casey Marshall <csm@gnu.org>
+
+	* source/gnu/testlet/gnu/crypto/sasl/srp/TestOfSRPAuthInfoProvider.java
+	(test): use unique file name.
+	* source/gnu/testlet/gnu/crypto/sasl/srp/TestOfSRPPaswordFile.java
+	(exerciseFile): likewise.
+	* source/gnu/testlet/gnu/crypto/sasl/srp/TestOfSRPPrimitives.java
+	(test): likewise.
+
+2004-08-19  Casey Marshall <csm@gnu.org>
+
+	* source/gnu/crypto/prng/BasePRNG.java
+	(nextBytes): fix bounds check. Use `while' not `do-while' loop.
+
+2004-08-19  Casey Marshall <csm@gnu.org>
+
+	* source/gnu/crypto/Registry.java.in
+	(FORTUNA_PRNG): new constant.
+	(FORTUNA_GENERATOR_PRNG): new constant.
+	* source/gnu/crypto/hash/BaseHash.java
+	(update(byte[])): new method.
+	* source/gnu/crypto/hash/IMessageDigest.java
+	(update(byte[])): new method.
+	* source/gnu/crypto/prng/BasePRNG.java
+	(addRandomBytes(byte[])): new method.
+	* source/gnu/crypto/prng/Fortuna.java: new file.
+	* source/gnu/crypto/prng/IRandom.java
+	(addRandomBytes(byte[])): new method.
+	* source/gnu/crypto/prng/RandomEvent.java: new file.
+	* source/gnu/crypto/prng/RandomEventListener.java: new file.
+
+2004-08-19  Casey Marshall <csm@gnu.org>
+
+	* source/gnu/testlet/gnu/crypto/jce/TestOfKeyPairGenerator.java
+	(testUnknownGenerator): use "GNU-SECURITY" provider.
+	(testDSAKeyPairGenerator): likewise.
+	(testRSAKeyPairGenerator): likewise.
+	(setUp): likewise.
+
+2004-08-19  Casey Marshall <csm@gnu.org>
+
+	* source/gnu/testlet/gnu/crypto/key/srp6/TestOfSRP6KeyAgreements.java
+	(pFile): use name that was never in CVS.
+
+2004-08-19  Casey Marshall <csm@gnu.org>
+
+	* source/gnu/testlet/gnu/crypto/jce/TestOfSignature.java
+	(testUnknownScheme): use "GNU-SECURITY" provider.
+	(testDSSRawSignature): likewise.
+	(testRSAPSSRawSignature): likewise.
+	(setUp): likewise.
+
+2004-08-18  Casey Marshall <csm@gnu.org>
+
+	* source/gnu/crypto/pad/SSL3.java
+	(pad): commented out call to `PRNG.nextBytes'; this seems to cause
+	`make check' to hang for some reason.
+	* source/gnu/crypto/prng/CSPRNG.java
+	(SPINNER_COUNT): new constant.
+	(SPINNER_THREADS): new constant.
+	(<clinit>): initialize `SPINNER_THREADS' along with `SPINNERS'.
+	(fastPoll): use `SPINNER_COUNT'. Access Spinner.counter directly.
+	(Spinner): implement Runnable; don't extend Thread.
+	(Poller.run): kill-and-wait-on the process if we get an
+	exception.
+
+2004-08-18  Casey Marshall <csm@gnu.org>
+
+	* source/Makefile.am: added OMACs.
+	* gcj/source/Makefile.am: likewise.
+	* source/gnu/crypto/jce/GnuCrypto.java
+	(<init>): use new OMac classes.
+	* source/gnu/crypto/jce/mac/OMacAnubisImpl.java,
+	* source/gnu/crypto/jce/mac/OMacBlowfishImpl.java,
+	* source/gnu/crypto/jce/mac/OMacCast5Impl.java,
+	* source/gnu/crypto/jce/mac/OMacDESImpl.java,
+	* source/gnu/crypto/jce/mac/OMacImpl.java,
+	* source/gnu/crypto/jce/mac/OMacKhazadImpl.java,
+	* source/gnu/crypto/jce/mac/OMacRijndaelImpl.java,
+	* source/gnu/crypto/jce/mac/OMacSerpentImpl.java,
+	* source/gnu/crypto/jce/mac/OMacSquareImpl.java,
+	* source/gnu/crypto/jce/mac/OMacTripleDESImpl.java,
+	* source/gnu/crypto/jce/mac/OMacTwofishImpl.java
+	new files.
+
+2004-08-15  Dalibor Topic <robilad@kaffe.org>
+
+	* source/gnu/crypto/pki/provider/DSASignature.java
+	(DSASignature()): Added throws clause to fix compilation.
+	(clone,DSASignature(DSASignature)) Removed.
+
+2004-08-12  Casey Marshall <csm@gnu.org>
+
+	* source/gnu/crypto/pki/provider/DSASignature.java
+	(<init>): initialize `digest' here.
+	(init): removed initialization of `digest', and remove unnecessary
+	catches.
+	Reported by Dalibor Topic <robilad@kaffe.org>
+
+2004-05-31  Casey Marshall  <csm@gnu.org>
+
+	* security/javax/security/auth/login/AccountExpiredException.java
+	* security/javax/security/auth/login/AppConfigurationEntry.java
+	* security/javax/security/auth/login/Configuration.java
+	* security/javax/security/auth/login/CredentialExpiredException.java
+	* security/javax/security/auth/login/FailedLoginException.java
+	* security/javax/security/auth/login/LoginContext.java
+	* security/javax/security/auth/login/LoginException.java
+	* security/javax/security/auth/login/NullConfiguration.java
+	* source/gnu/crypto/auth/callback/Engine.java
+	* source/gnu/crypto/auth/callback/GnuCallbacks.java
+	* source/gnu/crypto/jce/GnuSasl.java
+	* source/gnu/crypto/jce/GnuSecurity.java
+	* source/gnu/crypto/jce/mac/OMacImpl.java
+	* source/gnu/crypto/jce/prng/CSPRNGSpi.java
+	* source/gnu/crypto/pad/SSL3.java
+	* source/gnu/crypto/pad/TLS1.java
+	* source/gnu/crypto/pki/X509CertificateBuilder.java
+	* source/gnu/crypto/pki/ext/PolicyConstraint.java
+	* source/gnu/crypto/tool/keytool/MessagesBundle.properties
+	* source/gnu/testlet/gnu/crypto/pki/pkits/AllCertificatesAnyPolicyTest11_1.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/AllCertificatesAnyPolicyTest11_2.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/AllCertificatesSamePoliciesTest10_1.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/AllCertificatesSamePoliciesTest10_2.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/AllCertificatesSamePoliciesTest10_3.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/AllCertificatesSamePoliciesTest13_1.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/AllCertificatesSamePoliciesTest13_2.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/AllCertificatesSamePoliciesTest13_3.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/DifferentPoliciesTest12.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/DifferentPoliciesTest7.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/DifferentPoliciesTest8.java
+	* source/gnu/testlet/gnu/crypto/pki/pkits/DifferentPoliciesTest9.java:
+	New files.
+
+	* jce/javax/crypto/Engine.java (getInstance): chain exceptions.
+
+	* source/gnu/crypto/Properties.java: reformatted.
+
+	* source/gnu/crypto/Registry.java
+	(SSL3_PAD): new constant.
+	(TLS1_PAD): new constant.
+
+	* source/gnu/crypto/auth/callback/AbstractCallbackHandler.java
+	Uncomment getInstance methods.
+
+	* source/gnu/crypto/der/DERReader.java
+	(<init>): new constructor.
+	(skip): new method.
+
+	* source/gnu/crypto/jce/GnuCrypto.java
+	Statically link algorithms.
+
+	* source/gnu/crypto/jce/keyring/GnuKeyring.java
+	(engineLoad): include bad magic in exception message.
+	(engineStore): removed debug line.
+
+	* source/gnu/crypto/keyring/PrivateKeyEntry.java
+	* source/gnu/crypto/keyring/PublicKeyEntry.java
+	(<init>): invoke `super(int)' with `TYPE'.
+
+	* source/gnu/crypto/mac/MacFactory.java
+	(getNames): add OMAC names. Cache resulting set.
+	(names): new class field.
+
+	* source/gnu/crypto/mode/EAX.java
+	(valid): new class field.
+	(selfTest): return true (for now).
+
+	* source/gnu/crypto/mode/ModeFactory.java
+	(getNames): cache resulting set.
+	(names): new class field.
+
+	* source/gnu/crypto/pad/PadFactory.java
+	(getInstance): return SSL3 and TLS1 padding.
+	(getNames): add SSL3 and TLS1.
+
+	* source/gnu/crypto/pki/PolicyNodeImpl.java
+	(addAllPolicyQualifiers): new method.
+	(addPolicyQualifier): changed parameter to `PolicyQualifierInfo'.
+	(toString): improved output.
+
+	* source/gnu/crypto/pki/X509CertificateImpl.java
+	Marked fields as protected for X509CertificateBuilder.
+	(<init>): chain exceptions.
+	New constructor for subclasses.
+	(getIssuerX500Principal): uncomment.
+	(getSubjectX500Principal): uncomment.
+	(toString): improved output.
+
+	* source/gnu/crypto/pki/ext/AuthorityKeyIdentifier.java
+	* source/gnu/crypto/pki/ext/ExtendedKeyUsage.java
+	* source/gnu/crypto/pki/ext/GeneralNames.java
+	* source/gnu/crypto/pki/ext/IssuerAlternativeNames.java
+	* source/gnu/crypto/pki/ext/KeyUsage.java
+	* source/gnu/crypto/pki/ext/PolicyMappings.java
+	* source/gnu/crypto/pki/ext/PrivateKeyUsagePeriod.java
+	* source/gnu/crypto/pki/ext/ReasonCode.java
+	* source/gnu/crypto/pki/ext/SubjectAlternativeNames.java
+	* source/gnu/crypto/pki/ext/SubjectKeyIdentifier.java
+	(toString): new method.
+
+	* source/gnu/crypto/pki/ext/BasicConstraints.java
+	* source/gnu/crypto/pki/ext/CRLNumber.java
+	* source/gnu/crypto/pki/ext/CertificatePolicies.java
+	(<init>): new constructor.
+	(getEncoded): new method.
+	(toString): new method.
+
+	* source/gnu/crypto/pki/ext/Extension.java
+	Check `DEBUG' before calling debug.
+	(debug): don't check `DEBUG' here.
+	(encoded): new field.
+	(<init>): check for `PolicyConstraint'.
+	New constructor for programmatic creation.
+	(getEncoded): new method.
+	(toString): new method.
+	(getDerValue): new method.
+	(encode): new method.
+	(Value.<init>): new constructor.
+
+	* source/gnu/crypto/pki/provider/DSASignature.java
+	(init): get "SHA-160" message digest.
+
+	* source/gnu/crypto/pki/provider/EncodedKeyFactory.java
+	(engineGeneratePublic): use explicit cast.
+
+	* source/gnu/crypto/pki/provider/PKIXCertPathValidator.java
+	(debug) Check `DEBUG' in code, not here.
+	Numerous policy checking improvements.
+
+	* source/gnu/crypto/pki/provider/SHA1withRSA.java
+	(<init>): get "SHA-160".
+
+	* source/gnu/crypto/pki/provider/X509CertificateFactory.java
+	Chain exceptions.
+
+	* source/gnu/crypto/tool/Ent.java: Replaced `crypto' with
+	`security'.
+
+	* source/gnu/crypto/tool/keytool/Command.java
+	* source/gnu/crypto/tool/keytool/Delete.java
+	* source/gnu/crypto/tool/keytool/Export.java
+	* source/gnu/crypto/tool/keytool/Import.java
+	* source/gnu/crypto/tool/keytool/List.java
+	* source/gnu/crypto/tool/keytool/Main.java
+	Updated.
+
+	* source/gnu/testlet/gnu/crypto/jce/TestOfMessageDigest.java
+	* source/gnu/testlet/gnu/crypto/jce/TestOfProvider.java
+	Replaced `crypto' with `security'.
+
+2004-05-07  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/tool/keytool/Command.java
+	* source/gnu/crypto/tool/keytool/Delete.java
+	* source/gnu/crypto/tool/keytool/Export.java
+	* source/gnu/crypto/tool/keytool/GenKey.java
+	* source/gnu/crypto/tool/keytool/Import.java
+	* source/gnu/crypto/tool/keytool/List.java
+	* source/gnu/crypto/tool/keytool/Main.java
+	* source/gnu/crypto/tool/keytool/Path.java
+	* source/gnu/crypto/tool/keytool/Revoke.java
+	* source/gnu/crypto/tool/keytool/Sign.java
+	* source/gnu/crypto/tool/keytool/Trust.java:
+	New files.
+
+	* source/gnu/crypto/keyring/AuthenticatedEntry.java
+	* source/gnu/crypto/keyring/CertPathEntry.java
+	* source/gnu/crypto/keyring/CertificateEntry.java
+	* source/gnu/crypto/keyring/PasswordAuthenticatedEntry.java
+	(<init>): invoke `super(int)' with `TYPE'.
+	(decode): don't create new `Properties' object.
+
+	* source/gnu/crypto/keyring/BinaryDataEntry.java
+	* source/gnu/crypto/keyring/PasswordEncryptedEntry.java
+	(<init>): invoke `super(int)' with `TYPE'.
+
+	* source/gnu/crypto/keyring/CompressedEntry.java
+	(<init>): invoke `this(Properties)'.
+	(decode): don't create new `Properties' object.
+
+	* source/gnu/crypto/keyring/EncryptedEntry.java
+	(<init>): invoke `super(int,Properties)' with `TYPE' and new
+	`Properties'.
+
+	* source/gnu/crypto/keyring/Entry.java
+	* source/gnu/crypto/keyring/EnvelopeEntry.java
+	* source/gnu/crypto/keyring/MaskableEnvelopeEntry.java
+	* source/gnu/crypto/keyring/PrimitiveEntry.java
+	(<init>): replaced default constructor with one that accepts
+	`int'.
+
+	* source/gnu/crypto/keyring/GnuPrivateKeyring.java
+	(USAGE): set to `GKR_PRIVATE_KEYS|GKR_PUBLIC_CREDENTIALS'.
+
+	* source/gnu/crypto/keyring/GnuPublicKeyring.java
+	(USAGE): set to `GKR_CERTIFICATES'.
+
+2004-05-01  Casey Marshall  <csm@gnu.org>
+
+	* jce/javax/crypto/ExemptionMechanismException.java:
+	Replaced with GNU version.
+
+	* jgss/org/ietf/jgss/GSSManager.java
+	(getInstance): implemented.
+
+	* security/javax/security/auth/PrivateCredentialPermission.java
+	(<init>): don't mark `actions' as final; removed `this.actions'.
+	(implies): fixed spelling errors.
+	(hashCode): use `credentialClass'.
+
+	* security/javax/security/auth/Subject.java
+	(SecureSet.iterator): removed semicolon.
+	(SecureSet.add): use correct case labes.
+	(SecureSet.remove): likewise.
+
+	* security/javax/security/auth/SubjectDomainCombiner.java
+	Import java.security.Principal.
+
+	* security/javax/security/auth/x500/X500Principal.java
+	Import java.io.EOFException.
+	(<init>): call `parseString'; handle IOException.
+	(equals): cast other class properly.
+	(getName): fixed reference to `RFC2253'.
+	(encodeDer): don't return value.
+	(readAttributeValue): call own `toByteArray'.
+	(parseDer): fixed reference to `this.encoded'.
+	(newRelativeDistinguishedName): new method.
+	(putComponent): new methods.
+	(toByteArray): new method.
+
+	* source/gnu/crypto/Properties.java: Reformatted.
+
+	* source/gnu/crypto/Registry.java
+	(CSPRNG_PRNG): new constant.
+
+	* source/gnu/crypto/cipher/Blowfish.java
+	(keySizes): use gnu.crypto.util.Sequence.
+
+	* source/gnu/crypto/der/DERReader.java
+	(makeString): removed `break' statements after returns.
+	(fromUtf8): fixed `IOException' references; cast ints to chars.
+
+	* source/gnu/crypto/der/DERWriter.java
+	(toIso88591): use `charAt'.
+	(toUtf16Be): likewise.
+
+	* source/gnu/crypto/keyring/Entry.java
+	(encode): don't write to `out' if it is null.
+
+	* source/gnu/crypto/keyring/GnuPublicKeyring.java
+	(store): removed print statement.
+
+	* source/gnu/crypto/keyring/PasswordAuthenticatedEntry.java
+	(<init>): removed print statement.
+
+	* source/gnu/crypto/prng/BasePRNG.java
+	(addRandomByte): implemented.
+	(addRandomBytes): implemented.
+
+	* source/gnu/crypto/prng/CSPRNG.java
+	Reformatted.
+	(slowPoll): check if pollerThread is null.
+
+	* source/gnu/crypto/prng/IRandom.java
+	(addRandomByte): new method.
+	(addRandomBytes): new method.
+
+	* source/gnu/crypto/prng/LimitReachedException.java
+	Added constructor that accepts a detail message.
+
+	* source/gnu/crypto/util/PRNG.java
+	(<clinit>): use CSPRNG singleton.
+
+2004-05-01  Brian Hoover  <bhoover@wecs.com>
+
+	* source/gnu/crypto/auth/Password.java: New file.
+	* source/gnu/crypto/sasl/srp/SRPClient.java
+	(password): use Password class.
+	(resetMechanism): likewise.
+	(getUsernameAndPassword): likewise.
+	* source/gnu/crypto/tool/SaslConnection.java
+	(<init>): use Password class.
+
+2004-05-01  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/util/ExpirableObject.java
+	(doDestroy): made protected.
+
+2004-04-24  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/tool/Ent.java: Merged with stable-2-0.
+
+2004-04-22  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/util/ExpirableObject.java: New file.
+
+2004-04-20  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/util/Prime.java (isProbablePrime): omit
+	`passFermatLittleTheorem' and `passEulerCriterion' tests (there is
+	a liar bug in `passEulerCriterion').
+
+	Euler criterion bug reported by Eric Gilbert <ee_gilbert-at-yahoo.com>.
+
+2004-04-13  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/der/BitString.java
+	* source/gnu/crypto/der/DER.java
+	* source/gnu/crypto/der/DEREncodingException.java
+	* source/gnu/crypto/der/DERReader.java
+	* source/gnu/crypto/der/DERValue.java
+	* source/gnu/crypto/der/DERWriter.java
+	* source/gnu/crypto/der/OID.java
+	* security/javax/security/auth/x500/X500Principal.java
+	* security/javax/security/auth/x500/X500PrivateCredential.java
+	* security/javax/security/auth/AuthPermission.java
+	* security/javax/security/auth/DestroyFailedException.java
+	* security/javax/security/auth/Destroyable.java
+	* security/javax/security/auth/Policy.java
+	* security/javax/security/auth/PrivateCredentialPermission.java
+	* security/javax/security/auth/RefreshFailedException.java
+	* security/javax/security/auth/Refreshable.java
+	* security/javax/security/auth/Subject.java
+	* security/javax/security/auth/SubjectDomainCombiner.java
+	New files.
+
+2004-03-16  Casey Marshall  <csm@gnu.org>
+
+	* source/gnu/crypto/tool/Ent.java (getChiSquareProbability):
+	test for when `a == 0.0'.
+
+2004-02-16  Casey Marshall  <rsdio@metastatic.org>
+
+	* source/gnu/crypto/prng/CSPRNG.java
+	(Poller): implement Runnable, don't extend Thread.
+	(pollerThread): new field.
+	(slowPoll): use pollerThread, not poller.
+
+	* jgss/org/ietf/jgss/ChannelBinding.java
+	* jgss/org/ietf/jgss/GSSContext.java
+	* jgss/org/ietf/jgss/GSSCredential.java
+	* jgss/org/ietf/jgss/GSSException.java
+	* jgss/org/ietf/jgss/GSSManager.java
+	* jgss/org/ietf/jgss/GSSName.java
+	* jgss/org/ietf/jgss/MessageProp.java
+	* jgss/org/ietf/jgss/Oid.java
+	* jce/javax/crypto/ASN1ParsingException.java
+	* jce/javax/crypto/DER.java
+	* jce/javax/crypto/DEREncodingException.java
+	* jce/javax/crypto/DERReader.java
+	* jce/javax/crypto/DERValue.java
+	* jce/javax/crypto/DERWriter.java
+	* jce/javax/crypto/NullCipherImpl.java
+	* jce/javax/crypto/OID.java
+	New files.
+
+	* jce/javax/crypto/BadPaddingException.java
+	* jce/javax/crypto/BitString.java
+	* jce/javax/crypto/Cipher.java
+	* jce/javax/crypto/CipherInputStream.java
+	* jce/javax/crypto/CipherOutputStream.java
+	* jce/javax/crypto/CipherSpi.java
+	* jce/javax/crypto/EncryptedPrivateKeyInfo.java
+	* jce/javax/crypto/Engine.java
+	* jce/javax/crypto/ExemptionMechanism.java
+	* jce/javax/crypto/ExemptionMechanismException.java
+	* jce/javax/crypto/ExemptionMechanismSpi.java
+	* jce/javax/crypto/IllegalBlockSizeException.java
+	* jce/javax/crypto/KeyAgreement.java
+	* jce/javax/crypto/KeyAgreementSpi.java
+	* jce/javax/crypto/KeyGenerator.java
+	* jce/javax/crypto/KeyGeneratorSpi.java
+	* jce/javax/crypto/Mac.java
+	* jce/javax/crypto/MacSpi.java
+	* jce/javax/crypto/NoSuchPaddingException.java
+	* jce/javax/crypto/NullCipher.java
+	* jce/javax/crypto/SealedObject.java
+	* jce/javax/crypto/SecretKey.java
+	* jce/javax/crypto/SecretKeyFactory.java
+	* jce/javax/crypto/SecretKeyFactorySpi.java
+	* jce/javax/crypto/ShortBufferException.java
+	* jce/javax/crypto/interfaces/DHKey.java
+	* jce/javax/crypto/interfaces/DHPrivateKey.java
+	* jce/javax/crypto/interfaces/DHPublicKey.java
+	* jce/javax/crypto/interfaces/PBEKey.java
+	* jce/javax/crypto/spec/DESKeySpec.java
+	* jce/javax/crypto/spec/DESedeKeySpec.java
+	* jce/javax/crypto/spec/DHGenParameterSpec.java
+	* jce/javax/crypto/spec/DHParameterSpec.java
+	* jce/javax/crypto/spec/DHPrivateKeySpec.java
+	* jce/javax/crypto/spec/DHPublicKeySpec.java
+	* jce/javax/crypto/spec/IvParameterSpec.java
+	* jce/javax/crypto/spec/PBEKeySpec.java
+	* jce/javax/crypto/spec/PBEParameterSpec.java
+	* jce/javax/crypto/spec/RC2ParameterSpec.java
+	* jce/javax/crypto/spec/RC5ParameterSpec.java
+	* jce/javax/crypto/spec/SecretKeySpec.java
+	Reimplemented.
+
+2004-01-19  Casey Marshall  <rsdio@metastatic.org>
+
+	* source/gnu/crypto/mode/ModeFactory.java
+	(getInstance): return EAX if requested.
+
+	* source/gnu/crypto/mac/MacFactory.java
+	(getInstance): return OMAC if requested.
+
+	* source/gnu/crypto/Registry.java
+	(EAX_MODE): new constant.
+	(OMAC_PREFIX): new constant.
+
+	* source/gnu/crypto/mode/BaseMode.java
+	(testSymmetry): use cipherBlockSize for CIPHER_BLOCK_SIZE.
+
+	* source/gnu/crypto/mode/CTR.java
+	(setup): allow smaller block sizes; use IV for initial counter.
+	(blockSizes): new method; override default implementation.
+	(ctr): modified for varying block sizes.
+
+	* source/gnu/crypto/mode/IAuthenticatedMode.java,
+	source/gnu/crypto/mode/EAX.java,
+	source/gnu/crypto/mac/OMAC.java,
+	source/gnu/testlet/gnu/crypto/mac/TestOfOMAC.java,
+	source/gnu/testlet/gnu/crypto/mode/TestOfEAX.java:
+	New files.
+
+2004-01-17  Casey Marshall  <rsdio@metastatic.org>
+
+	* source/gnu/crypto/prng/CSPRNG.java: New file.
+
+2004-01-16  Casey Marshall  <rsdio@metastatic.org>
+
+	* source/gnu/crypto/prng/EntropySource.java,
+	source/gnu/crypto/util/SimpleList.java,
+	source/gnu/crypto/exp/Helix.java,
+	source/gnu/crypto/util/Sequence.java: New files.
+

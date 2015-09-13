@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="Client">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../eclipse"/>
+    <property name="UniversityContest.location" value="../UniversityContest"/>
+    <property name="Share.location" value="../Share"/>
+    <property name="Server.location" value="../Server"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit_4.8.2.v4_8_2_v20110321-1705/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+    </path>
+    <path id="Share.classpath">
+        <pathelement location="${Share.location}/bin"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+        <pathelement location="${Share.location}/../gnu-crypto-2.1.0/source/gnu-crypto.jar"/>
+    </path>
+    <path id="Server.classpath">
+        <pathelement location="${Server.location}/bin"/>
+        <path refid="Share.classpath"/>
+        <pathelement location="${Server.location}/../mysql-connector-java-5.1.20/mysql-connector-java-5.1.20-bin.jar"/>
+        <pathelement location="${Server.location}/../jcalendar/lib/jcalendar-1.4.jar"/>
+    </path>
+    <path id="Client.classpath">
+        <pathelement location="bin"/>
+        <path refid="Server.classpath"/>
+        <path refid="Share.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="build.xml" dir="${Share.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${Server.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="build.xml" dir="${Share.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${Server.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="Client.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="build.xml" dir="${UniversityContest.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${UniversityContest.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="RunClientSimulator">
+        <java classname="ch.epfl.lasec.simulator.RunClientSimulator" failonerror="true" fork="yes">
+            <classpath refid="Client.classpath"/>
+        </java>
+    </target>
+    <target name="UniversityContestClientDebugger">
+        <java classname="ch.epfl.lasec.universitycontest.UniversityContestClientDebugger" failonerror="true" fork="yes">
+            <classpath refid="Client.classpath"/>
+        </java>
+    </target>
+</project>

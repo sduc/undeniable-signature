@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, UniversityContestActivity!</string>
+    <string name="app_name">University Contest</string>
+    <string name="current_challenge">Current Challenge</string>
+    <string name="uni_score">University Score</string>
+    <string name="team_score">Team Score</string>
+    <string name="due_to">Due To:</string>
+    <string name="send">Send</string>
+    <string name="question">Question</string>
+    <string name="answer">Answer</string>
+    <string name="no_data">No university</string>
+    <string name="no_results">No results</string>
+    <string name="connection_server_error">Impossible to connect to the server!</string>
+    <string name="negative_answer">No</string>
+    <string name="positive_answer">Yes</string>
+    <string name="neutral_answer">OK</string>
+    <string name="confirm_sending">Are you sure you want to send it!</string>
+    <string name="config_my_uni_adddress">Your University IP address</string>
+    <string name="config_adv_uni_address">Your Opponent University IP address</string>
+    <string name="config_team_id">Your Team identification number</string>
+    <string name="about">About</string>
+    <string name="config">Configuration</string>
+    <string name="challenge">Challenge</string>
+    <string name="score">Score</string>
+    <string name="total_score">Total Score</string>
+    <string name="solution">Solution</string>
+    <string name="authentication_error">Authentication Error: authentiation failed.</string>
+
+</resources>

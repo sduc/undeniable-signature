@@ -1,0 +1,27 @@
+\chapter{Introduction}
+\label{chap:introduction}
+
+Undeniable signature schemes were first introduced by Chaum and van Antwerpen~\cite{cite:chaum}.
+Unlike classical signatures, undeniable signatures need the verifier to run an interactive protocol with the signer to verify a signature.
+MOVA is an undeniable signature scheme advanced by J. Monnerat and S. Vaudenay~\cite{cite:thesis-monnerat,cite:2-move,cite:mova-crypto-journal,cite:opti-mova,cite:generic-mova}.
+Classical signatures are already widely used and the applications are numerous. 
+This is not necessarily the case for undeniable signatures, this is one of the reason why we tried to 
+exhibit a realistic application for MOVA.
+
+Nowadays, most of the people have a smartphone. This progress gave a lot of opportunities in the development of new mobile applications.  
+Security in the mobile environment can be very challenging and MOVA can bring something. Indeed, MOVA has the property to provide very short signature.
+In this project, we studied MOVA and tried to find a relevant application on Android~\cite{cite:android} that uses MOVA.
+The final application we came to is a university contest on Android phones. In this application, universities are challenging each other. Each university provides challenges or quizzes 
+to the other. Students form teams to answer to the quizzes and send them back to the university who designed it. The aim of each university is to cumulate the maximum score, where a certain amount of 
+score is won depending on how successfully the team answered to the challenge. In this application, a client-server architecture is used. MOVA is used to sign the challenges that are sent over the network.
+
+In Chapter~\ref{chap:preliminaries}, we will first cover some basic notions of cryptography.
+We will recall some cryptographic primitives that will be used in the application.
+In Chapter~\ref{chap:mova}, we will first describe undeniable signatures. Then we will present the MOVA signature scheme and we will show how it works in theory.
+In Chapter~\ref{chap:application}, we will describe the application we developed. In Section~\ref{sec:app-overview} a general
+view on it will be given and in Section~\ref{sec:app-sec} a general view on the security. In Section~\ref{sec:threat} the threat model will be described, followed by Section~\ref{sec:app-problem} where we describe some problems we encountered and finally 
+in Section~\ref{sec:app-classic} we will justify why to use MOVA instead of classical signature.
+In Chapter~\ref{chap:design}, we will describe how the application was designed. 
+In Section~\ref{sec:archi}, we will present the architecture of the application.
+Then in Section~\ref{sec:implementation} we will discuss some implementation choices.
+

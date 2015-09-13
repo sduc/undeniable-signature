@@ -1,0 +1,113 @@
+\chapter{Application Design}
+\label{chap:design}
+    
+    The University Contest application is an Android application where students form teams to answer to quizzes from other universities and score points for their own university.
+    The application uses MOVA to sign unfilled/filled quizzes.
+    The architecture of the application will be described in this chapter. We will also discuss some implementation choices.
+
+    \section{Architecture}
+    \label{sec:archi}
+    The application has the following architecture. It is composed of three participant: 
+    the Android application on which the students mainly fill the quizzes, the server of the first university and the opposing university.
+    
+    \subsection{The Android Application}
+    The Android application on the phone has three main activities~\cite{cite:android}:
+    \begin{description}
+        \item[ChallengeActivity] The activity allowing the user to fill the current quiz.
+        \item[TeamScoreActivity] The activity used to get the score of the team and the result/correction of the quizzes.
+        \item[UniversityScoreActivity] The activity allowing the user to obtain the score of all universities participating the contest.
+    \end{description}
+    The \texttt{ChallengeActivity} is the most useful activity. When starting, it first checks if the phone already knows the MOVA public keys/parameters of both servers. If not it 
+    retrieves them from the respective server. Then it checks if there is an ongoing challenge already available on the phone. If not it tries to get a new one from the server of 
+    the opposing university. Then the student can fill the quiz and has to send it before a deadline. When sending the quiz, it is first sent to the respective university of the students 
+    which will sign it and send it back to the user. Then it automatically check the signature and sends it to the opposing university which will grade it.
+
+    The \texttt{TeamScoreActivity} is an activity containing the list of all quizzes submitted by the team with the score and the responses. It also contains the cumulated score of the team.
+    This part is not implemented yet.
+
+    The \texttt{UniversityScoreActivity} is an activity containing the list of all universities participating the contest with their respective score.
+    This part is not implemented yet.
+
+    \subsection{The Servers}
+    The two servers run the same custom protocol because of the symmetry of the application. To make simple, the client can
+    \begin{itemize}
+        \item Ask for the servers MOVA public key and MOVA parameters.
+        \item Ask a new challenge (to the opposing university).
+        \item Ask for his team score with the result of all quizzes his team submitted (to the opposing university).
+        \item Ask for the score of all universities (to all servers, so by default it will ask his university server).
+        \item Ask to sign his filled-in quiz (to his university server).
+        \item Ask for the verification/denial of a message signed using MOVA.
+        \item Send a filled-in quiz so that the server signs it (to his university server).
+        \item Send a filled-in signed quiz so that the server grades it (to the opposing server).
+    \end{itemize}
+    The servers also communicate together to verify the signature of the filled quizzes they receive and to update the scores of the universities. 
+
+    Let us discuss now how the server are implemented. All the code was made in Java~\cite{cite:java}.
+    
+    \subsubsection{Client Query Handler}
+    This is a process that handles all queries from the client cited above. It is listening on port 12345 for new clients. 
+    To start this process just run \texttt{UniversityContestServer.class}.
+    
+    \subsubsection{Database}
+    It is a MySQL~\cite{cite:sql} database. The name of the database is \texttt{unicontest}. It is composed of three tables:
+    \begin{description}
+        \item[\texttt{team}] The team table contains the following informations. 
+            The team ID, the score of the team, the university of the team,  and the ID of the current challenge for the team.
+        \item[\texttt{challenge}] The challenge table contains the following entries: 
+            the challenge ID, the associated team ID, the score that the team did for that challenge, a boolean value telling
+            whether the filled-in challenge was received by the server, a boolean value telling whether the challenge was corrected and the name of the challenge.
+        \item[\texttt{university}] The university table contains the following entries: the university name and the university cumulated score.
+    \end{description}
+    To initialize the database, \texttt{DataBaseInit.class} can be used. But before a \texttt{java} user has to be created with the appropriated password.
+    The other processes access the database using class \texttt{DataBaseHandler}.
+    
+    \subsubsection{Server Manager}
+    The server manager is used by the administrator of the server. It can be used to add a new team, a new university or a new challenge. It can also be used to manage the challenges,
+    correct them and assign scores. For more comfort, a GUI is provided. The latter can be started by running \texttt{ServerManagerGUI.class}.
+    
+    \section{Implementation} 
+    \label{sec:implementation}
+    In this section we will discuss some implementation choices. First we will discuss how MOVA was implemented. Then we will
+    discuss what choices where made for the commitment scheme and the pseudorandom generator (PRNG).
+
+    \subsection{MOVA}
+    Let us discuss how MOVA was implemented for the application. Given that MOVA is quiet theoretical, some implementation choices had to be made leading to some loss of generality 
+    in the scheme.
+    For the sake of simplicity and for efficiency reasons, the following choices were made.
+    \begin{itemize}[label=,leftmargin=0.8cm,rightmargin=1cm]
+        \item $\Xgroup = (\XdX{\Z}{n})^*$ for some $n=p_1 p_2$ which is the product of two large prime numbers. 
+        \item $\Ygroup = \{-1,1\}$ leading to $d=p=2$.
+        \item The homomorphisms are the Legendre symbols in $G$. Suppose without any 
+            loss of generality that it is $\legendre{\cdot}{p_1}$
+    \end{itemize}
+
+    \noindent Therefore with these choices, the public key will be defined by:
+    \[
+        K_p^{S} = (n,\seedK,(\Ykey{1},...,\Ykey{\Lkey}))
+    \]
+    since $d$ is always 2 and Ygroup is always $\{-1,1\}$. The secret key will be defined as:
+    \[
+        K_s^{S} = p_1
+    \]
+    since $p_1$ totally defines the homomorphism.
+
+    \subsection{Other Cryptographic Primitives}
+    In MOVA confirmation/denial protocol, a commitment scheme is needed. In this project, the commitment scheme was implemented
+    as in Example~\ref{example:commitment}. In this implementation a hash function is needed and SHA-256~\cite{nist:sha} 
+    is used. 
+
+    For the PRNG, we used the implementation in GNU cryto 2.1.0\cite{cite:gnu-crypto}.
+
+    \section{The Code}
+    Everything was coded in Java 6 and Android 2 for the application. The code is divided into three Eclipse~\cite{eclipse} projects.
+    \begin{description}
+        \item[Share] This project contains all shared code between the client and the server. It consists of the protocol,
+            the MOVA scheme and all classes related to the application (such as the \texttt{Quiz} class).
+        \item[UniversityContest] This project is the Android project containing the client part to be installed on the mobile
+            devices
+        \item[Server] This project contains the server part, which is the query handler and the server manager.
+    \end{description}
+
+    The code is commented in a Java Doc style so it will not be further discussed in this report.
+
+

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/white" >
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/app_title"
+        android:background="@color/app_title_colour"
+        android:paddingLeft="@dimen/small_padding"
+        android:paddingBottom="@dimen/small_padding"
+        android:paddingTop="@dimen/small_padding"/>
+    
+    <RelativeLayout 
+        android:paddingTop="@dimen/small_padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/sub_title_colour">
+        
+        <TextView 
+            android:id="@+id/challenge_result_title_text_view"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sub_title"
+            android:paddingLeft="@dimen/small_padding"/>
+        
+        
+        <TextView 
+            android:id="@+id/challenge_result_score_text_view"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sub_title"
+            android:layout_alignParentRight="true"
+            android:paddingRight="@dimen/small_padding"/>
+        
+        <TextView 
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sub_title"
+            android:text="@string/score"
+            android:layout_toLeftOf="@id/challenge_result_score_text_view"
+            android:paddingRight="@dimen/small_padding"/>
+        
+        
+    </RelativeLayout>
+    
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:id="@+id/challenge_result_score_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+        
+    </ScrollView>
+    
+
+</LinearLayout>

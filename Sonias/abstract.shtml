@@ -1,0 +1,51 @@
+        <table border="0" width="90%">
+            <tr>
+        <!-- !!!!!!!!!! ENTER YOUR PROJECT TITLE !!!!!!!!!! -->
+                <td colspan="2" class="td-strong"><b>Primeless cryptography</b></td>
+            </tr>
+            <tr>
+                <td colspan="2" height="40">&nbsp;</td>
+            </tr>
+            <tr>
+                <td width="10%">Author:</td>
+<!-- !!!!!!!!!! ENTER YOUR NAME HERE!!!!!!!!!! -->
+                <td>Sonia Mihaela Bogos</td>
+            </tr>
+            <tr>
+                <td colspan="2" height="20">&nbsp;</td>
+            </tr>
+            <tr>
+ <!-- !!!!!!!!!! ENTER YOUR SUPERVISOR(S) HERE !!!!!!!!!! -->
+                <td>Supervisor(s):</td>
+                <td>Ioana Boureanu</td>
+            </tr>
+            <tr>
+                <td colspan="2" height="20">&nbsp;</td>
+            </tr>
+            <tr>
+                <td> Date:</td>
+                <td>Summer Semester 2011</td> 
+            </tr>
+            <tr>
+                <td colspan="2" height="40">&nbsp;</td>
+            </tr>
+            <tr>
+                <td valign="top">
+                  Abstract:
+                </td> 
+                <td valign="top">
+   <p align="justify">
+  The goal of this project is to study and construct cryptographic primitives in a primeless manner, i.e. without generating prime numbers. 
+  </p>
+
+  <p align="justify">
+   The motivation for this approach is to reduce the asymptotic complexity of a primitive that is, 
+ in many cases, dominated by the generation of prime numbers. For example, the RSA cryptosystem 
+ has a complexity of O(l^4) for the setup phase, for generating two different prime numbers 
+ p and q. The encryption and decryption processes take only O(l^3). 
+ Although we are working with random numbers n, we study the problem of how big should be 
+ size of n as we want to maintain the factorization problem hard.
+   </p>
+                </td>
+              </tr>
+            </table>

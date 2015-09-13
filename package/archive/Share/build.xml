@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="Share">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../eclipse"/>
+    <property name="Client.location" value="../Client"/>
+    <property name="Evoting.location" value="../Evoting"/>
+    <property name="Server.location" value="../Server"/>
+    <property name="UniversityContest.location" value="../UniversityContest"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit_4.8.2.v4_8_2_v20110321-1705/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+    </path>
+    <path id="Share.classpath">
+        <pathelement location="bin"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+        <pathelement location="../lib/gnu-crypto.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="test">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="Share.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="test"/>
+            <classpath refid="Share.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="build.xml" dir="${Client.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${Client.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${Evoting.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${Evoting.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${Server.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${Server.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${UniversityContest.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${UniversityContest.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="DenialProtocolTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.mova.DenialProtocolTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="MovaPublicKeyTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.mova.MovaPublicKeyTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="ConfirmationProtocolTest.testConfirmationProtocol">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.mova.ConfirmationProtocolTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="RiddleTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.universitycontest.RiddleTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="KeyPairGeneratorTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.mova.KeyPairGeneratorTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="Candidate">
+        <java classname="ch.epfl.lasec.evoting.Candidate" failonerror="true" fork="yes">
+            <classpath refid="Share.classpath"/>
+        </java>
+    </target>
+    <target name="PseudoRandomGeneratorTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.mova.PseudoRandomGeneratorTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="ConfirmationProtocolTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.mova.ConfirmationProtocolTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="CommitmentTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.mova.CommitmentTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="MovaTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.mova.MovaTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="QuizTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.universitycontest.QuizTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="YGroupElementTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.mova.YGroupElementTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="MessageTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="ch.epfl.lasec.mova.MessageTest" todir="${junit.output.dir}"/>
+            <classpath refid="Share.classpath"/>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>

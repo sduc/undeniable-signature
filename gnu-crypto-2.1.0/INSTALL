@@ -1,0 +1,249 @@
+Gnu Crypto build instructions
+==============================
+
+To build this library you need at least a Java bytecode compiler.  To
+test it you need, in addition, a Java bytecode interpreter.  The
+following sections detail this process.
+
+
+1. Build with Jakarta ANT
+--------------------------
+ANT is a pure java build tool which can be found at
+<http://http://jakarta.apache.org/ant/>.  To find out about the
+availabe targets of the build file supplied with this library, enter the
+following on your console, assuming you have a working ANT environment:
+
+   $ ant -projecthelp
+
+If you have ANT version 1.5.1 or later, you should see something like
+the following if you enter the above command:
+
+Buildfile: build.xml
+Main targets:
+
+ clean      Remove object files
+ distclean  Remove all generated files including deliverables
+ docs       Generate programmer's documentation in Javadoc HTML format
+ ent        Test randomness of PRNG algorithms
+ init       Create temporary directories for a build
+ jar        Build the project's main .jar file
+ kat        Output NIST-compliant KAT vectors
+ mct        Output NIST-compliant MCT vectors
+ nessie     Output NESSIE-compliant test vectors
+ release    Package the library's Software and generated Test Vectors
+ speed      Exercise hash and block ciphers to measure performance
+ test       Run built-in tests to ensure correctness of .jar file
+ tv         Output NIST and NESSIE compliant test vectors
+
+Default target: jar
+
+
+2. Building with GNU tools
+------------------------
+The library can be built using gcj (GNU Compiler for Java), part of GCC
+(GNU Compiler Collection) which can be found at <http://gcc.gnu.org/>.
+If you decide to build with GCJ, you will need gcj with, at least,
+version 3.1.
+
+When the GNU Crypto shared reloadable native library is built, special
+implementations of some algorithms get generated and/or included in the
+binaries to take advantage of the capabilities of the GNU tools in
+producing highly performant and fast code tailored for the target
+platform.
+
+Whether you will be using GCJ or not, or building a shared library or
+not, please note that the build process assumes building in a directory
+different than the one containing the sources.  This is true for both
+GCJ-friendly as well as non-GCJ-friendly builds.
+
+2.1. Pre-requisites for advanced hackers
+.........................................
+The distribution of GNU Crypto comes with pre-configured make scripts.
+To build using these pre-configured scripts, follow the same instrcutions
+replacing 'autogen.sh' with 'configure' that's it!
+
+On the other hand, if you have already installed --or willing to install
+and use the automake, autoconf and libtool tools-- then follow exactly
+the rest of this document.  
+
+Make sure that you have recent copies of autoconf and automake --at
+least autoconf 2.52 and automake / aclocal 1.6 are required.  You will
+also need a Java bytecode compiler --preferably jikes, which you can
+find at <http://www-124.ibm.com/developerworks/oss/jikes/>.
+
+To generate the programmer's documentation in Javadoc HTML form, you
+will need a Java bytecode interpreter.  Currently, only a JDK can be
+used at this level for bytecode interpretation and execution of the
+test cases.  Other options may become available in the future.
+
+2.2. How to
+............
+The only difference between building a GCJ-friendly version of the
+library and a non GCJ-friendly one is which 'init.sh' script is called.
+The scripts in the 'gcj' subtree (under both gcj/source and gcj/jce)
+contain everything to configure and make a GCJ-friendly version.  The
+one at the top-level is for use when the non-GCJ-friendly version is
+required.
+
+The common steps for both versions, assuming you have installed this
+library in a directory called 'gnu-crypto' are:
+
+*  Create a build directory; let's call it 'build' and let's assume
+   that it's at the same level as 'gnu-crypto'.  cd to it.
+
+   $ mkdir build
+   $ cd build
+
+*  From 'build' run the 'init.sh' script found in ../gnu-crypto/gcj,
+   or in ../gnu-crypto, depending on whether you're building a GCJ-
+   friendly version, or not, of the library respectively:
+
+   $ ../gnu-crypto/gcj/init.sh
+   or
+   $ ../gnu-crypto/init.sh
+
+*  Generate the GNU build toolchain scripts and files and configure
+   the installation:
+
+   $ ./autogen.sh [configure-options]
+
+   The configure-options are the possible options you may want to pass
+   to the 'configure' script.  These may include things like specific
+   GCJFLAGS value, location of native libraries, etc...  I use:
+
+   $ ./autogen.sh \
+   > GCJFLAGS="-march=athlon-xp -O2 -momit-leaf-frame-pointer -funroll-all-loops"
+
+   Remember though, if you are a maintainer, that you want to configure
+   with as many defaults as possible; e.g. pass nothing; just invoke
+   ./autogen.sh with no arguments!
+
+At this point if you're a maintainer, this is the right time to commit
+your copy to the CVS.  if your aim is to build the native library then
+continue reading.
+
+Note also, that you need to run the 'autogen.sh' script once, or every
+time you modify the 'config.ac' or Makefile.am' files.  Later, replacing
+'autogen.sh' with 'configure' with the same options should suffice.
+
+2.3. Building a Java Cryptography Extension (JCE)
+..................................................
+In addition to GNU Crypto being able to be used on its own for providing
+cryptographic services, the library includes both (a) JCE/JCA Framework
+Adapters to allow using the algorithm implementations through a "standard"
+JCE Provider --named "GNU-CRYPTO" (class gnu.crypto.jce.GnuCrypto), and
+(b) an implementation of the Java Cryptography Extension (JCE) framework
+--javax.crypto with support classes.
+
+Again, whether or not you are building a GCJ-friendly version of the
+library, the build scripts allow you in conjunction, to build the JCE.
+
+By default the JCE classes are built from sources included in this
+library.  However, you can disable this feature by specifying any of the
+followings on the configure line:
+
+   --with-jce=no
+   --without-jce
+   --without-jce=yes
+
+For example, I use:
+
+   $ ./autogen.sh \
+   > GCJFLAGS="-march=athlon-xp -O2 -momit-leaf-frame-pointer -funroll-all-loops" \
+   > --without-jce
+
+2.4. Specifying which Java bytecode compiler to use
+....................................................
+If GCJ is found by the configure script, it will be used in preference
+to any other Java bytecode compiler.  Nevertheless, you can change this
+behaviour by specifying which compiler should be used instead.  Assuming
+you have both jikes and javac available on your platform, do one of the
+following:
+
+   $ ./autogen.sh --with-jikes
+   $ ./autogen.sh --with-jikes=yes
+or
+   $ ./autogen.sh --with-javac
+   $ ./autogen.sh --with-javac=yes
+
+Furthermore, if any of those tools is not accessible from the PATH
+environment variable, you can do:
+
+   $ ./autogen.sh --with-jikes=/path/to/jikes
+
+Finally, when compiling with jikes, you can specifiy the runtime library
+to use, which can be either the rt.jar that comes with the JDK, or the
+one installed by the GNU Classpath project
+(see <http://www.gnu.org/software/classpath/>).  To use the GNU
+Classpath runtime (the glibj.zip), do:
+
+   $ ./autogen.sh --with-jikes --with-classpath
+
+The script will attempt to locate the glibj.zip file in one of four
+locations:
+
+   - /usr/local/classpath
+   - /usr/local
+   - /usr
+   - /opt/classpath
+
+in that order.  Alternatively, if you have installed GNU Classpath in a
+different location, you can use the following:
+
+   $ ./autogen.sh \
+   >    --with-jikes \
+   >    --with-classpath=/path/to/classpath/install/dir
+
+2.5. Compiling, testing and installing
+.......................................
+To compile the source files, do:
+
+   $ make
+
+To run the Mauve tests that are included in the distribution, do:
+
+   $ make check
+
+Depending on whether you're building with, or without a JCE, the total
+number of tests shall differ.  As of December 22nd, 2002, the total
+number of tests without JCE is 608, and 2668 with.
+
+6. Install.  You may need to 'su' in order to do that:
+
+   $ make install
+   or
+   $ su -c 'make install'
+
+IMPORTANT: After successful completion of the installation, be sure to
+update your LD_LIBRARY_PATH global environment variable to include the
+location of GNU Crypto's installed shared libraries;  e.g. if you
+'configure,' or 'autogen.sh', with the default prefix, then do something
+like:
+
+   $ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/gnu-crypto/lib; \
+   >    export LD_LIBRARY_PATH
+
+Also, add /usr/local/gnu-crypto/bin to your PATH.
+
+
+3. Generation of algorithm test vectors
+----------------------------------------
+
+   $ make test-vectors
+
+The generated test vectors will be written to the './tv' directory.
+
+
+4. Tools
+---------
+GNU Crypto contains some basic tools for measuring the performance of
+the algorithm implementations:
+
+   $ make speed
+
+Finally, the library contains a simple tool to qualify the output of the
+pseudo-random number generators available in the distribution:
+
+   $ make ent
+
+.

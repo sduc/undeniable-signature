@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/text_title"
+        android:textSize="@dimen/title_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="italic"
+            android:textSize="@dimen/text_size"
+            android:textColor="@color/grey"
+            android:text="@string/due_to" />
+        
+        <TextView 
+            android:layout_width="@dimen/space"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:lineSpacingExtra="@dimen/space"
+            android:id="@+id/text_date_due"
+            android:textStyle="italic"
+            android:textSize="@dimen/text_size"
+            android:textColor="@color/grey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        
+        <TextView 
+            android:layout_width="@dimen/separator"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="italic"
+            android:textSize="@dimen/text_size"
+            android:textColor="@color/grey"
+            android:text="@string/results" />
+        
+        <TextView 
+            android:layout_width="@dimen/space"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/text_date_res"
+            android:textStyle="italic"
+            android:textSize="@dimen/text_size"
+            android:textColor="@color/grey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

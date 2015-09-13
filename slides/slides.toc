@@ -1,0 +1,9 @@
+\beamer@endinputifotherversion {3.12pt}
+\beamer@sectionintoc {1}{Introduction}{6}{0}{1}
+\beamer@sectionintoc {2}{Signature Schemes}{16}{0}{2}
+\beamer@subsectionintoc {2}{1}{Undeniable Signatures}{17}{0}{2}
+\beamer@subsectionintoc {2}{2}{MOVA}{26}{0}{2}
+\beamer@sectionintoc {3}{The Application}{44}{0}{3}
+\beamer@subsectionintoc {3}{1}{Design}{48}{0}{3}
+\beamer@subsectionintoc {3}{2}{Application Result}{78}{0}{3}
+\beamer@sectionintoc {4}{Conclusion}{92}{0}{4}

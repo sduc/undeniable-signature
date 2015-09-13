@@ -1,0 +1,867 @@
+\documentclass{beamer}
+
+\usepackage[ngerman,english]{babel}
+\usepackage{graphicx,amssymb,latexsym,epsfig,fancyhdr,color,bbding}
+\usepackage{verbatim} 
+\usepackage{lastpage}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{epstopdf}
+\cfoot{\thepage\ of \pageref{LastPage}}
+
+
+
+\newtheorem{proposition}{Proposition}
+
+  \newcommand{\la}{\leftarrow}
+  \newcommand{\ra}{\rightarrow}
+  \newcommand{\lora}{\Longrightarrow}
+  \newcommand{\La}{\Leftarrow}
+  \newcommand{\Ra}{\Rightarrow}
+  \newcommand{\lla}{\longleftarrow}
+  \newcommand{\lra}{\leftrightarrow}
+  \newcommand{\Lra}{\Leftrightarrow}
+  \newcommand{\hra}{\hookrightarrow}
+  \newcommand{\da}{\!\!\downarrow}
+  \newcommand{\ua}{\!\!\uparrow}
+  \newcommand{\uhr}{\upharpoonright}
+  \newcommand{\ov}{\overline}
+  \newcommand{\un}{\underline}
+  \newcommand{\rvec}[1]{\stackrel{\ra}{#1}}
+  \newcommand{\lvec}[1]{\stackrel{\la}{#1}}
+  \newcommand{\lag}{\langle}
+  \newcommand{\rag}{\rangle}
+  
+  \def\cA{{\mathcal A}}
+  \def\cB{{\mathcal B}}
+  \def\cC{{\mathcal C}}
+  \def\cD{{\mathcal D}}
+  \def\cE{{\mathcal E}}
+  \def\cF{{\mathcal F}}
+  \def\cG{{\mathcal G}}
+  \def\cH{{\mathcal H}}
+  \def\cI{{\mathcal I}}
+  \def\cK{{\mathcal K}}
+  \def\cL{{\mathcal L}}
+  \def\cM{{\mathcal M}}
+  \def\cN{{\mathcal N}}
+  \def\cO{{\mathcal O}}
+  \def\cP{{\mathcal P}}
+  \def\cQ{{\mathcal Q}}
+  \def\cR{{\mathcal R}}
+  \def\cS{{\mathcal S}}
+  \def\cT{{\mathcal T}}
+  \def\cV{{\mathcal V}}
+  \def\cU{{\mathcal U}}
+
+  \def\bA{{\bf A}}
+  \def\bB{{\bf B}}
+  \def\bC{{\bf C}}
+  \def\bD{{\bf D}}
+  \def\bF{{\bf F}}
+  \def\bG{{\bf G}}
+  \def\bH{{\bf H}}
+  \def\bI{{\bf I}}
+  \def\bP{{\bf P}}
+  \def\bN{{\bf N}}
+  \def\bQ{{\bf Q}}
+  \def\bR{{\bf R}}
+  \def\bS{{\bf S}}
+  \def\bT{{\bf T}}
+  \def\bU{{\bf U}}
+  \def\bV{{\bf V}}
+  \def\bZ{{\bf Z}}
+
+
+
+
+\useoutertheme{infolines}
+\setbeamertemplate{footline}{\scriptsize{\hfill\insertframenumber\hspace*{.5cm}} } 
+
+
+\begin{document}
+
+
+
+\begin{frame}
+
+\begin{center}
+    \includegraphics[width=2cm]{logo_epfl_coul.eps}
+  \end{center}
+  \vspace{0.3cm}
+  
+   \begin{center}
+  {\LARGE  Primeless Cryptography}
+  \end{center}
+  \vspace{0.1cm}
+
+
+ \begin{center}
+   Sonia Mihaela Bogos
+  \end{center}
+  \vspace{0.1cm}
+ 
+
+ \begin{center}
+   School of Computer and Communication Sciences 
+  \end{center}
+  \vspace{0.1cm}
+
+  \begin{center}
+    \begin{tabular}{cc}
+      \begin{tabular}{p{4.0cm}}
+         \begin{center}
+    \begin{normalsize}{
+        \bf Responsible}\\Prof. Serge Vaudenay\\EPFL/LASEC
+    \end{normalsize}
+  \end{center}
+      \end{tabular}&
+      \begin{tabular}{p{4.0cm}}
+          \begin{center}
+    \begin{normalsize}{
+        \bf Coordinator}\\Ioana Boureanu\\EPFL/LASEC
+    \end{normalsize}
+  \end{center}
+      \end{tabular}
+    \end{tabular}
+  \end{center}
+  
+  \begin{center}
+    \includegraphics[width=2.5cm]{logo_lasec_coul.eps}
+  \end{center}
+ 
+\end{frame}
+
+%%%
+%%%
+%%%
+
+\begin{frame}
+\frametitle{Outline}
+
+ 	\begin{itemize}
+		\item {\bf Motivation} 
+		\item Background
+		\item A first attempt
+		\item New Proposal
+		\item Conclusion
+	\end{itemize}
+\end{frame}
+
+
+%%%
+%%%
+%%%
+
+\begin{frame}
+\frametitle{Motivation (1)}
+    The goal of this report is to analyse and construct cryptographic primitives that use
+    primeless cryptography. 
+    
+    \bigskip
+    
+    What is \textbf{primeless cryptography}?
+    
+    The universe of cryptography where prime numbers are not generated. In our case, 
+    random numbers are used.
+    	
+
+
+\end{frame}
+
+%%%
+%%%
+%%%
+
+\begin{frame}
+\frametitle{Motivation (2)}
+
+	The purpose is to reduce the asymptotic complexity. For example, 
+	RSA has a complexity of:
+	
+	\begin{itemize}
+		\item Setup: $O(l^4)$
+		\item Encryption: $O(l^3)$
+		\item Decryption: $O(l^3)$	
+	\end{itemize}
+	when we generate two different prime numbers, $p$ and $q$, 
+	of size $l$.
+	
+	
+\end{frame}
+
+%%%
+%%%
+%%%
+
+\begin{frame}
+\frametitle{Outline}
+
+ 	\begin{itemize}
+		\item Motivation 
+		\item \textbf{Background}
+		\item A first attempt
+		\item New Proposal
+		\item Conclusion
+	\end{itemize}
+\end{frame}
+
+
+%%%
+%%%
+%%%
+
+\begin{frame}
+\frametitle{Characters}
+
+
+ 	\begin{definition}
+ 	Let $G$ be an Abelian group. A \textbf{character} $\chi$ is a function 
+ 	$\chi : G \rightarrow \mathbb{C} \backslash \{ 0 \}$ such that \\
+ 	
+ 	\hspace{30mm}  $\chi(a+b)= \chi(a) \cdot \chi(b)$, $\forall a,b \in G$.
+ 	\end{definition} 
+ 	
+ 	\bigskip
+ 	
+ 	\begin{itemize}
+ 		\item group structure over the set of all characters on $G$. 
+ 		\item we use characters of order 2 and 4.
+ 		\item denote by $\varepsilon$ the trivial character
+ 				where $\varepsilon(x)=1$, $\forall x \in G$.
+ 	\end{itemize}
+ 	
+
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Characters of order 2}
+
+	\begin{itemize}
+		\item $p \in \mathbb{Z}$ prime.
+		
+		\item two characters in 
+			$Z_p^*$, solutions of $\chi^2= \varepsilon$: Legendre
+			symbol, $(\frac{.}{p})$, and $\varepsilon.$
+		\item Jacobi - extension of the Legendre symbol.
+		\item a list of four characters, solutions of $\chi^2= \varepsilon$, in $\mathbb{Z}_n^*:$ $\varepsilon$, $(\frac{.}{n})$, $(\frac{.}{p})$ and $(\frac{.}{q})$, 
+		for $n= p\cdot q$ with $p$ and $q$ two different odd primes.
+	\end{itemize}
+
+	
+	
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Gaussian Integers}
+
+	\begin{itemize}
+		\item $\mathbb{Z}[i]= \{ a + bi$  $|$  $a,b \in \mathbb{Z}, i^2=-1 \}$.
+		\item for $\alpha = a+bi$, $N(\alpha) = \alpha \cdot \bar{\alpha} = a^2 + b^2$.
+	\end{itemize}
+	
+	
+	\begin{proposition}
+		Value $\alpha$ is a prime in  $\mathbb{Z}[i]$, iff 
+		$\alpha$ satisfies one of the following:
+		\begin{itemize}
+			\item $\alpha = 1+i$ or $\alpha= 1-i$.
+			\item $\alpha$ is prime in $\mathbb{Z}$ and $\alpha \equiv 3 \pmod{4}$.
+			\item $\alpha \cdot \bar{\alpha}$ is a prime in $\mathbb{Z}$ and 
+			$\alpha \cdot \bar{\alpha} \equiv 1 \pmod{4}$.
+		\end{itemize}  
+	\end{proposition}
+	
+
+
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Quartic Residue Symbol (1)}
+
+\begin{definition}
+ 				Let $\alpha,\beta \in \mathbb{Z}[{i}]$ be such that $(1+i) \nmid \beta$. Values $\beta$ and $\alpha$ are relatively prime. 
+ 				 
+ 				\bigskip
+ 				 				 
+ 				$\mathbf{\chi}_{\beta} : \mathbb{Z}[{i}] \to \{\pm 1, \pm i\}$: 
+ 				\begin{itemize}
+ 					\item $\mathbf{\chi}_{\beta} = (\alpha^{\frac{N(\beta)-1}{4}}\big)\bmod \beta,$ for $\beta$ prime.
+ 					\item $\mathbf{\chi}_{\beta} = \prod _{i} \mathbf{\chi}_{\beta _{i}}(\alpha),$ for $\beta = \prod _ {i} \beta _{i},$ where $\beta_{i}$ is prime.
+ 				\end{itemize}
+\end{definition}
+
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Quartic Residue Symbol (2)}
+
+
+ 	\begin{definition}
+ 		A nonunit $\alpha \in \mathbb{Z}[i]$ is primary if $\alpha \equiv 1 \pmod{(1+i)^3}$.
+ 	\end{definition}
+ 	
+ 	\begin{proposition}
+ 	 				Let $\alpha,\beta \in \mathbb{Z}[{i}]$ be such that $(1+i) \nmid \beta$, $\gcd(\beta,\alpha) = 1$ and $\gcd(\beta,\alpha') = 1$.
+ 	 				\begin{itemize}
+ 	 					
+ 	 					\item (Multiplicativity) $\chi_{\beta}(\alpha \alpha') = \chi_{\beta}(\alpha) \cdot \chi_{\beta}(\alpha')$.
+ 	 					\item (Modularity) If $\alpha \equiv \alpha' \pmod{\beta}$, $\chi_{\beta}(\alpha) = \chi_{\beta}(\alpha')$.
+ 	 					\item (Quartic Reciprocity Law) If $\alpha, \beta$ are primary, 
+ 	 						
+ 	 						\hspace{30mm} $\chi_{\beta}(\alpha) = \chi_{\alpha}(\beta) \cdot (-1)^{\frac{N(\alpha)-1}{4} \cdot \frac{N(\beta)-1}{4}}$.
+ 	 					\item (Complementary Laws) If $\beta = a + bi$ is primary,
+ 	 					
+ 	 						\hspace{30mm} $\chi_{\beta}(i)= i^{\frac{N(\beta)-1}{2}}$,  $\chi_{\beta}(1+i) = i^{\frac{a-b-b^2-1}{4}}$.
+ 	 						
+ 	 				\end{itemize}
+ 	 				
+ 	 			\end{proposition}
+ 	 			
+ 	 			
+ 		
+\end{frame}
+
+% % %
+% % %
+% % %
+
+
+
+\begin{frame}
+\frametitle{Algorithm to compute the quartic residue symbol \cite{oswald}}
+
+	$t \gets 0$\\
+	\textbf{While} $(N(\alpha) > 1)$ \textbf{do}
+	\begin{itemize}
+	\item[] $\alpha \gets \alpha \bmod \beta~$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~(Modularity)
+	\item[] find $\alpha'$ primary such that $\alpha= i^j \cdot (1+i)^k \cdot \alpha'$
+	\item[] set $\alpha \gets \alpha'$ and adjust $t$~~~~~~~~~~~~~~~~~~~~~~~~~(Multiplicativity)
+	\item[] swap $\alpha$ and $\beta$ and adjust $t$~~~~~~~~~~~~~~~~~~~~~(Reciprocity Law)
+	\end{itemize} 
+	\textbf{If} $(N(\alpha) = 1)$ return $i^t$
+
+	%there are characters of other orders
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Outline}
+
+ 	\begin{itemize}
+		\item Motivation 
+		\item Background
+		\item \textbf{A first attempt}
+		\item New Proposal
+		\item Conclusion
+	\end{itemize}
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Scheme 1 \cite{p}}
+ 	
+
+ 	\textit{Key generation} \\
+
+ 	\textbf{Input:} Security parameter $s$. \\
+ 		 \textbf{Output:} Public key: $(n, p)$;  Private key: $\gamma$.
+ 		 
+ 		\bigskip
+ 		 
+ 			\quad 1. Select a big $\gamma \in \mathbb{Z}[i],$ $i.e.$ $\gamma = a' + b'i$, where $a', b' \in \mathbb{Z}$ and
+ 		the size of $a', b'$ depends on the security parameter $s$ . \\
+ 		 \quad 2. Compute $n =\gamma \bar{\gamma}$ ($n \in \mathbb{Z}$). \\
+ 		 \quad 3. Pick a $p \in \mathbb{Z}$ such that  $ \chi_{\gamma} (p) = i $. \\
+
+
+
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Scheme 1 \cite{p}}
+	
+		\textit{Encryption} \\
+
+		 \textbf{Input:} a bit $b$. \\
+			 \textbf{Output:} the encryption $c$, $c  \in \mathbb{Z}_n$.  \\
+			 \textbf{Public key:} $(n,p)$.
+			 
+			 
+		\bigskip
+			 
+		\quad  1. Pick an $a \in \mathbb{Z}$ such that \textbf{if} $b =0$ \textbf{then} $a \equiv 1 \pmod{4}$
+		\textbf{else}  $a \equiv 3 \pmod{4}$. \\
+	    \quad 2. $c \equiv p^a \pmod{n}$. \\ 
+		
+		\bigskip
+		
+		
+		\textit{Decryption} \\
+		
+		 \textbf{Input:} the encryption $c$, $c \in \mathbb{Z}_n$. \\
+				 \textbf{Output:} a bit $b$. \\
+				 \textbf{Secret key:} $\gamma$.
+				 
+		\bigskip
+			
+			
+		 \quad  1. Compute the quartic residue symbol $ \chi_{\gamma} (c)$. \\   
+		\quad   2. \textbf{if} $\chi_{\gamma} (c) =i$ \textbf{then} $b = 0$  \textbf{else} {$b = 1$\;}.\\
+
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Weakness of Scheme 1}
+
+	\begin{itemize}
+		\item  an adversary 
+		  $\mathcal{A}$ does not need to know $\gamma$, 
+		  but only an \textit{equivalent} key $\gamma'$
+		  to $\gamma$. 
+		\item  equivalent key: a gaussian factor $\gamma' \in \mathbb{Z}[i]$ of $n$ with
+		  $\chi_{\gamma'}(p) = \pm i$.
+		\item for a prime $f \equiv 1 \pmod{4}$, $f = \gamma' \cdot \bar{\gamma'} $, with probability of $\frac{1}{2}$,
+		  $\chi_{\gamma'}(p) = \pm i$.    
+		\item  $Prob_{n \in \mathbb{Z}, 2 \not | n}[ f_1 \equiv 1 \pmod{4}, f_2 \equiv 1 \pmod{4} , f_1 \not= f_2 $   $ ] = \frac{1}{ 2^2 \cdot f_1 \cdot f_2}$.    
+	\end{itemize}
+ 
+  \bigskip
+  
+ 
+  		
+  
+  
+
+
+\end{frame}
+
+% % %
+% % %
+% % %
+
+
+\begin{frame}
+\frametitle{Breaking Scheme 1}
+ 
+     \textbf{Input:} the encrypted bit $c$, $c \in \mathbb{Z}_n$. \\
+ 		    			 \textbf{Output:} a bit $b$.\\
+ 		    			 \textbf{Public key:} $(n,p)$.
+ 		    	\bigskip
+ 		    	
+ 		    	
+ 		    	\quad  1. Find two small prime factors of $n$, $f_j \in \mathbb{Z}$, such that $f_j \equiv 1 \pmod{4}$ for $1 \leq j \leq 2$.  \\
+ 		        \quad 2. Run \textit{Cornacchia} and \textit{Tonelli} algorithms to find  \\
+ 		        \quad \quad $\gamma_j \in \mathbb{Z}[i]$ such that $\gamma_j \cdot \bar{\gamma_j} = f_j$. \\
+ 		         \quad 3. \textbf{if} $\chi_{\gamma_j} (p) =i$ or $\chi_{\gamma_j} (p) = -i$ \textbf{then} decrypt the value $c$ using the following rules:  \\
+ 		         \quad \quad for $\chi_{\gamma_j} (p) =i$:  \textbf{if} $\chi_{\gamma_j} (c) =i$ \textbf{then} $b=0$ \textbf{else} $b=1$ \\
+ 		         \quad \quad for $\chi_{\gamma_j} (p) = -i$:  \textbf{if} $\chi_{\gamma_j} (c) = -i$ \textbf{then} $b=0$ \textbf{else} $b=1$ \\ 
+ 		         \quad \quad \textbf{otherwise} abort. 
+  
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Outline}
+
+ 	\begin{itemize}
+		\item Motivation 
+		\item Background
+		\item A first attempt
+		\item \textbf{New Proposal}
+		\item Conclusion
+	\end{itemize}
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Key Agreement}
+
+  	\small{	
+  		\begin{equation*}
+  		A \qquad  \qquad \qquad \qquad \qquad \qquad \qquad B
+  		\end{equation*}
+  		
+  		\noindent pick $\alpha = \prod_{i=1}^{i=k} \alpha_i,$ where $\alpha_i \in \mathbb{Z}$ \\
+  		pick $\beta = \prod_{i=1}^{i=k} \beta_i,$ where $\beta_i \in \mathbb{Z}$ \\
+  		compute $n = \alpha \cdot \beta $
+  				
+  		\bigskip
+  				
+  		\noindent 
+  		pick $x_1, x_2, \ldots x_t \in \mathbb{Z}_n^*$ \\
+  		compute $y_i = (\frac{x_i}{\alpha}), 1 \leq i \leq t$
+  				 
+  		\begin{equation*}
+  		\qquad \xrightarrow[y_1,y_2, \ldots, y_t]{\hspace*{1.8cm} n,x_1,x_2,\ldots,x_t \qquad \qquad}  
+  		\end{equation*}
+  				
+   
+  				
+  		\hspace{80mm} pick $b_1, b_2, \ldots, b_t \in \{ 0,1\}$ 
+  				
+  		\hspace{80mm} $z= x_1^{b_1} \cdots x_t^{b_t} \pmod{n}$
+  				
+  				
+  		\begin{equation*}
+  		\qquad \xleftarrow{\hspace*{1.8cm} z \qquad \qquad}  
+  		\end{equation*}   
+  				
+  		$K = (\frac{z}{\alpha})$ \hspace{80mm} $K = y_1^{b_1} \cdots y_t^{b_t}$
+  		
+  		  \begin{center}
+  		\textbf{Scheme 2}
+  		\end{center}		
+  	}	
+
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Choice of parameters}
+
+	\begin{itemize}
+		\item $s \in \mathbb{Z}$ security parameter.
+		\item $\alpha_i$ and $\beta_i$ are of size $l$, for $1 \leq i \leq k$. (See next slides)
+		\item value $t$ assures the uniqueness of character $(\frac{.}{\alpha})$ and $t\geq s$. 
+		\item $x_i's$ randomly chosen from $\mathbb{Z}_n^*$, $y_i's$ not all equal to 1.
+		\item $b_i's$ not all equal to 0. 
+	\end{itemize}
+
+	\bigskip
+
+ Complexity: $O(tk^2l^2)$.
+
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Security (1)}
+
+	Scheme 2 is secure if, after the run of it,
+			
+	\hspace{10mm} $Adv_{\mathcal{A}}(s) = Prob [K = K'] - \frac{1}{2}$,  \\
+	
+	\bigskip
+	
+	is negligible in terms of $s$, where $K'$ is the bit guessed by $\mathcal{A}$ and $K$ is the agreed key. 
+\end{frame}
+
+% % %
+% % % 
+% % %
+
+\begin{frame}
+\frametitle{Computational Problems}
+
+	\textbf{Factorization.} Given $n \in \mathbb{Z}$, find the prime factorization of $n$.
+ 	
+ 	\bigskip	
+ 			
+ 	\textbf{MOVA$^d$}. Let $n \in \mathbb{Z}$, $t$ be a positive integer and $\chi$ be a \textit{hard character} of order $d$ on $\mathbb{Z}_n^*$. Given $t$ pairs of the form $(x_i, \chi(x_i))$, with $1 \leq i \leq t$, and given $x \in \mathbb{Z}_n^*$, compute $\chi(x)$. 
+ 	
+ 	\bigskip
+ 	
+ 	\begin{proposition}
+ 		We have the following Karp reduction:
+ 		 	
+ 		 	\hspace{30mm} 	MOVA$^d$ $\leq$ Factorization.	
+ 	\end{proposition}
+ 	 		
+  	%as a motivation to have the factorization hard	 
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Factorization for random numbers (1)}
+
+\begin{table}
+ 		\begin{center}
+ 		
+ 		\begin{tabular}{ | c | c | c |}
+ 		
+ 		\hline
+ 		Prob. $n_i < n^x$  & $x$ for $n_1$ & $x$ for $n_2$ \\
+ 		\hline
+ 		0.01 & $0.26974$ & $0.00558$ \\
+ 		\hline
+ 		0.02 &  $0.29341$& $0.0111$ \\
+ 		\hline
+ 		0.10 & $0.37851$ & $0.05308$ \\
+ 		\hline 
+ 		0.50 & $0.606$ & $0.21172$ \\
+ 		\hline
+ 		0.90 & $0.90484$ & $0.35899$ \\
+ 		\hline
+ 		
+ 		\end{tabular}
+ 		\label{res}
+ 		\caption{Distribution size for the largest two prime factors \cite{fact}}  
+ 		\end{center}
+ 		\end{table}
+ 		
+ 		It is necessary to have the following inequality: 
+ 			
+ 		 \begin{equation} 
+ 			 			   %\label{eqsecn}
+ 			 				 \frac{C_{ECM}(x \cdot l)}{F_2(x)} \geq C_{GNFS}(L') \cite{thesis},
+ 			 			   \end{equation}
+ 			 			   
+ 			 		where $l$ is the size of $n$,  $0<x<1$ and  $F_2(x)=$ Prob  $[n_2 < n^x]$.	   
+ 			
+ 		  
+ 			   
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Factorization for random numbers (2)}
+
+	\begin{itemize}
+		\item take $n$ to be a product of random numbers $p_i$:
+		
+		\hspace{10mm} $n= p_1 p_2 \cdots p_k$, with $|p_i| =l$ for all $1 \leq i \leq k$, $|n| = k \cdot l$. 
+		
+		\item modification of $(1)$: 
+		
+		\hspace{30mm} $min_{0 < x < 1}(C_{ECM}(x \cdot l), F_2(x)^{-k}) \geq C_{GNFS}(L')$.
+		
+		\item sufficient condition:
+		
+		$min [F_2(x)^{-k}, min_{x \leq u \leq y} \frac{C_{ECM}(ul)}{F_2(u)^k}, C_{ECM}(yl)]$ $\geq C_{GNFS}(L').$ \quad  $(2)$ 
+		
+	\end{itemize}	
+	
+	
+	
+	\bigskip
+	
+	The inequality $(2)$ can be simplified with:
+	
+	\hspace{30mm} $C_{ECM}(x \cdot l) = F_2(x)^{-k} = C_{GNFS}(L')$. 
+	
+			
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Factorization for random numbers (3)}
+
+	We obtain the following approximations for the size of $n$:
+	
+	
+		  	\begin{table}
+	 		\begin{center}
+	 		
+	 		\begin{tabular}{ | c | c | c | c | c |}
+	 		
+	 		\hline
+	 		  $x$  & $F_2(x)$ & $l$ & $k$ & $|n| = k \cdot l$ \\
+	 		\hline
+	 		0.21172 & 0.5 &  1$\,$276 & 45 &  57\,420 \\
+	 		\hline
+	 		0.01110 & 0.02 & 24\,500& 8  & 196\,000 \\
+	 		\hline
+	 		0.40681 & 0.96 & 660 & 750 & 495\,000 \\
+	 		\hline 
+	 		
+	 		\end{tabular}
+	 		\label{table2}
+	 		\caption{Required size of $n$ for $L'= 1024$}  
+	 		\end{center}
+	 		\end{table}
+	 		
+	%with the conclusion that we need numbers of hundreds of thousands of bits
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Security (2)}
+
+\begin{theorem}
+				Let $\varphi: G  \rightarrow \mathbb{Z}_d$ be a group homomorphism. If one can compute a $f$ such that 
+				$Prob_{z \in G}(f(z) \not= \varphi(z)) \leq \frac{\xi}{12}$  with a constant $\xi < 1$, then one can compute
+				$\varphi$ in a number of calls to $f$ bounded by a polynomial in log$(\# G)$ \cite{mova} . 
+\end{theorem}
+
+\bigskip
+
+\begin{corollary}[Security of Scheme 2]
+	Assuming that Factorization and MOVA$^d$ are hard, then no adversary $\mathcal{A}$ can guess the bit $K$ from one run of the agreement but with a probability bounded by 
+	$\frac{1}{2}$. 	
+\end{corollary}
+ 	
+\end{frame}
+
+
+
+% % %
+% % %
+% % %
+
+
+\begin{frame}
+\frametitle{Probabilistic Encryption}
+
+\small{
+
+\begin{equation*}
+		A \qquad  \qquad \qquad \qquad \qquad \qquad \qquad B
+		\end{equation*}
+			pick $\alpha = \prod_{i=1}^{i=k} \alpha_i,$ where $\alpha_i \in \mathbb{Z}$ \\
+			pick $\beta = \prod_{i=1}^{i=k} \beta_i,$ where $\beta_i \in \mathbb{Z}$ \\
+			compute $n = \alpha \cdot \beta $
+			
+		\bigskip		
+				
+		\noindent 
+		pick $x_1, x_2, \ldots x_t \in \mathbb{Z}_n^*$ \\
+		compute $y_i = (\frac{x_i}{\alpha}), 1 \leq i \leq t$
+				 
+		\begin{equation*}
+		\qquad \xrightarrow[y_1,y_2, \ldots, y_t]{\hspace*{1.8cm} n,x_1,x_2,\ldots,x_t \qquad \qquad}  
+		\end{equation*}
+				
+ 
+				
+		\hspace{80mm} pick $b_1, b_2, \ldots, b_t \in \{ 0,1\}$ 
+				
+		\hspace{80mm} $K = y_1^{b_1} \cdots y_t^{b_t}$ 			
+
+				
+						
+
+		\begin{equation*}
+		\qquad \xleftarrow{\hspace*{1.8cm} z= x_1^{b_1} \cdots x_t^{b_t} \pmod{n}  \qquad \qquad}  
+		\end{equation*}   
+				
+		$K = (\frac{z}{\alpha})$ 
+		
+		\begin{center}
+		\textbf{Scheme 3}
+		\end{center}
+	}	
+
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Using characters of order 4}
+
+	\begin{itemize}
+		\item improve the schemes by using characters of order 4: agree on a 2 bit value $K$ (or encrypt two bits).
+		\item compute $n$ as $ \prod_i \alpha_i \cdot \bar{\alpha_i} \cdot \beta_i \cdot \bar{\beta_i}$.
+		\item $b_i's$ are randomly chosen from $\{ 0,1,2,3\}$.
+		\item correctness and the security proof are maintained. 	
+	\end{itemize}
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Outline}
+
+ 	\begin{itemize}
+		\item Motivation 
+		\item Background
+		\item A first attempt
+		\item New Proposal
+		\item \textbf{Conclusion}
+	\end{itemize}
+\end{frame}
+
+% % %
+% % %
+% % %
+
+\begin{frame}
+\frametitle{Conclusion}
+
+	\begin{itemize}
+		\item two cryptographic primitives, that use primeless cryptography, were introduced.
+		\item the need to have the factorization problem hard.
+		\item smaller complexity for the setup of $n$.
+		\item hard to work with too big numbers.		
+	\end{itemize}
+	
+	\bigskip
+	
+	Future work:
+	\begin{itemize}
+		\item asymptotic analysis on values $k$ and $l$.
+		\item construction of a more efficient cryptographic primitive.
+	\end{itemize}
+
+\end{frame}
+
+% % %
+% % %
+% % %
+
+
+\bibliographystyle{plain}
+\bibliography{biblio2}
+
+
+\end{document}
+
+
+
+

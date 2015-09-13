@@ -1,0 +1,228 @@
+\chapter{MOVA Signature Scheme}
+\label{chap:mova}
+
+In this chapter, we will first present undeniable schemes. 
+Then MOVA signature scheme will be described herein.
+
+\section{Undeniable Signatures}
+Undeniable signature scheme were invented by Chaum and van Antwerpen~\cite{cite:chaum}.
+The aim of an undeniable signatures scheme is roughly the same that a classical 
+signature scheme (see section~\ref{sec:signature}) which is to bind an identity to a message.
+The only difference is that the verifier must run an interactive protocol with the signer
+to verify the validity of the message-signature pair.
+
+As in classical signatures, let $n$ be a security parameter. Let $S$ and $V$ be
+the signer and the verifier respectively. To define an undeniable scheme, the following algorithms must be 
+defined:
+\begin{description}
+    \item[Setup] It consists of two algorithms that generate the key pair for $S$ and $V$.
+        Let $(k_p^S,k_s^S) \leftarrow \mathrm{Setup}^S(1^n)$ and 
+        $(k_p^V,k_s^V) \leftarrow \mathrm{Setup}^V(1^n)$.
+    \item[Sign] An algorithm to sign a message in the message space using the secret key 
+        of $S$.
+        Let $\sigma \leftarrow \mathrm{Sign}(m,k_s^S)$ ,where $m$ is the message.
+    \item[Confirm] It consists of an interactive protocol between $S$ and $V$ to confirm 
+        the validity of a message signature pair.
+    \item[Deny] It consists of an interactive protocol between $S$ and $V$ to deny the 
+        validity of a message signature pair.
+\end{description}
+
+
+\section{MOVA}
+The MOVA\footnote{MOVA stands for {\bf Mo}nnerat {\bf Va}udenay} signature scheme 
+was invented by J. Monnerat and S. Vaudenay~\cite{cite:thesis-monnerat,cite:2-move,
+cite:mova-crypto-journal,cite:opti-mova,cite:generic-mova}. It is an undeniable signature scheme. 
+
+\subsection{Definition}
+Consider a signer $S$ and a verifier $V$. Assume that they can use two pseudorandom generators,
+$\GenK$ and $\GenS$. 
+
+The {\bf Setup} algorithm is defined as follows.
+$S$ chooses two Abelian groups $\Xgroup$ and $\Ygroup$. Then he chooses 
+$\hom: \Xgroup \rightarrow \Ygroup$. Then using $\GenK$ on seed $\seedK$ he generates 
+$\Lkey$ elements of $\Xgroup$:
+\[
+\Xkey{1},...,\Xkey{\Lkey} \leftarrow \GenK(\seedK).
+\]
+Finally, he computes $\Ykey{1},...,\Ykey{\Lkey}$, where $\Ykey{i} = \hom(\Xkey{i})$.
+
+With this Setup algorithm, the public key 
+\[
+    K_p^{S} = (\Xgroup,\Ygroup,d,\seedK,(\Ykey{1},...,\Ykey{\Lkey})), 
+\]
+where $ d = |\Ygroup|$ and the secret key
+\[
+    K_s^{S} = \hom.
+\]
+
+The {\bf Sign} algorithm is defined as follows.
+Let $m \in \{0,1\}^*$ be the message to sign. First $\GenS$ is seeded with $m$ to obtain
+$\Xsig{1},...,\Xsig{\Lsig} \in \Xgroup$. The signature is 
+\[
+    \sigma = (\Ysig{1},...,\Ysig{\Lsig}),
+\]
+where $\Ysig{i} = \hom(\Xsig{i})$.
+
+The {\bf Confirm} interactive protocol is defined as follows.
+It takes $(m,\sigma)$ as input. First $S$ and $V$ retrieve values $\Xkey{i},\Xsig{j}$ for
+$i = 1,...,\Lkey$ and $j = 1,...,\Lsig$ by using $\GenK$ and $\GenS$.
+Then they run $\mathrm{GHIproof}_{\Icon}(S)$ with 
+\[
+S = \{(\Xkey{i},\Ykey{i})| i = 1,...,\Lkey\} \cup \{(\Xsig{i},\Ysig{i})| i = 1,...,\Lsig\}
+\]
+and $S$ is playing the role of the prover.
+$\mathrm{GHIproof}_{l}(S)$ is described in figure~\ref{fig:ghiproof}.
+
+The {\bf Deny} interactive protocol is defined as follows.
+It takes a supposedly invalid message-signature pair $(m,\sigma')$ as input with $\sigma' = (\Zsig{1},...,\Zsig{\Lsig})$
+First, $S$ and $V$ retrieve values $\Xkey{i},\Xsig{j}$ for
+$i = 1,...,\Lkey$ and $j = 1,...,\Lsig$ by using $\GenK$ and $\GenS$.
+Then they run  $\mathrm{coGHIproof}_{\Iden}(S,T)$ with 
+\[
+S = \{(\Xkey{i},\Ykey{i})|i=1,...,\Lkey\}
+\]
+and 
+\[
+T = \{(\Xsig{i},\Zsig{i})|i=1,...,\Lsig\}.
+\]
+$\mathrm{coGHIproof}_{\Iden}(S,T)$ is described in figure~\ref{fig:coghiproof}. 
+
+\subsection{Interactive Proofs}
+In this section, we will describe the two interactive proofs used in MOVA (namely GHIproof and
+coGHIproof). In MOVA the secret key is a group homomorphism.
+So let us start with a small definition.
+\begin{definition}
+    Let $G$ and $H$ be two Abelian groups. Let us consider the set of points  $S~=~\{(x_i,y_i)|i=1,...,s\}~\subseteq~G\times H
+    $. We say that $S$ interpolates in a group homomorphism if there exists $\hom:G\rightarrow H$ st. 
+    $\hom(x_i) = y_i$, for $i = 1,...,s$.
+    Furthermore if we consider $T \subseteq G \times H$, we say that $T$ interpolates in a group homomorphism with the set $S$ if $S\cup T$ interpolates in a group homomorphism.
+\end{definition}
+We can now define two problems taken from~\cite{cite:generic-mova,cite:2-move} related to MOVA and the previous definition.
+We have the Group Interpolation Problem:
+\begin{prob_descr}
+    \item[$n$-$S$-GHI Problem]
+    \item[Parameters:] Two abelian groups $G,H$, and $S \subseteq G\times H$, $n\in\N$.
+    \item[Instance Generation:] $n$ elements $x_1,...,x_n \in_U G$.
+    \item[Problem:] Find $y_1,...,y_n \in H$ such that $\{(x_i,y_i)|i=1,...,n\}$ interpolates
+        with $S$ in a group homomorphism.
+\end{prob_descr}
+And we have the Group Interpolation Decisional Problem:
+\begin{prob_descr}
+    \item[$n$-$S$-GHID Problem]
+    \item[Parameters:] Two abelian groups $G,H$ and $S \subseteq G\times H$, $n\in\N$.
+    \item[Instance Generation:] The instance $T$ is generated according to $T_0$ or $T_1$.
+        $T_0$ is generated by picking $\{(x_i,y_n)|i=1,...,n\} \in (G\times H)^n$ uniformly at
+        random such that it interpolates with $S$ in a group homomorphism. $T_1$ is picked
+        uniformly at random in $(G\times H)^n$.
+    \item[Problem:] Decide whether the instance $T$ is of type $T_0$ or $T_1$.
+\end{prob_descr}
+For both problems, in practice and in particular in MOVA, we consider sets $S$ that interpolates in a unique group homomorphism.
+
+Now we can describe the interactive protocols that are used in MOVA. 
+
+\subsubsection{GHID Problem interactive proof}
+
+We first describe the interactive proof for the GHID Problem.
+Consider $G,H$ and $S$ as defined above where $|H| = d$. 
+Consider a security parameter $l$. In this protocol, a prover convinces a verifier that $S$ interpolates in a group homomorphism $\hom$.
+$\hom$ the secret witness known by the prover. 
+The protocol is described in Figure~\ref{fig:ghiproof}.
+
+
+\begin{figure}[!h]
+    \centering
+    \[
+        \begin{split}
+        &\mbox{\bf GHIproof}_l(S)\\
+        &\mbox{\bf Parameters: } G,H,d=|H|\\
+        &\mbox{\bf Input: } l,S = \{(g_i,e_i)|i=1,...,s\} \subseteq G\times H\\
+        \end{split}
+    \]
+    \[
+        \begin{array}{ccc}
+        \hline
+            \mbox{Prover } P                      &                  & \mbox{Verifier } V                                  \\
+        \hline
+                                                  &                  &                                                     \\
+                                                  &                  & r_i \in_U G, a_{i,j} \in_U \XdX{\Z}{d}  \\ 
+                                                  &                  & \mbox{compute}                                      \\
+                                                  &                  & u_i = dr_i + \sum_{j=1}^{s}{a_{i,j}g_{j}}           \\
+                                                  & \spleftarrow{u_i} & w_i = \sum_{j=1}^{s}{a_{i,j}e_{j}}           \\
+                                                  &                  & i = 1,...,l \mbox{ and } j=1,...,s      \\
+                                                  &&\\
+            v_i = \hom(u_i) \quad i=1,...,l & \sprightarrow{\commit{v_1,...,v_l}} &                                   \\
+                                                  &&\\
+                                                  & \spleftarrow{r_i,a_{i,j}}           &                                   \\ 
+                                                  &&\\
+             \mbox{check } u_i = dr_i + \sum_{j=1}^{s}{a_{i,j}g_{j}}& \sprightarrow{\mathrm{open}(v_1,....,v_l)}  &        \\
+                                                  &&\\
+                                                  &                                    & \mbox{check } v_i = w_i           \\
+        \hline
+        \end{array}
+    \]
+    \caption{$\mathrm{GHIproof}_{l}(S)$}
+    \label{fig:ghiproof}
+\end{figure}
+
+\subsubsection{coGHID Problem interactive proof}
+Let us describe the interactive proof for the coGHID Problem.
+Consider $G,H$,$S$ and $T$ as defined above where $|H| = d$ and $p$ is the smallest prime factor of $d$. Consider also a security parameter $l$. 
+In this protocol, the prover convinces the verifier that for at least one $(x_i,z_i) \in T$
+we have that $z_i \neq \hom(x_i)$, where $\hom$ uniquely interpolates $S$.
+The protocol is depicted in Figure~\ref{fig:coghiproof}. 
+
+One might notice that at step 2 of the protocol, when the prover has to find $\lambda_i$, for $i = 1,...,l$, this is equivalent to solve the discrete logarithm problem in $H$.
+But $\lambda_i \in \XdX{\Z}{p}$, so in practice we choose $d$ such that its smallest prime factor is not too large.
+
+\begin{figure}[!h]
+    \hskip -25pt
+    \[
+        \begin{split}
+        &\mbox{\bf coGHIproof}_l(S,T)\\
+        &\mbox{\bf Parameters: } G,H,d=|H|,p \mbox{ smallest prime factor of } d\\
+        &\mbox{\bf Input: } l,S = \{(g_i,e_i)|i=1,...,s\} \subseteq G\times H,\\
+        & \quad\quad T = \{(x_i,z_i)|i=1,...,t\} \subseteq G \times H\\  
+        \end{split}
+    \]
+    \[
+        \begin{array}{ccc}
+        \hline
+            \mbox{Prover } P                      &                  & \mbox{Verifier } V                                  \\
+        \hline
+                                                  &                  &                                                     \\
+                                                  &                  & r_{i,k} \in_U G, a_{i,j,k} \in_U \XdX{\Z}{d}  \\ 
+                                                  && \mbox{ and } \lambda_i \in_U \XdX{\Z}{p} \\
+                                                  &                  & \mbox{compute}                                      \\
+                                                  &                  & u_{i,k} = dr_{i,k} + \sum_{j=1}^{s}{a_{i,j,k}g_{j}} + \lambda_i x_i           \\
+                                                  & \spleftarrow{u_{i,k},w_{i,k}} & w_{i,k} = \sum_{j=1}^{s}{a_{i,j,k}e_{j}} + \lambda_i z_i           \\
+                                                  &                  & \mbox{for } i = 1,...,l \mbox{ , } j=1,...,s       \\
+                                                  & & \mbox{ and } k=1,...,t\\
+                                                  &&\\
+        v_{i,k} = \hom(u_{i,k}),  y_k = \hom(x_k) &&\\
+     \mbox{for } i=1,...,l \mbox{ and } k=1,...,t &&\\
+     \mbox{find } \lambda_i \mbox{ st } w_{i,k} -v_{i,k} = \lambda_i(z_k-y_k) & \sprightarrow{\commit{\lambda_1,...,\lambda_l}} &                                   \\
+                                                  &&\\
+                                                  & \spleftarrow{r_{i,k},a_{i,j,k}}           &                                   \\ 
+                                                    &&\\
+                                       \mbox{check} &&\\
+        u_{i,k} = dr_{i,k} + \sum_{j=1}^{s}{a_{i,j,k}g_{j}} + \lambda_i x_i &&\\
+           w_{i,k} = \sum_{j=1}^{s}{a_{i,j,k}e_{j}} + \lambda_i z_i   & \sprightarrow{\mathrm{open}(\lambda_1,....,\lambda_l)}  &                                   \\
+                                                  &&\\
+                                                  &                                    & \mbox{check that $\lambda_i$ are correct}           \\
+        \hline
+        \end{array}
+    \]
+    \caption{$\mathrm{coGHIproof}_{l}(S)$}
+    \label{fig:coghiproof}
+\end{figure}
+
+
+\subsection{Advantages of MOVA}
+MOVA has some advantages, when comparing it to classical signature schemes. To begin, MOVA scheme is an undeniable scheme. Therefore
+verification can be done only with the help of the signer whereas classical signature schemes are universally verifiable (everyone can verify the signature).
+In some application where privacy is an issue, this property can be useful. For example we can think of an application where someone wants to sign a document,
+but he does not want that anyone can see that he signed it.
+
+The other main advantage of MOVA is that we can have very short signatures (for example 20 bits as suggested in~\cite{cite:thesis-monnerat}).
+Short signature might be very useful when dealing with mobile or resource limited devices. For example, we could encode some information with his signature 
+in a QR-code.

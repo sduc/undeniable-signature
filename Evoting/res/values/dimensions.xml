@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="space">4.2sp</dimen>
+    <dimen name="separator">8sp</dimen>
+    <dimen name="text_size">16.5sp</dimen>
+    <dimen name="title_size">20sp</dimen>
+    
+</resources>

@@ -1,0 +1,420 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE MOVEABLE PURE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE MOVEABLE PURE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE MOVEABLE PURE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOGDEM DIALOG DISCARDABLE  0, 0, 334, 78
+STYLE DS_CENTER | WS_POPUP | WS_BORDER
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         200,ID_STATIC,"Static",SS_BITMAP,0,0,337,77
+END
+
+IDD_DIALOG1 DIALOG DISCARDABLE  0, 0, 186, 190
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK_RADIO,134,175,50,14
+    CONTROL         "Generate a signature",IDC_RADIO1,"Button",
+                    BS_AUTORADIOBUTTON,0,50,82,10
+    CONTROL         "Send the public key (email)",IDC_RADIO2,"Button",
+                    BS_AUTORADIOBUTTON | WS_DISABLED,0,64,101,10
+    CONTROL         "Execute the confirmation protocol as VERIFIER",
+                    IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,0,78,165,10
+    CONTROL         "Execute the denial protocol as VERIFIER",IDC_RADIO4,
+                    "Button",BS_AUTORADIOBUTTON,0,107,146,10
+    LTEXT           "              MOVA Undeniable Signature",IDC_STATIC,59,
+                    7,125,10,SS_CENTERIMAGE
+    CONTROL         "Execute the confirmation protocol as PROVER",IDC_RADIO6,
+                    "Button",BS_AUTORADIOBUTTON,0,93,163,10
+    CONTROL         "Execute the denial protocol as PROVER",IDC_RADIO7,
+                    "Button",BS_AUTORADIOBUTTON,0,122,143,10
+    CONTROL         "Quit",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON,0,136,29,
+                    10
+    CONTROL         "Generate a public key",IDC_RADIO8,"Button",
+                    BS_AUTORADIOBUTTON,0,36,85,10
+END
+
+IDD_PROTCONF DIALOG DISCARDABLE  0, 0, 251, 207
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "YOU ARE THE VERIFIER !"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Quit",IDC_CL,194,155,50,14
+    PUSHBUTTON      "Browse",IDC_PATHPK,194,41,50,14
+    PUSHBUTTON      "Execute",IDC_COMP,194,97,50,14
+    EDITTEXT        IDC_PATH_SRC,6,41,178,14,ES_AUTOHSCROLL
+    LTEXT           "Insert the path of the public key...",IDC_STATIC,10,31,
+                    177,10
+    PUSHBUTTON      "Browse",IDC_PATHPK2,194,68,50,14
+    EDITTEXT        IDC_PATH_SRC2,6,68,178,14,ES_AUTOHSCROLL
+    LTEXT           "Insert the path of the signed file...",IDC_STATIC,9,58,
+                    177,10
+    EDITTEXT        IDC_PATH_SRC3,6,96,178,14,ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "Signature given by the Prover...",IDC_STATIC,8,86,177,
+                    10
+    LTEXT           "Currently, no operation...",IDC_VS,12,128,169,34
+    EDITTEXT        IDC_IP,29,13,131,14,ES_AUTOHSCROLL
+    LTEXT           "Insert the DNS of the Prover and the port...",
+                    IDC_STATIC,10,1,177,10
+    EDITTEXT        IDC_PORT,198,13,46,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "DNS:",ID_IP,10,15,19,10
+    LTEXT           "Port:",ID_PORT,173,15,21,10
+    CONTROL         "See details",IDC_VERBOSE_V,"Button",BS_AUTOCHECKBOX | 
+                    BS_FLAT,193,131,51,10
+    LTEXT           "Currently, no operation...",IDC_VS2,12,128,169,34
+    GROUPBOX        "Operations",IDC_STATIC,7,117,176,53
+    LISTBOX         IDC_EDIT1,193,101,48,40,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
+                    NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "",IDC_GHI,40,179,166,18,SS_CENTERIMAGE | SS_SUNKEN
+END
+
+IDD_CONFPROV DIALOG DISCARDABLE  0, 0, 322, 156
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "YOU ARE THE PROVER!"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Quit",IDC_CL,265,110,50,14
+    EDITTEXT        IDC_PORT,73,45,50,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Port to listen to...",IDC_STATIC,10,47,54,8
+    PUSHBUTTON      "Execute",IDC_LISTEN,265,93,50,14
+    LTEXT           "Currently, no operation...",IDC_SL,79,80,162,30,NOT 
+                    WS_GROUP
+    GROUPBOX        "Operations",IDC_STATIC,73,65,179,59
+    EDITTEXT        IDC_BW_PATH,73,26,188,14,ES_AUTOHSCROLL
+    LTEXT           "Secret Key Path",IDC_STATIC,9,28,52,8
+    PUSHBUTTON      "Browse",IDC_BW,265,26,50,14
+    CONTROL         "See details",IDC_VERBOSE_P,"Button",BS_AUTOCHECKBOX | 
+                    BS_FLAT | WS_TABSTOP,8,116,51,10
+    CTEXT           "",IDC_GHI2,79,131,166,18,SS_CENTERIMAGE | SS_SUNKEN
+    EDITTEXT        IDC_BW_PATH2,73,7,188,14,ES_AUTOHSCROLL
+    LTEXT           "Signed File",IDC_STATIC2,9,10,36,8
+    PUSHBUTTON      "Browse",IDC_BW2,265,7,50,14
+END
+
+IDD_PROTCONF1 DIALOG DISCARDABLE  0, 0, 502, 436
+STYLE DS_CENTER | WS_POPUP | WS_CAPTION | WS_THICKFRAME
+CAPTION "YOU ARE THE VERIFIER !"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Quit",IDC_CL,442,93,50,14
+    PUSHBUTTON      "Browse",IDC_PATHPK,442,13,50,14
+    PUSHBUTTON      "Execute",IDC_COMP,442,40,50,14
+    EDITTEXT        IDC_PATH_SRC,253,13,178,14,ES_AUTOHSCROLL
+    LTEXT           "Insert the path of the public key...",IDC_STATIC,257,2,
+                    177,10
+    PUSHBUTTON      "Browse",IDC_PATHPK2,192,39,50,14
+    EDITTEXT        IDC_PATH_SRC2,7,39,178,14,ES_AUTOHSCROLL
+    LTEXT           "Insert the path of the signed file...",IDC_STATIC,10,29,
+                    177,10
+    EDITTEXT        IDC_PATH_SRC3,253,39,178,14,ES_UPPERCASE | 
+                    ES_AUTOHSCROLL
+    LTEXT           "Signature given by the Prover...",IDC_STATIC,255,29,177,
+                    10
+    EDITTEXT        IDC_IP,29,13,131,14,ES_AUTOHSCROLL
+    LTEXT           "Insert the DNS of the Prover and the port...",
+                    IDC_STATIC,10,1,177,10
+    EDITTEXT        IDC_PORT,195,13,46,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "DNS:",ID_IP,10,15,19,10
+    LTEXT           "Port:",ID_PORT,173,15,21,10
+    CONTROL         "Hide details",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
+                    BS_FLAT,187,97,53,10
+    LTEXT           "Currently, no operation...",IDC_VS,12,67,169,34
+    GROUPBOX        "Operations",IDC_STATIC,7,54,176,53
+    LISTBOX         IDC_EDIT1,7,112,485,317,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    LTEXT           "",IDC_STATIC,348,100,61,8
+    CTEXT           "",IDC_GHI,262,68,166,18,SS_CENTERIMAGE | SS_SUNKEN
+END
+
+IDD_CONFPROV1 DIALOG DISCARDABLE  0, 0, 505, 407
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "YOU ARE THE PROVER!"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Quit",IDC_CL,363,84,50,14
+    EDITTEXT        IDC_PORT,73,67,50,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Port to listen to...",IDC_STATIC,10,69,54,8
+    PUSHBUTTON      "Execute",IDC_LISTEN,421,84,50,14
+    LTEXT           "Currently, no operation...",IDC_SL,325,27,162,30,NOT 
+                    WS_GROUP
+    GROUPBOX        "Operations",IDC_STATIC,319,12,179,59
+    EDITTEXT        IDC_BW_PATH,73,18,188,14,ES_AUTOHSCROLL
+    LTEXT           "Secret Key Path",IDC_STATIC,9,20,52,8
+    PUSHBUTTON      "Browse",IDC_BW,267,18,50,14
+    CONTROL         "Hide details",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | 
+                    BS_FLAT | WS_TABSTOP,205,68,50,10
+    LISTBOX         IDC_LIST1,7,115,491,285,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    CTEXT           "",IDC_GHI2,57,88,166,18,SS_CENTERIMAGE | SS_SUNKEN
+    EDITTEXT        IDC_BW_PATH2,73,42,188,14,ES_AUTOHSCROLL
+    LTEXT           "Signed File",IDC_STATIC2,9,45,36,8
+    PUSHBUTTON      "Browse",IDC_BW2,267,42,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIALOGDEM, DIALOG
+    BEGIN
+        RIGHTMARGIN, 333
+        BOTTOMMARGIN, 76
+    END
+
+    IDD_DIALOG1, DIALOG
+    BEGIN
+        RIGHTMARGIN, 184
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 189
+    END
+
+    IDD_PROTCONF, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 244
+        BOTTOMMARGIN, 200
+    END
+
+    IDD_CONFPROV, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 315
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 149
+    END
+
+    IDD_PROTCONF1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 492
+        BOTTOMMARGIN, 429
+    END
+
+    IDD_CONFPROV1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 498
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 400
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+200                     BITMAP  DISCARDABLE     "demarrage.bmp"
+IDB_BITMAP2             BITMAP  DISCARDABLE     "bitmap2.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON    DISCARDABLE     "icon1.ico"
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "EPFL\0"
+            VALUE "FileDescription", "crypt1\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "crypt1\0"
+            VALUE "LegalCopyright", "Copyright © 2004\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "crypt1.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "EPFL crypt1\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// French (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRC)
+#ifdef _WIN32
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH_CANADIAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAIN1 DIALOG DISCARDABLE  0, 0, 303, 101
+STYLE DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "MOVA - Undeniable Signature"
+FONT 8, "Verdana"
+BEGIN
+    LTEXT           "File to sign",IDC_STATIC,9,41,56,8
+    EDITTEXT        IDC_PATH_SRC,70,38,187,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_B_BROWSE_SRC,261,38,32,14
+    PUSHBUTTON      "OK",IDC_B_OK,243,57,50,14
+    EDITTEXT        IDC_EDIT1,70,57,139,17,ES_AUTOHSCROLL
+    PUSHBUTTON      "Quit",IDCANCEL,242,76,50,14
+    LTEXT           "Signature",IDC_STATIC2,9,60,56,8
+    GROUPBOX        "Generate a Signature",IDC_STATIC,6,7,290,87
+    LTEXT           "Secret Key Path",IDC_STATIC,9,20,56,8
+    EDITTEXT        IDC_PATH_SRC6,70,17,187,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_B_BROWSE_SRC3,261,17,32,14
+    LTEXT           "",IDC_TEMPS2,9,80,200,12
+END
+
+IDD_MAIN2 DIALOG DISCARDABLE  0, 0, 303, 126
+STYLE DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MOVA - Undeniable Signature"
+FONT 8, "Verdana"
+BEGIN
+    PUSHBUTTON      "Quit",IDCANCEL,243,105,50,14
+    CONTROL         "Progress1",IDC_PDL2,"msctls_progress32",NOT WS_VISIBLE | 
+                    WS_BORDER,70,107,139,10
+    LTEXT           "Public Key name",IDC_BLABLA,9,43,56,11
+    EDITTEXT        IDC_PATH_SRC5,75,40,182,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_B_BROWSE_SRC2,261,40,32,14
+    PUSHBUTTON      "OK",IDC_B_OK2,243,82,50,14
+    GROUPBOX        "Generate a Public Key",IDC_BLABLA,6,7,290,93
+    LTEXT           "Secret Key name",IDC_BLABLA,9,61,60,11
+    EDITTEXT        IDC_PATH_SRC7,75,58,182,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_B_BROWSE_SRC4,261,58,32,14
+    LTEXT           "Size of random numbers (a power of 2, please)",
+                    IDC_BLABLA,96,26,157,11
+    EDITTEXT        IDC_BITS,261,23,32,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "",IDC_TEMPS,9,84,202,12
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO MOVEABLE PURE 
+BEGIN
+    IDD_MAIN1, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 296
+        TOPMARGIN, 7
+    END
+
+    IDD_MAIN2, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 296
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 119
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // French (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

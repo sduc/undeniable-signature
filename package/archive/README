@@ -1,0 +1,84 @@
+Short, Undeniable Signature for Android 2.x
+===========================================
+
+1. Requirements
+---------------
+To use this project, you need
+    - Android SDK
+    - JDK 6
+    - MySQL
+
+1.1 Library used
+................
+Here are the libraray used in this project, you do not need to install them.
+    - jcalendar
+    - gnu-crypto
+The .jar are provided with the project.
+
+
+2. The Projects
+---------------
+If you are using eclipse, the project is separated into three eclipse projects:
+    - Server
+    - Share
+    - UniversityContest
+The last one is an android project and the two first are java projects.
+You can just by load the projects in Eclipse
+
+If you want you can also use ANT, a build.xml is provided for each project.
+To build all projects with ANT just run:
+    $> ./build.sh
+
+2.1 Server
+..........
+
+The Server is separated into two parts, the first is a process listening to port 12345 for new clients.
+To run this process just run < RunUniversityContestServer.java > in Eclipse (package: ch.epfl.lasec.universitycontest).
+
+The second part of the server is the Server Manager, used manage challenges, teams and universities.
+A GUI is available for the managment. To start the GUI just run < ServerManagerGUI.java > in Eclipse 
+(package: ch.epfl.lasec.universitycontest.gui ) 
+
+THE DATABSAE
+''''''''''''
+For the server to work properly, you need to initialize the MySQL Database. 
+First you can either add a new user that has access to MySQL databases:
+    username: java      password: akfss19uT
+To add a new user, in the mysql prompt, type
+    mysql> CREATE USER 'java'@'localhost' [IDENTIFIED BY 'akfss19uT']
+or you can just use an already created user (for example root) and change in files
+< DataBaseHandler.java > (package: ch.epfl.lasec.universitycontest) the USER to "your_custom_username"
+and the PASSWORD to "your_custom_password". Do the same in file < DataBaseInit.java >
+(package: ch.epfl.lasec.universitycontest).
+I would adwise to use the first solution since it is simpler.
+
+Then you have to initialize the database by running < DataBaseInit.java > (package: ch.epfl.lasec.universitycontest).
+This should create a new DataBase name [unicontest]. It should also create three tables: [team],[challenge] and [university].
+Verify that they where created by connecting to the database and checking that the tables exist.
+
+Executable Jar
+''''''''''''''
+An executable jar are provided for the Server Manager and for the listening process.
+To run the server manager you can execute ServerManager.jar:
+    > java -jar ServerManager.jar
+Same for the process:
+    > java -jar UniversityContestServerProcess.jar
+
+2.2 Share
+.........
+
+The Share project contains all code shared by the client and the server. Make sure it is in the classpath of the Server project
+and UniversityContest project. 
+There is no code to be run in this project. A jar is provided so that you can add it in the classpath of the two 
+other projects.
+
+
+2.3 UniversityContest
+.....................
+
+This is the Android project. If the android plugin is installed in Eclipse, it should not be a problem.
+
+
+3. DOCUMENTATION
+----------------
+A java doc is available for all projects (Server,Share and UniversityContest) in their respective folder.

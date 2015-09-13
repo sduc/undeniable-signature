@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/white" >
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/app_title"
+        android:background="@color/app_title_colour"
+        android:paddingLeft="@dimen/small_padding"
+        android:paddingBottom="@dimen/small_padding"
+        android:paddingTop="@dimen/small_padding"/>
+
+    <Button
+        android:id="@+id/button_current_challenge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin"
+        android:paddingTop="@dimen/button_padding"
+        android:paddingBottom="@dimen/button_padding"
+        android:background="@drawable/button_menu"
+        android:text="@string/current_challenge"
+        android:textSize="@dimen/text_button_menu"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/button_uni_score"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/uni_score"
+        android:paddingTop="@dimen/button_padding"
+        android:paddingBottom="@dimen/button_padding"
+        android:background="@drawable/button_menu"
+        android:layout_margin="@dimen/margin"
+        android:textSize="@dimen/text_button_menu"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/button_team_score"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/team_score"
+        android:paddingTop="@dimen/button_padding"
+        android:paddingBottom="@dimen/button_padding"
+        android:background="@drawable/button_menu"
+        android:layout_margin="@dimen/margin"
+        android:textSize="@dimen/text_button_menu"
+        android:textColor="@color/white" />
+
+</LinearLayout>

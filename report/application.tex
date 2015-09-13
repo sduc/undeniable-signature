@@ -1,0 +1,117 @@
+\chapter{The Application}
+\label{chap:application}
+
+    Before starting the development, the first step was to find an application on mobile devices 
+    that has to use MOVA without being too 
+    artificial. Different applications were considered and compared to choose the most adapted. 
+    The application we came to is named {\bf University Contest}. The shortness of the signature and batch verification were the two main benefits of MOVA. 
+    In this chapter, the developed application will be presented. 
+    Then we will establish a threat model and say why MOVA is more appropriated than classical signature in our mobile application.
+
+    
+    \section{Overview}
+    \label{sec:app-overview}
+    We consider an application where several universities are participating to a tournament.
+    We can imagine that for the first round of the tournament, universities are organized into
+    pairs. Let us consider one pair, and let us denote the two universities by $U_1$ and $U_2$. $U_1$ and $U_2$  are in competition.
+    In this application, $U_1$ provides quizzes/challenges/riddles to students in $U_2$. Similarly $U_2$ provides quizzes to students in $U_1$.
+    Students in a university are forming teams. We assume that teams have a certain amount of time (for example one week) to complete the current quiz/challenge/riddle. 
+    Each team in a university have a different quiz\footnote{If several teams in a university have the same quiz, then they can copy on each other to increase the final score.}.
+    When completed they send it to the server of both universities and get a score. Then the university who provided the quiz also provides the solution of the quiz and the score the 
+    team did, to the students. At the end of the first round, all the best of the two universities 
+    (i.e. the ones with the highest cumulated score of all teams in the university) in the pairs are 
+    promoted to the second round. The game goes on the same way until the final round, where only two universities are remaining. The best of the two wins the game. 
+
+    \begin{figure}[!h]
+        
+        \centering
+        \subfloat[$S_1$ sending quizzes to teams in $U_2$]{
+            \begin{pspicture}(1,0)(4,5)
+                \psellipse[fillcolor=gray!34,fillstyle=solid,linecolor=gray!34](1,2.5)(0.7,2)
+                \psellipse[fillcolor=gray!34,fillstyle=solid,linecolor=gray!34](4,2.5)(0.7,2)
+                \rput(1,4){\color{gray}$U_1$}
+                \rput(4,4){\color{gray}$U_2$}
+                \rput(1,3){$S_1$}
+                \rput(4,3){$S_2$}
+                \rput(4,1){$T_i$}
+                \psline{->}(1.3,2.7)(3.7,1.3)
+                \rput(2.5,2.5){$(Q,\sigma)$}
+            \end{pspicture}
+        }
+
+        \subfloat[$T_i$ sending back the filled in quiz]{
+            \begin{pspicture}(1,0)(4,5)
+                \psellipse[fillcolor=gray!34,fillstyle=solid,linecolor=gray!34](1,2.5)(0.7,2)
+                \psellipse[fillcolor=gray!34,fillstyle=solid,linecolor=gray!34](4,2.5)(0.7,2)
+                \rput(1,4){\color{gray}$U_1$}
+                \rput(4,4){\color{gray}$U_2$}
+                \rput(1,3){$S_1$}
+                \rput(4,3){$S_2$}
+                \rput(4,1){$T_i$}
+                \psline{->}(4.1,1.3)(4.1,2.7)
+                \rput(4.3,2){\tiny $\tilde{Q}$}
+                \psline{<-}(3.9,1.3)(3.9,2.7)
+                \rput(3.5,2){\tiny $(\tilde{Q},\tilde{\sigma})$}
+                \psline{<-}(1.3,2.7)(3.7,1.3)
+                \rput(2.4,1.6){\tiny $(\tilde{Q},\tilde{\sigma})$}
+            \end{pspicture}
+        }
+        
+        \caption{Application Overview}
+    
+    \end{figure}
+
+    \section{Security Overview}
+    \label{sec:app-sec}
+    For this part let us consider one pair with universities $U_1$ and $U_2$ as before. Let us denote the server of $U_1$ by $S_1$ and the server of $U_2$ by $S_2$.
+    We can assume that communication between $S_1$ and $S_2$ are confidential, authenticated and preserve integrity.
+    When $U_1$ creates a quiz/challenge for students of $U_2$ they sign it with MOVA and then send it to them. In that way, the students are ensured that the quiz comes indeed
+    from $U_1$ and that it is not a fake quiz from other cheating students who wants to make them lose time, hence lose score. Furthermore, only the designated team can verify the signature.
+    Then, when the students are sending back the quiz to $S_2$, $S_2$ can sign the filled in quiz with MOVA and send it to back to the team. The team can verify that the signature 
+    is correct\footnote{In that model, we consider that the students do not trust the server and want to be sure that answer were not changed or deleted.},
+    and send it to $S_1$. Finally $S_1$ receives the filled in quiz and verify both signatures.
+    For signatures coming from $S_2$, $S_1$ can run a batch verification with $S_2$.
+    Then when $S_1$ provides the solutions with score the team, he signs everything and sends it across. Therefore, students are ensured that the solution and the score are correct.
+
+    When a team is starting to communicate with a server, the team is authenticated using a preshared secret. We can assume that when a team registers, it has to choose a password.
+
+    \section{Threat Model}
+    \label{sec:threat}
+    Let us now describe the threat model, by showing what an adversary could do or what he might want to do if he is also a participant for example.
+    \subsubsection{Fake Quizzes}
+    The first thing that an adversary might do is to forge fake quizzes. Hence the use of the signature when sending new quizzes. A reason why an adversary might do that is  to
+    make the teams fill in useless quizzes. In that case, the adversary might be another team from the opposing university. Another reason might be to make university servers receive 
+    useless filled in quizzes.
+    \subsubsection{Fill Another Team's Quiz}
+    An adversary might want to send a quiz assigned to a team he is not belonging to, so that the team gets a zero score on that quiz. 
+    But by construction of the application, he cannot steal a quiz and make the score count for his team. Even if he is also participating to the contest
+    because quizzes are unique and associated to their respective teams.
+    \subsubsection{Modify the Answer in a Filled in Quiz}
+    Another type of attack one could do is when the team sends the filled in quiz, the adversary could modify what is sent so that the team loses score. 
+    Therefore, as stated previously, the team sends first the filled in quiz to his university server so that it is signed. Then the team can verify 
+    that nothing was modified. 
+
+    \section{Problems}
+    \label{sec:app-problem}
+    We need to authenticate the students to their university server. Because if this is not the case, then anyone can forge a valid signature. 
+    When sending the filled in quiz 
+    to the university to get the signature, if no authentication is provided then anyone can make the server sign anything\footnote{This server only sign.
+    He does not do any verification because all verifications are done on the other server (the one which will correct the quiz).}.
+
+
+    \section{Using Classical Signatures}
+    \label{sec:app-classic}
+    In this application we could try to use classical signature. For the signature of the unfilled quiz (the signature signed by $S_1$ when $S_1$ is the quiz provider), 
+    MOVA could bring something compared to classical signatures, due to the following reasons:
+    \begin{itemize}
+        \item We use that MOVA is not universally verifiable, because only the designated team must verify the signature. 
+        \item For the signature of the filled in quiz (signed by $S_2$, when $S_1$ is the quiz provider), we exploit the fact that $S_1$
+            runs batch verification. For example at the end of the day, the server has received one quiz per team, and the signatures have to be 
+            verified. So all signatures are verified in one shot. We can assume that verification is scheduled at the end of each day or the end of a round. 
+        \item The fact that the signatures are very short is always an advantage when dealing with mobile devices. Furthermore since the server has to
+            store some signature to run the batch verification, we gain some storage-space by having shorter signature. We could schedule the batch verification
+            at the end of each month for example.
+    \end{itemize}
+    
+
+

@@ -1,0 +1,105 @@
+\begin{figure*}
+[!h]
+    \setlength\fboxsep{0pt}
+    \setlength\fboxrule{0.5pt}
+    \centering
+        \[
+        \begin{array}{ccc}
+        \mbox{Sender}      &                   & \mbox{Receiver}           \\
+                           &                   &                           \\
+          X                &                   &                           \\
+     (c,k) = \commit{X;r}  & \prightarrow{c}   &       c                   \\
+                           & \prightarrow{}    &                           \\
+                           &    \vdots         &                           \\
+                           & \pleftarrow{}     &                           \\
+                           & \prightarrow{k}   &   X=\mathrm{open}(c,k)    \\
+
+        \end{array}
+        \]
+    \caption{Commitment Scheme}
+    \label{fig:commit}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}
+[!h]
+    \centering
+    \[
+        \begin{split}
+        &\mbox{\bf GHIproof}_l(S)\\
+        &\mbox{\bf Parameters: } G,H,d=|H|\\
+        &\mbox{\bf Input: } l,S = \{(g_i,e_i)|i=1,...,s\} \subseteq G\times H\\
+        \end{split}
+    \]
+    \[
+        \begin{array}{ccc}
+        \hline
+            \mbox{Prover } P                      &                  & \mbox{Verifier } V                                  \\
+        \hline
+                                                  &                  &                                                     \\
+                                                  &                  & r_i \in_U G \mbox{ and } a_{i,j} \in_U \XdX{\Z}{d}  \\
+                                                  &                  & \mbox{compute}                                      \\
+                                                  &                  & u_i = dr_i + \sum_{j=1}^{s}{a_{i,j}g_{j}}           \\
+                                                  & \spleftarrow{u_i} & w_i = \sum_{j=1}^{s}{a_{i,j}e_{j}}           \\
+                                                  &                  & \mbox{for } i = 1,...,l \mbox{ and } j=1,...,s      \\
+                                                  &&\\
+            v_i = \hom(u_i) \mbox{for } i=1,...,l & \sprightarrow{\commit{v_1,...,v_l}} &                                   \\
+                                                  &&\\
+                                                  & \spleftarrow{r_i,a_{i,j}}           &                                   \\
+                                                  &&\\
+             \mbox{check } u_i = dr_i + \sum_{j=1}^{s}{a_{i,j}g_{j}}& \sprightarrow{\mathrm{open}(v_1,....,v_l)}  &                                   \\
+                                                  &&\\
+                                                  &                                    & \mbox{check } v_i = w_i           \\
+        \hline
+        \end{array}
+    \]
+    \caption{$\mathrm{GHIproof}_{l}(S)$}
+    \label{fig:ghiproof}
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}
+[!h]
+    \advance\leftskip-4cm
+    \[
+        \begin{split}
+        &\mbox{\bf coGHIproof}_l(S,T)\\
+        &\mbox{\bf Parameters: } G,H,d=|H|,p \mbox{ smallest prime factor of } d\\
+        &\mbox{\bf Input: } l,S = \{(g_i,e_i)|i=1,...,s\} \subseteq G\times H,\\
+        & \quad\quad T = \{(x_i,z_i)|i=1,...,t\} \subseteq G \times H\\
+        \end{split}
+    \]
+    \[
+        \begin{array}{ccc}
+        \hline
+            \mbox{Prover } P                      &                  & \mbox{Verifier } V                                  \\
+        \hline
+                                                  &                  &                                                     \\
+                                                  &                  & r_{i,k} \in_U G, a_{i,j,k} \in_U \XdX{\Z}{d}  \\
+                                                  && \mbox{ and } \lambda_i \in_U \XdX{\Z}{p} \\
+                                                  &                  & \mbox{compute}                                      \\
+                                                  &                  & u_{i,k} = dr_{i,k} + \sum_{j=1}^{s}{a_{i,j,k}g_{j}} + \lambda_i x_i           \\
+                                                  & \spleftarrow{u_{i,k},w_{i,k}} & w_{i,k} = \sum_{j=1}^{s}{a_{i,j,k}e_{j}} + \lambda_i z_i           \\
+                                                  &                  & \mbox{for } i = 1,...,l \mbox{ , } j=1,...,s       \\
+                                                  & & \mbox{ and } k=1,...,t\\
+                                                  &&\\
+        v_{i,k} = \hom(u_{i,k}),  y_k = \hom(x_k) &&\\
+     \mbox{for } i=1,...,l \mbox{ and } k=1,...,t &&\\
+     \mbox{find } \lambda_i \mbox{ st } w_{i,k} -v_{i,k} = \lambda_i(z_k-y_k) & \sprightarrow{\commit{\lambda_1,...,\lambda_l}} &                                   \\
+                                                  &&\\
+                                                  & \spleftarrow{r_{i,k},a_{i,j,k}}           &                                   \\
+                                                    &&\\
+                                       \mbox{check} &&\\
+        u_{i,k} = dr_{i,k} + \sum_{j=1}^{s}{a_{i,j,k}g_{j}} + \lambda_i x_i &&\\
+           w_{i,k} = \sum_{j=1}^{s}{a_{i,j,k}e_{j}} + \lambda_i z_i   & \sprightarrow{\mathrm{open}(\lambda_1,....,\lambda_l)}  &                                   \\
+                                                  &&\\
+                                                  &                                    & \mbox{check that $\lambda_i$ are correct}           \\
+        \hline
+        \end{array}
+    \]
+    \caption{$\mathrm{coGHIproof}_{l}(S)$}
+    \label{fig:coghiproof}
+\end{figure*}
+\efloatseparator
+ 

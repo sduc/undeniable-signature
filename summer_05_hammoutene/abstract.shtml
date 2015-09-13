@@ -1,0 +1,131 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>New Page 1</title>
+<style>
+<!--
+	div.c1 {
+		text-align: center
+	}
+	
+	.td-plain {
+		background-color: #ffffff;
+	}
+	
+	.td-strong {
+		background-color: #dddddd;
+	}
+-->
+</style>
+</head>
+
+<body>
+
+<div class="c1">
+	<table height="100%" cellSpacing="0" cellPadding="5" width="100%" border="0" vspace="0" hspace="0" id="table1">
+		<tr vAlign="bottom">
+			<td class="td-plain" align="middle" height="34">
+	                <img src="http://lasecwww.epfl.ch/images/logo-small.gif" width="165" height="34" alt="LASEC Logo">
+			</td>
+			<td class="td-strong" align="right" width="100%" height="34">
+			[Search]&nbsp;&nbsp;<a href="http://lasecwww.epfl.ch/">[Home]</a> </td>
+		</tr>
+		<tr vAlign="top">
+			<td class="td-strong" height="70%"><br>
+&nbsp;<ul type="square">
+				<li><a href="http://lasecwww.epfl.ch/">Home</a> 
+				</li>
+				<li><a href="http://lasecwww.epfl.ch/people.shtml">People</a> 
+				</li>
+				<li><a href="http://lasecwww.epfl.ch/research.shtml">Research</a> 
+				</li>
+				<li><a href="http://lasecwww.epfl.ch/education.shtml">Education</a> 
+				</li>
+				<li><a href="http://lasecwww.epfl.ch/students.shtml">Students 
+				Information</a> 
+				</li>
+				<li>
+				<a href="http://lasecwww.epfl.ch/php_code/publications/search.php">
+				Publications</a> 
+				</li>
+				<li><a href="http://lasecwww.epfl.ch/dummies.shtml">LASEC for 
+				Dummies</a> 
+				</li>
+				<li><a href="http://lasecwww.epfl.ch/links.shtml">Useful Links</a> 
+				</li>
+				<li><a href="http://lasecwww.epfl.ch/find.shtml">How to find us</a> 
+				</li>
+			</ul>
+			<br>
+&nbsp;<ul type="square">
+				<li><a target="external" href="http://ic.epfl.ch">I&amp;C Home Page</a> 
+				</li>
+				<li><a target="external" href="http://www.epfl.ch">EPFL Home 
+				Page</a> 
+				</li>
+			</ul>
+			<br>
+			<br>
+&nbsp;</td>
+			<td class="td-plain" width="100%" height="100%" rowSpan="2">
+			<table width="90%" border="0" id="table2">
+				<tr>
+					<td class="td-strong" colSpan="2"><b>A Demonstrator for the MOVA Undeniable Signatures</b></td>
+				</tr>
+				<tr>
+					<td colSpan="2" height="40">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Author: </td>
+					<td><a href="mailto:fabricecedric.nansi@epfl.ch">Malik Hammoutène</a> 
+					</td>
+				</tr>
+				<tr>
+					<td colSpan="2" height="20">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Supervisors: </td>
+					<td>Prof. Serge Vaudenay</td>
+				</tr>
+				<tr>
+					<td colSpan="2" height="20">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Date:</td>
+					<td>Summer Semester 2003-2004</td>
+				</tr>
+				<tr>
+					<td colSpan="2" height="42">&nbsp;</td>
+				</tr>
+				<tr>
+					<td vAlign="top">Abstract: </td>
+					<td vAlign="top">Undeniable signatures are digital signatures which protect the privacy of the signer: a signer can sign any digital document, and the signature can be verified through an interactive protocol together with the signer. A new undeniable scheme was proposed by EPFL. It makes possible to have very short signatures (typically: 20 to 30 bits). This scheme is called the MOVA scheme (M O stands for M onnerat Jean, and V A for V audenay Serge). Please, read [1] for more information about this protocol.
+During this 12 weeks internship, I had to program a software in C, imple- menting a variant of this scheme (signer without expert group knowledge). This implementation is a Windows API, using sockets (TCP/IP)..</td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+		<tr vAlign="bottom">
+			<td class="td-strong" align="middle"><hr><font size="-3">EPFL / I&amp;C 
+			/ LASEC<br>
+			INF 237 (INF Building)<br>
+			Station 14<br>
+			CH-1015 Lausanne<br>
+			SWITZERLAND<br>
+			<br>
+			Tel. +41 21 693 7603<br>
+			Fax. +41 21 693 7689<br>
+&nbsp;</font></td>
+		</tr>
+		<tr vAlign="top">
+			<td class="td-strong"><hr>&nbsp; </td>
+			<td class="td-plain" align="middle"><hr>Copyright (c) 2005 LASEC. 
+			All rights reserved. </td>
+		</tr>
+	</table>
+</div>
+
+</body>
+
+</html>

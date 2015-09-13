@@ -1,0 +1,95 @@
+\chapter{Preliminaries}
+\label{chap:preliminaries}
+
+In this chapter, 
+we explain the notions essential for the remainder of this report. Several basic cryptographic notions are presented.
+
+\section{Hash Function}
+A hash function is a function that maps an arbitrary length input to a fixed length output.
+More formally, a hash function is a function 
+\[
+    h\!:\!\bitset^*~\rightarrow~\bitset^n, \mbox{for $n \in \N$ fixed.}
+\]
+A cryptographic hash function $h$ has to satisfy some security properties. Especially it has to resist to the following attacks:
+\begin{description}
+    \item[Collision attack] Find $x$ and $x'$ in $\bitset^*$ such that $h(x) = h(x')$ and $x \neq x'$.
+    \item[First preimage attack] Given the hash $y \in \bitset^n$, find $x \in \bitset^*$ such that $h(x) = y$.
+    \item[Second preimage attack] Given to input $x$ and $x'$ in $\bitset^*$ such that $x \neq x'$ and $h(x) = h(x')$. 
+\end{description}
+
+\section{Pseudorandom Generator}
+A pseudorandom generator is a function taking a seed as input and outputs a sequence of bits.
+More formally, it is a function $F:\bitset^k\rightarrow\bitset^n$, for $k,n \in \N$ where $k < n$ usually.
+To be secure, a pseudorandom generator must be unpredictable which informally means that given a partial sequence of bits, it is hard to guess the next bits.
+
+\section{Commitment Scheme}
+Commitment schemes are cryptographic primitives used when a party in a protocol wants to hide a value temporarily but accepts
+to be bound to this value from the beginning to the end of the protocol.
+A sender chooses a value, sends another value to the receiver related to his chosen value without revealing his initial value, i.e.
+the sender commits to his value.
+Then both the sender and receiver exchange some messages and at some point, the sender reveals some material to the received so that the receiver knows the value and can check that it is correct. 
+
+\begin{figure}[!h]
+    \setlength\fboxsep{0pt}
+    \setlength\fboxrule{0.5pt}
+    \centering
+        \[
+        \begin{array}{ccc}
+        \mbox{Sender}      &                   & \mbox{Receiver}           \\
+                           &                   &                           \\
+          X                &                   &                           \\
+     (c,k) = \commit{X;r}  & \prightarrow{c}   &       c                   \\
+                           & \prightarrow{}    &                           \\
+                           &    \vdots         &                           \\
+                           & \pleftarrow{}     &                           \\
+                           & \prightarrow{k}   &   X=\mathrm{open}(c,k)    \\
+
+        \end{array}
+        \]
+    \caption{Commitment Scheme}
+    \label{fig:commit}
+    
+\end{figure}
+
+
+The properties we want for a commitment scheme is to be hiding (when given $\commit{X;r}$, it should be impossible to recover $X$) and binding 
+(given that $c = \commit{X;r}$ it is should be impossible  $X'$ such that $\commit{X';r'} = c$).
+
+\begin{example}
+    \label{example:commitment}
+   We can build a commitment scheme using hash functions $h$. Let $\commit{X;r} = h(X||r)$ where $ \cdot || \cdot $ denotes the concatenation.
+   To open the commitment, the sender just sends $X$ and $r$. The commitment scheme is hiding
+   and binding when the hash function is collision resistant and resistant to first and second
+   preimage attacks.
+\end{example}
+
+\section{Digital Signature}
+\label{sec:signature}
+A digital signature scheme is a public-key cryptosystem that is aimed to sign messages so that the identity of the sender of the message is binded with the message.
+
+Given a security parameter $n$, a signature scheme is defined by three algorithms:
+\begin{description}
+    \item[KeyGen] An algorithm that generates the public and the secret key.\\ 
+        Let $(k_p,k_s)~\leftarrow~\mathrm{KeyGen}(1^n)$, where $k_p$ is the public and $k_s$ is the secret key.
+    \item[Sign] An algorithm to sign a message.
+        Let $\sigma \leftarrow \mathrm{Sign}(m,k_s)$, where $m$ is a message from the message space.
+    \item[Verify] An algorithm to verify a signature.
+        $\mathrm{Verify(m,\sigma,k_p)}$ outputs a bit that determines whether $(m,\sigma)$ 
+        is either valid (when the output is 1) or invalid (when the output is 0).
+\end{description}
+
+One security property one would want to have is existential unforgeability under chosen message attack.  
+This means that an adversary without the secret key should not be able to forge a valid 
+signature for any message, given that he can query some messages to an oracle some messages and get their valid, respective
+signature\footnote{the adversary cannot query the message that he wants to forge the signature of to the oracle}.
+
+More precisely, $\forall$ probabilistic polynomial-time algorithm $A$ that has access to the signing oracle and that outputs
+a valid message signature pair $(m,\sigma')$ that was not queried to the oracle, 
+\[
+\Pr{\left\{1 \leftarrow \mathrm{Verify}(m,\sigma',k_p) | (m,\sigma') \leftarrow A\right\}} \in O(n^{-k}) \quad \forall k \in \N, 
+\]
+where the probability is taken in the random choices of $A$.
+
+In classical signature scheme that were just described, anyone can verify a 
+message-signature pair without communicating with the signer. The verifier only needs to 
+know the public key.

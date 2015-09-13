@@ -1,0 +1,94 @@
+\documentclass[11pt, a4paper, twoside, openright]{report}
+\usepackage{amsmath}    
+\usepackage{graphicx}  
+\usepackage{verbatim}   
+\usepackage{color}      
+%\usepackage{subfigure}  
+\usepackage{hyperref}   
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{pstricks}
+\usepackage{pstricks-add}
+\usepackage{pst-node}
+\usepackage{enumitem}
+\usepackage{subfig}
+
+% amsthm definitions
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+
+%some new environments
+
+
+\newenvironment{prob_descr}{
+    \begin{description}[labelindent=0.5cm]
+            \setlength{\leftmargin}{1cm}
+        \setlength{\itemsep}{1pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
+}{\end{description}}
+
+
+%some new commands
+\newcommand{\bitset}{\{0,1\}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\XdX}[2]{#1/#2#1}
+\newcommand{\commit}[1]{\mathrm{Commit}(#1)}
+\newcommand{\vlongleftarrow}{\xleftarrow{\hspace*{100pt}}}
+\newcommand{\vlongrightarrow}{\xrightarrow{\hspace*{100pt}}}
+\newcommand{\slongleftarrow}{\xleftarrow{\hspace*{70pt}}}
+\newcommand{\slongrightarrow}{\xrightarrow{\hspace*{70pt}}}
+\newcommand{\pleftarrow}[1]{\overset{#1}{\vlongleftarrow}}
+\newcommand{\prightarrow}[1]{\overset{#1}{\vlongrightarrow}}
+\newcommand{\spleftarrow}[1]{\overset{#1}{\slongleftarrow}}
+\newcommand{\sprightarrow}[1]{\overset{#1}{\slongrightarrow}}
+\newcommand{\wgroup}[1]{\mathrm{#1group}}
+\newcommand{\Xgroup}{\wgroup{X}}
+\newcommand{\Ygroup}{\wgroup{Y}}
+\newcommand{\Lsig}{\mathrm{Lsig}}
+\newcommand{\Lkey}{\mathrm{Lkey}}
+\newcommand{\Icon}{\mathrm{Icon}}
+\newcommand{\Genw}[1]{\mathrm{Gen#1}}
+\newcommand{\GenK}{\Genw{K}}
+\newcommand{\GenS}{\Genw{S}}
+\newcommand{\Iden}{\mathrm{Iden}}
+\newcommand{\seedw}[1]{\mathrm{seed#1}}
+\newcommand{\seedK}{\seedw{K}}
+\newcommand{\seedS}{\seedw{S}}
+\newcommand{\Ykey}[1]{\mathrm{Ykey}_{#1}}
+\newcommand{\Xkey}[1]{\mathrm{Xkey}_{#1}}
+\newcommand{\wsig}[2]{\mathrm{#1sig}_{#2}}
+\newcommand{\Xsig}[1]{\wsig{X}{#1}}
+\newcommand{\Ysig}[1]{\wsig{Y}{#1}}
+\newcommand{\Zsig}[1]{\wsig{Z}{#1}}
+\newcommand{\legendre}[2]{\left(\frac{#1}{#2}\right)}
+\renewcommand{\hom}{\mathbf{hom}}
+
+\begin{document}
+
+\input{cover.tex}
+
+\tableofcontents
+
+\input{introduction.tex}
+\input{preliminaries.tex}
+\input{mova.tex}
+\input{application.tex}
+\input{design.tex}
+\input{conclusion.tex}
+
+\bibliographystyle{plain}
+\bibliography{bibliography}
+
+\end{document}

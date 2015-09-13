@@ -1,0 +1,57 @@
+
+\documentclass[12pt,4paper]{article}
+%\usepackage[margin=1.2in]{geometry}
+\title{University Contest Application Progress}
+\author{Sebastien Duc}
+\date{}
+
+\begin{document}
+    \maketitle
+
+    The University Contest application is an android application where students form teams to answer to quizzes from other universities and score points for their own university.
+    The application uses MOVA to sign unfilled/filled quizzes.
+    The architecture of the application will be described in this report.
+
+    \section{Architecture}
+    The application has the following architecture. It is compose of three participant: 
+    the Android application on which the students mainly fill the quizzes, the server of the first university and the opposing university.
+    
+    \subsection{The Android Application}
+    The Android application on the phone has three main activities:
+    \begin{description}
+        \item[ChallengeActivity] The activity allowing the user to fill the current quiz.
+        \item[TeamScoreActivity] The activity used to get the score of the team and the result/correction of the quizzes.
+        \item[UniversityScoreActivity] The activity allowing the user to obtain the score of all universities participating the contest.
+    \end{description}
+    The \texttt{ChallengeActivity} is the most useful activity. When starting it first checks if the phone already knows the MOVA public keys/parameters of both servers. If not it 
+    retrieves them from the respective server. Then it checks if there is an ongoing challenge already available on the phone. If not it tries to get a new one from the server of 
+    the opposing university. Then the student can fill the quiz and has to send it before a deadline. When sending the quiz, it is first sent to the respective university of the student 
+    which will sign it and send it back to the user. Then it automatically checks the signature and sends it to the opposing university which will grade it.
+
+    The \texttt{TeamScoreActivity} is an activity containing the list of all quizzes submitted by the team with the score and the responses. It also contains the cumulated score of the team.
+    This part is not implemented yet.
+
+    The \texttt{UniversityScoreActivity} is an activity containing the list of all universities participating the contest with their respective score.
+    This part is not implemented yet.
+
+    \subsection{The Servers}
+    The two servers run the same custom protocol because of the symmetry of the application. To make simple, the client can
+    \begin{itemize}
+        \item Ask for the servers MOVA public key and MOVA parameters.
+        \item Ask a new challenge (to the opposing university).
+        \item Ask for his team score with the result of all quizzes his team submitted (to the opposing university).
+        \item Ask for the score of all universities (to all servers, so by default it will ask his university server).
+        \item Ask to sign his fill quiz (to his university server).
+        \item Ask for the verification/denial of a message signed using MOVA.
+        \item Send a filled quiz so that the server signs it (to his university server).
+        \item Send a filled signed quiz so that the server grades it (to the opposing server).
+    \end{itemize}
+    The servers also communicate together to verify the signature of the filled quizzes they receive and to update the scores of the universities. 
+    
+
+    
+
+
+
+ 
+\end{document}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, EvotingActivity!</string>
+    <string name="app_name">Evoting</string>
+    <string name="no_votes">There is no vote.</string>
+    <string name="menu_delete">Delete vote</string>
+    <string name="due_to">due to:</string>
+    <string name="results">results:</string>
+    <string name="separator">/</string>
+    <string name="send">Send</string>
+    <string name="ballot">Ballot</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+</resources>

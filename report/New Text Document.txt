@@ -1,0 +1,7 @@
+(by the way, what you seem to describe  in words before the commitment created via a hash are more interactive commitment schemes or a longer protocol in which a commitment is used; 
+you should say so; or simply say that we have a commitment phase and a opening phase of the commitment)
+
+Good work! Well done! 
+
+
+

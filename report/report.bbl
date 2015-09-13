@@ -1,0 +1,67 @@
+\begin{thebibliography}{10}
+
+\bibitem{cite:android}
+Android developers, 2012.
+\newblock \url{http://developer.android.com}.
+
+\bibitem{eclipse}
+Eclipse, 2012.
+\newblock \url{http://www.eclipse.org/}.
+
+\bibitem{cite:gnu-crypto}
+Paulo Barretto, Keith Burdis, Edward Kmett, Olivier Louchart-Fletcher, Casey
+  Marshall, Raif Naffah, Mark Wielaard, and Thomas Wu.
+\newblock The gnu crypto project.
+\newblock \url{http://www.gnu.org/software/gnu-crypto/}.
+
+\bibitem{cite:chaum}
+David Chaum and Hans~Van Antwerpen.
+\newblock {Undeniable Signatures}.
+\newblock In Gilles Brassard, editor, {\em CRYPTO}, volume 435 of {\em Lecture
+  Notes in Computer Science}, pages 212--216. Springer, 1989.
+
+\bibitem{cite:thesis-monnerat}
+Jean Monnerat.
+\newblock {\em {Short undeniable signatures: design, analysis, and
+  applications}}.
+\newblock PhD thesis, EPFL, 2006.
+
+\bibitem{cite:opti-mova}
+Jean Monnerat, Yvonne~Anne Oswald, and Serge Vaudenay.
+\newblock {Optimization of the MOVA Undeniable Signature Scheme}.
+\newblock In Ed~Dawson and Serge Vaudenay, editors, {\em Mycrypt}, volume 3715
+  of {\em Lecture Notes in Computer Science}, pages 196--209. Springer, 2005.
+
+\bibitem{cite:generic-mova}
+Jean Monnerat and Serge Vaudenay.
+\newblock {Generic Homomorphic Undeniable Signatures}.
+\newblock In Pil~Joong Lee, editor, {\em ASIACRYPT}, volume 3329 of {\em
+  Lecture Notes in Computer Science}, pages 354--371. Springer, 2004.
+
+\bibitem{cite:2-move}
+Jean Monnerat and Serge Vaudenay.
+\newblock {Short 2-Move Undeniable Signatures}.
+\newblock In Phong~Q. Nguyen, editor, {\em VIETCRYPT}, volume 4341 of {\em
+  Lecture Notes in Computer Science}, pages 19--36. Springer, 2006.
+
+\bibitem{cite:mova-crypto-journal}
+Jean Monnerat and Serge Vaudenay.
+\newblock {Short Undeniable Signatures Based on Group Homomorphisms}.
+\newblock {\em J. Cryptology}, 24(3):545--587, 2011.
+
+\bibitem{cite:java}
+Oracle.
+\newblock Java doc, 2011.
+\newblock \url{http://docs.oracle.com/javase/6/docs/}.
+
+\bibitem{cite:sql}
+Oracle.
+\newblock Mysql, 2012.
+\newblock \url{http://www.mysql.com/}.
+
+\bibitem{nist:sha}
+Processing Standards.
+\newblock Secure hash standard (shs).
+\newblock {\em Processing}, FIPS PUB 1(October), 2008.
+
+\end{thebibliography}

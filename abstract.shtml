@@ -1,0 +1,57 @@
+          <table border="0" width="90%">
+            <tr>
+	        <!-- !!!!!!!!!! ENTER YOUR PROJECT TITLE !!!!!!!!!! -->
+                <td colspan="2" class="td-strong"><b>Short, Undeniable Signature for Android 2.x</b></td>
+            </tr>
+            <tr>
+                <td colspan="2" height="40">&nbsp;</td>
+            </tr>
+            <tr>
+                <td width="10%">Author:</td>
+		<!-- !!!!!!!!!! ENTER YOUR NAME HERE!!!!!!!!!! -->
+                <td>Sebastien Duc</td>
+            </tr>
+            <tr>
+                <td colspan="2" height="20">&nbsp;</td>
+            </tr>
+            <tr>
+		<!-- !!!!!!!!!! ENTER YOUR SUPERVISOR(S) HERE !!!!!!!!!! -->
+                <td>Supervisor(s):</td>
+                <td>Dr. Ioana Boureanu</td>
+            </tr>
+            <tr>
+                <td colspan="2" height="20">&nbsp;</td>
+            </tr>
+            <tr>
+                <td> Date:</td>
+		<!-- !!!!!!!!!! ENTER YOUR SEMESTER HERE !!!!!!!!!! -->
+		<!-- e.g. Winter Semester 2005-2006 -->
+		<!-- e.g. Summer Semester 2006 -->
+                <td>Spring Semester 2012</td> 
+            </tr>
+            <tr>
+                <td colspan="2" height="40">&nbsp;</td>
+            </tr>
+            <tr>
+                <td valign="top">
+                  Abstract:
+                </td> 
+                <td valign="top">
+		  <!-- !!!!!!!!!! ENTER YOUR ABSTRACT HERE !!!!!!!!!! -->
+		  <p align="justify">
+          In this project, we first studied MOVA signature scheme, a short, undeniable signature scheme. 
+          We tried to find an application for Android
+          where MOVA can bring something more that classical signature schemes. The selected application is a 
+          University Contest on mobile phones. In this application, students in universities are forming teams and
+          answer to quizzes made by the other universities. We built a threat model in this context and justified 
+          the use of MOVA. The signature are used mostly to avoid cheating. The two interesting properties of MOVA 
+          we exploited are shortess of the signature and the possibility
+          to do a batch verification. The first is very convenient in a mobile environment.
+          The second phase of this project consisted in implementing the application on Android and Java.
+          We implemented both part of the application, which are the university servers and the android clients.
+          We also implemented MOVA signature scheme.
+		  </p>
+		  
+                </td>
+              </tr>
+            </table>

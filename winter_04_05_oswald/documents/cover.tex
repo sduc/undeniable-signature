@@ -1,0 +1,40 @@
+% Exemple de page de garde pour les projets réalisés au LASEC
+% Fichier à inclure dans votre document : \input{cover}
+% Nécessite le package {epsfig}
+\newcommand{\logoepfl}[0]{\begin{center}\epsfig{file=logo_epfl_coul.eps}\end{center}\vspace{0.3cm}\hrule}
+\newcommand{\logolasec}[0]{\begin{center}\epsfig{file=logo_lasec_coul.eps, width=4.5cm}\end{center}}
+\newcommand{\project}[1]{\begin{center}\large{#1}\end{center}}
+\newcommand{\department}[1]{\begin{center}\large{#1}\end{center}}
+\newcommand{\supervisor}[4]{\begin{center}\begin{normalsize}{\bf #1}\\#2\\#4\end{normalsize}\end{center}}
+\renewcommand{\author}[1]{\begin{center}\Large{#1}\end{center}\vspace{0.5cm}}
+\renewcommand{\title}[1]{\vspace{4cm}\begin{center}\huge{#1}\end{center}\vspace{1.7cm}}
+\renewcommand{\date}[2]{\begin{center}\normalsize{#1 #2}\end{center}}
+
+\thispagestyle{empty}
+
+\logoepfl
+\title{Generic Homomorphic Undeniable Signature Scheme: Optimizations}
+\author{Yvonne Anne Oswald}
+\department{SIN}
+\project{Semester Project}
+\date{February}{2005}
+
+\vspace{0.5cm}
+
+
+\begin{center}
+\begin{tabular}{cc}
+\begin{tabular}{p{4.0cm}}
+\supervisor{Responsible}{Prof. Serge Vaudenay}{serge.vaudenay@epfl.ch}{EPFL / LASEC}
+\end{tabular}&
+\begin{tabular}{p{4.0cm}}
+\supervisor{Supervisor}{Jean Monnerat}{jean.monnerat@epfl.ch}{EPFL / LASEC}
+\end{tabular}
+\end{tabular}
+\end{center}
+
+\vspace{1cm}
+
+\hrule
+\logolasec
+

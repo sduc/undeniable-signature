@@ -1,0 +1,6 @@
+Things to do:
+
+1. Add team handler. Handle the team id and password. (Protocol to determine).
+2. In team score: do a list view and for each list item, when clicked, lauch new activity in which the corrected challenge can be seen with score.
+3. correct challenge.encoded() to handle the title attribute [String]. (done for quiz) ---- DONE -----
+4. Determine how to get securly the public key of the servers initially

@@ -1,0 +1,899 @@
+\documentclass[11pt, a4paper, twoside, openright]{report}
+\usepackage{amsmath}    
+\usepackage{graphicx}  
+\usepackage{verbatim}   
+\usepackage{color}      
+\usepackage{subfigure}  
+\usepackage{hyperref}   
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{float}
+\floatstyle{boxed} 
+\restylefloat{figure}
+\usepackage{epstopdf}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+
+\begin{document}
+\renewcommand*\thesection{\arabic{section}}
+
+\input{cover.tex}
+
+\cleardoublepage
+
+
+\tableofcontents
+
+\clearpage
+
+\section{Introduction and Motivation}
+
+	The goal of this project is to study and construct cryptographic primitives in a primeless manner, 
+	i.e. without generating prime numbers. 
+	
+	The motivation for this approach is to reduce the asymptotic complexity of a primitive that is, 
+	in many cases, dominated by the generation of prime numbers. For example, the RSA cryptosystem 
+	has a complexity of $O(l^4)$ for the setup phase, for generating two different prime numbers 
+	$p$ and $q$. The encryption and decryption processes take only $O(l^3)$. 
+	
+	Although we are working with random numbers $n$, we study the problem of how big should be 
+	the size of $n$ as we want to maintain the factorization problem hard.  
+
+	The report is organized as follows: \textbf{Background} section introduces the definition of a 
+	\textit{character} and presents the computational problems related to it. Based on generation
+	of random numbers and on the properties of a character we propose in this report a scheme 
+	of key agreement and an encryption scheme in section \textbf{New Proposal}. Another probabilistic scheme
+	was introduced in \cite{p}, but we prove, in section \textbf{Probabilistic Encryption
+	Scheme}, that it is insecure. \textbf{Conclusions} ends the report with some final remarks and 
+	future work.  
+	
+\clearpage
+
+\section{Background}
+ 	In this section, we firstly introduce the definition of a \textit{character} and present the properties for characters 
+ 	of order 2 and 4. Secondly, we summarise the computational problems related to our work. 
+ 	For details, see \cite{book1} and  \cite{mova}. 
+ 	
+ 	\begin{definition}
+ 	Let $G$ be an Abelian group. A character $\chi$ is a group homomorphism from $(G,+)$ to $(\mathbb{C} \backslash \{ 0 \})$, i.e. a function
+ 	$\chi : G \rightarrow \mathbb{C} \backslash \{ 0 \}$ such that \\
+ 	
+ 	\hspace{30mm}  $\chi(a+b)= \chi(a) \cdot \chi(b)$, $\forall a,b \in G$.
+ 	\end{definition} 
+ 	
+ 	From the definition we can deduce that: 
+ 	
+ 	\begin{enumerate}
+ 		
+ 		\item $\chi(0)=1$.
+ 		\item $\chi(a)$ is the $\lambda(G)$th root of the unity, where $\lambda(G)$ is the group exponent of $G$.
+ 		\item $\forall a \in G$, $\chi(-a)= \chi(a)^{-1}$.  
+ 	\end{enumerate}
+ 	
+ 		Using these properties, it is possible to define a group structure over the set of all characters on $G$. The product 
+ 	 	$\chi_1 \chi_2$ of two characters $\chi_1$ and $\chi_2$ is defined as:
+ 	
+ 	\hspace{30mm}  $\chi_1 \chi_2(a) = \chi_1(a) \cdot \chi_2(a)$, $\forall a \in G$. 
+ 	
+ 	The inverse $\chi^{-1}$ is defined by:
+ 	
+ 	\hspace{30mm} $\chi^{-1}= \chi(a)^{-1}$, $\forall a \in G$.
+ 	
+ 	Each character will have an order in this group. Here we focus on characters of order 2 and 4. 
+ 	
+ 	\subsection{Characters of order 2}
+ 	
+ 		Let $\varepsilon$ be the trivial character where $\varepsilon(a)=1$, $\forall a \in \mathbb{Z}_p^*$.
+ 		Let $p \in \mathbb{Z}$ be an odd prime. The only two characters for which $\chi^2= \varepsilon$ are: Legendre symbol, $(\frac{a}{p})$,  and $\varepsilon$. 
+ 		
+ 		
+ 		We have the following properties for the Legendre symbol: 
+ 		
+ 		\begin{proposition}
+ 		Let $p,q$ be odd primes and $a,b \in \mathbb{Z}$. Then:
+ 		\begin{enumerate}
+ 			
+ 			\item $a^{(p-1)/2} = (\frac{a}{p}) \pmod{p}$.
+ 			\item $(\frac{ab}{p})= (\frac{a}{p}) \cdot (\frac{b}{p})$.
+ 			\item If $a \equiv b \pmod{p}$, then $(\frac{a}{p}) = (\frac{b}{p})$.
+ 			\item (Law of Quadratic Reciprocity) $(\frac{p}{q}) (\frac{q}{p})$ = $(-1)^{((p-1)/2)((q-1)/2)}$.
+  
+ 		\end{enumerate}
+ 		\end{proposition}
+ 		
+ 			The Jacobi symbol is an extension of the Legendre symbol that is defined for any odd integer $n$:
+ 		 		
+ 		\hspace{30mm} $(\frac{a}{n}) = (\frac{a}{p_1})^{e_1} (\frac{a}{p_2})^{e_2} \cdots (\frac{a}{p_i})^{e_i} $, 
+ 		 		
+ 		\bigskip
+ 		 		
+ 		\noindent where $gcd(a,n)=1$ and $n= p_1^{e_1}p_2^{e_2} \cdots p_i^{e_i}$. 
+ 		
+ 		For the particular case when $n= p\cdot q$ with $p$ and $q$ two different odd primes, we have a list of four characters,
+ 		 solutions of $\chi^2= \varepsilon$, in $\mathbb{Z}_n^*:$ $\varepsilon$, $(\frac{.}{n})$, $(\frac{.}{p})$ and $(\frac{.}{q})$. 
+
+ 	\subsection{Characters of order 4}
+ 		
+ 		Characters of order 4 are defined on the ring of Gaussian integers, the set $\mathbb{Z}[i]= \{ a + bi$  $|$  $a,b \in \mathbb{Z}, i^2=-1 \}$
+ 		with the classical operations defined on complex numbers.
+ 		
+ 		For $\alpha \in  \mathbb{Z}[i]$, with $\alpha = a + bi $, we define the norm of $\alpha$ as $N(\alpha)= \alpha \cdot \bar{\alpha} = a^2 + b^2$,
+ 		where $\bar{\alpha} = a - bi$ is the conjugate of $\alpha$. The units of $\mathbb{Z}[i]$ are $1$, $-1$, $i$ and $-i$.
+ 		
+ 		
+ 		\begin{proposition}
+ 			
+ 			The following statements describe all primes of $\mathbb{Z}[i]$ (up to a unit).
+ 		
+ 		\begin{enumerate}
+ 		\item An element $\alpha \in \mathbb{Z}[i]$ with $N(\alpha)$ equal to a prime $p$ of $\mathbb{Z}$ such that $p \equiv 1 \pmod{4}$.  
+ 		Conversely, let $p \in \mathbb{Z}$ be a prime such that $p \equiv 1 \pmod{4}$. There exists a prime $\alpha \in \mathbb{Z}[i]$ satisfying
+ 		\begin{equation*}
+ 		N(\alpha) = \alpha \bar{\alpha} = p.
+ 		\end{equation*}
+ 		\item An element $\alpha = p \in \mathbb{Z}$ such that $p$ is a prime of $\mathbb{Z}$ and $p \equiv 3 \pmod{4}$.
+ 		\item $1 + i$ and its conjugate, $1-i$, are prime and $N(1 + i) = N(1-i) = 2$.
+ 		\end{enumerate}
+ 		\end{proposition}
+ 		
+ 			Given a prime $p \in \mathbb{Z}$, where $p \equiv 1 \pmod{4}$, we can apply the Cornacchia and Tonneli algorithms to find the prime 
+ 		 		$\alpha$ of $\mathbb{Z}[i]$ with $N(\alpha)=p$. For more details, see \cite{cohen}.
+ 		
+ 		In order to define the extension of the Jacobi symbol for characters of order 4 we need the following result:
+ 		
+ 		\begin{proposition}
+ 		Let $\alpha$ be a prime of $\mathbb{Z}[i]$. Then, $\mathbb{Z}[i]/\alpha\mathbb{Z}[i]$ is a finite field with
+ 		$N(\alpha)$ elements.
+ 		\end{proposition}
+ 		
+ 		\subsubsection{Quartic Residue Symbol}
+ 		
+ 			\begin{definition}
+ 				Let $\alpha,\beta \in \mathbb{Z}[{i}]$ be such that $(1+i) \nmid \beta$. Values $\beta$ and $\alpha$ are relatively prime.  
+ 				The quartic residue symbol is defined as $ 
+ 				 \mathbf{\chi}_{\beta} : \mathbb{Z}[{i}] \to \{\pm 1, \pm i\}$ 
+ 				\begin{itemize}
+ 					\item for $\beta$ prime in $\mathbb{Z}[i]$, $\chi_{\beta}(\alpha)$ is the only element of $\{\pm 1, \pm i\}$ such that 
+ 					$\chi_{\beta}(\alpha)= (\alpha^{\frac{N(\beta)-1}{4}}\big)\bmod \beta$.
+ 					\item for $\beta = \prod _ {i} \beta _{i},$ where $\beta_{i}$ is prime in $\mathbb{Z}[i]$, $\chi_{\beta}(\alpha)= \prod_i{\chi_{\beta _{i}}(\alpha)}$. 
+ 				\end{itemize} 
+ 				  
+ 			\end{definition}
+ 			
+ 			From the definition it can be seen that for $\beta$ prime in $\mathbb{Z}[i]$, $\chi_{\beta}(\alpha) =1$ 
+ 			iff $\alpha \equiv z^4 \pmod{\beta}$ has a solution in $\mathbb{Z}[i]^*$.
+ 			
+ 			Notice that for $\beta \in \mathbb{Z}$, for any $\alpha \in \mathbb{Z}$, $\chi_{\beta}(\alpha) = (\frac{\alpha}{\beta})$. 
+ 			
+ 			We introduce the notion of primary element as it is useful in presenting properties of the quartic residue symbol:
+ 			
+ 			\begin{definition}
+ 				A nonunit $\alpha \in \mathbb{Z}[i]$ is primary if $\alpha \equiv 1 \pmod{(1+i)^3}$. Writing $\alpha$ as
+ 				$a + bi$, the above congruence is equivalent to 
+ 				
+ 				\hspace{30mm} $a \equiv 1 \pmod{4}$, $b \equiv 0 \pmod{4}$ or  
+ 				
+ 				\hspace{30mm} $a \equiv 3 \pmod{4}$, $b \equiv 2 \pmod{4}$.  				
+ 			\end{definition}
+ 		
+ 			
+ 			\begin{proposition}
+ 				For any $\alpha \in \mathbb{Z}[i]$ there is a unique representation of the form 
+ 				$i^j \cdot (1+i)^k \cdot \alpha'$, with $\alpha' \in \mathbb{Z}[i]$ primary and $k \in \mathbb{Z}$, $j \in \{ 0,1,2,3\}$.
+ 			\end{proposition}
+ 			
+ 			The quartic residue symbol satisfies the following properties: 
+ 			
+ 			\begin{proposition}
+ 				Let $\alpha,\beta \in \mathbb{Z}[{i}]$ be such that $(1+i) \nmid \beta$, with $\beta$, $\alpha$ and $\alpha'$ relatively prime.
+ 				\begin{enumerate}
+ 					
+ 					\item (Multiplicativity) $\chi_{\beta}(\alpha \alpha') = \chi_{\beta}(\alpha) \cdot \chi_{\beta}(\alpha')$.
+ 					\item (Modularity) If $\alpha \equiv \alpha' \pmod{\beta}$, $\chi_{\beta}(\alpha) = \chi_{\beta}(\alpha')$.
+ 					\item If $\beta' = \beta \cdot i^k$ with $k \in \mathbb{Z}$, $\chi_{\beta}(\alpha)= \chi_{\beta'}(\alpha)$.
+ 					\item (Quartic Reciprocity Law) If $\alpha, \beta$ are primary, 
+ 						
+ 						\hspace{30mm} $\chi_{\beta}(\alpha) = \chi_{\alpha}(\beta) \cdot (-1)^{\frac{N(\alpha)-1}{4} \cdot \frac{N(\beta)-1}{4}}$.
+ 					\item (Complementary Laws) If $\beta = a + bi$ is primary,
+ 					
+ 						\hspace{30mm} $\chi_{\beta}(i)= i^{\frac{N(\beta)-1}{2}}$,  $\chi_{\beta}(1+i) = i^{\frac{a-b-b^2-1}{4}}$.
+ 						
+ 				\end{enumerate}
+ 				
+ 			\end{proposition}
+ 			
+ 			
+ 				One way to compute the quartic residue symbol, $\chi_{\beta}(\alpha)$, is by using the definition but this  requires the
+ 			 			knowledge of the prime factorization of $\beta$. In some cases (e.g., if it is not easy to  factor $\beta$), it is more efficient   to apply iteratively the properties of the quartic residue symbol as shown in Algorithm \ref{alg1}. 
+ 			
+ 			\begin{algorithm}[ht] 
+ 			 \caption{Basic Algorithm Quartic Residuosity in $\mathbb{Z}[{i}]$} 
+ 			 \label{alg1} 
+ 			 \begin{algorithmic} 
+ 			 \STATE
+ 			 \textbf{Input:} $\alpha,\beta \in \mathbb{Z}[{i}] \setminus \{0\}$, $\gcd(\alpha,\beta)=1$ 
+ 			 and $(1 + i) \nmid \beta$\\ 
+ 			 \textbf{Output:} $c = \chi_{\beta}(\alpha)~~(c=0 \Leftrightarrow \chi_{\beta}(\alpha)$ is not defined$)$  \\
+ 			 
+ 			 \bigskip
+ 			 
+ 			 \STATE $\alpha \gets \alpha \bmod \beta~$ 
+ 			 \STATE $\mathbf{if} ~\alpha = 0 \mathbf{~~then~}~c=0$ 
+ 			 \STATE let primary $\alpha_1, \beta_1 \in \mathbb{Z}[{i}]$ be defined by\newline 
+ 			     $\alpha = (i)^{i_1} \cdot (1 + i)^{j_1}\cdot \alpha_1$ and\newline 
+ 			     $ \beta = (i)^{i_2} \cdot \beta_1$ 
+ 			 \STATE let $m, n \in \mathbb{Z}$ be defined by $\beta_1 = m + ni$ 
+ 			 \STATE $t\gets {\frac{m-n-n^{2}-1}{4}} {j_1}  +  {\frac{m^{2}+ n^{2} - 1}{4}}{i_1} \bmod 4$ 
+ 			 \STATE replace $\alpha$ with $\beta_1, ~\beta$ with $\alpha_1$ 
+ 			 \STATE $t \gets t +  \frac{(N(\alpha)-1)(N(\beta)-1)}{8}\bmod 4$ 
+ 			 \WHILE{$N(\alpha) > 1$} 
+ 			 \STATE $($LOOP INVARIANT: $\alpha, \beta$ are primary$)$ 
+ 			 \STATE let primary $\alpha_1$ be defined by $\alpha \bmod \beta = (i)^{i_1}\cdot (1 + i)^{j_1}\cdot \alpha_1$ 
+ 			 \STATE let $m, n \in \mathbb{Z}$ be defined by $\beta = m + ni$ 
+ 			 \STATE $t\gets t + {\frac{m-n-n^{2}-1}{4}} {j_1}  +  {\frac{m^{2}+ n^{2} - 1}{4}}{i_1} \bmod 4$ 
+ 			 \STATE replace $\alpha$ with $\beta, \beta$ with $\alpha_1$ 
+ 			 \STATE $t \gets t +  \frac{(N(\alpha)-1)(N(\beta)-1)}{8}\bmod 4$ 
+ 			 \ENDWHILE 
+ 			 \STATE $\mathbf{if} { ~N(\alpha) \ne 1 }  \mathbf{~~then~}~c \gets 0~\mathbf{~else~~} c \gets i^t $ 
+ 			 
+ 			 \end{algorithmic} 
+ 			 \end{algorithm} 
+ 			
+ 			
+ 			
+ 		   The first step of this algorithm is to use the modularity property and reduce $\alpha$ to 
+ 		an element $\alpha'$ equivalent to $\alpha \pmod{\beta}$. 
+ 		Then, using Proposition 4, $\alpha$ and $\beta$ are replaced with primary elements 
+ 		$\alpha_1$ and $\beta_1$. This is done in order to be able to apply iteratively the Quartic Reciprocity Law
+ 		and the modularity property in a loop. The size of $\alpha$ and $\beta$ decrease with each iteration of the 
+ 		loop and the algorithm stops when $\alpha$ becomes a unit. 	The algorithm will output $\chi_{\beta}(\alpha)= i^t$. The value $t$ is initialized with 0 and it is updated 	each time the Complementary or the Quartic Reciprocity Laws are used.  
+ 		
+ 		
+ 	\subsection{Characters of other orders}
+ 	
+ 		Let $\omega$ denote $\frac{-1+i\sqrt{3}}{2}$. It is the case that $\omega^2 + \omega+1=0$. Characters of order 3 
+ 	 	are defined on the ring of Eisenstein integers, the set $\mathbb{Z}[\omega]= \{ a +b\omega$ $|$ $a,b \in \mathbb{Z} \}$.
+ 	 	The Jacobi symbol can be extended for characters of order 3, similar to how it was defined for characters of order 4. 
+ 	 	Symbols of higher orders, possible when using integers of a cyclotomic field, are beyond the scope 
+ 	 	of this report.
+ 	
+ 	\subsection{Related Computational Problems}	
+ 		
+ 		The security of the schemes presented in the following sections is based on the following problems: 
+ 		
+ 		\textbf{Factorization.} Given $n \in \mathbb{Z}$, find the prime factorization of $n$.
+ 		
+ 			Let a \textit{hard character} of order $d$ on $\mathbb{Z}_n^*$ denote a non-trivial character and, for $d=2$,   a character  other than  the Jacobi symbol $(\frac{.}{n})$. 
+ 			
+ 		 		\textbf{MOVA$^d$}. Let $n \in \mathbb{Z}$, $t$ be a positive integer and $\chi$ be a \textit{hard character} of order 
+ 		 		$d$ on $\mathbb{Z}_n^*$. Given $t$ pairs of the form $(x_i, \chi(x_i))$, with $1 \leq i \leq t$, and given $x \in \mathbb{Z}_n^*$, 	compute $\chi(x)$. 
+  		 
+		Depending on the value $t$ of pairs used in an instance of a \textbf{MOVA$^d$} problem, there may be one or more characters that interpolate
+		 the $t$ pairs $(x_i, \chi(x_i))$. The uniqueness of the character is given by the following theorem: 
+
+		\begin{theorem}
+			Let $G$ and $H$ be two finite Abelian groups. We denote by $d$ the order of $H$. Let $x_1, x_2, \ldots, x_s \in G$
+			which span $G'$. The following properties are equivalent. In this case, we say that  $x_1, x_2, \ldots, x_s$ $H$-generate
+			$G$. 
+			\begin{itemize}
+				\item For all $y_1, y_2, \ldots, y_s \in H$, there exists at most one group homomorphism $Hom : G \rightarrow H$
+					such that $Hom(x_i) = y_i$ for all $1 \leq i \leq s$.
+				\item $G' + dG = G$.
+			\end{itemize}
+		\end{theorem} 
+
+		\begin{proposition}
+	 		For d=2 or d=4 we have the following Karp reduction:
+	 			
+	 		\hspace{30mm} 	MOVA$^d$ $\leq$ Factorization.	
+ 		\end{proposition}
+ 		
+ 		Since solving an instance of the factorization problem  would lead easily to a solution of the
+ 	 		corresponding MOVA instance, we need to make sure that the instance of the factorization problem issued 
+ 	 		by our scheme is hard. 
+ 	 		
+ 		
+
+ 			It is well known that for the particular case when $n = p \cdot q$, with $p,q$ safe prime numbers, the factorization 
+ 	 		problem is hard. As the aim of our study is to construct cryptographic primitives without generating prime numbers, but by using randomly selected number, we must study the factorization  problem in this context. 
+ 	 		
+ 	 		For $n$ positive we write its unique prime decomposition as: 
+ 	 		 		
+ 	 		 	\hspace{30mm} $n = n_1 n_2 \cdots n_k$, with $n_1 \geq n_2 \ldots \geq n_k$.  
+ 	 		 		
+ 	 		 	\bigskip
+ 		
+ 			The authors of \cite{fact} give theoretical results on the probability that, for a random number
+ 			$n$, the $k^{th}$ largest of its prime factors, $n_k$, is smaller than $n^x$ where $0 < x < 1$. This is expressed by 
+ 		
+
+		\hspace{30 mm}  $F_k(x) = \lim_{N \to +\infty} \frac{P_k(x,N)}{N}$, 
+
+		\noindent where $P_k(x,N)$ is the following function
+
+		\hspace{30mm} $P_k(x,N)= \# \{ 1 \leq n \leq N | n_k \leq N^x\}$. 
+
+ 
+        Table 1  in \cite{thesis}  illustrates some figures for finding the largest and second largest factor of a  		random number $n$.            
+                                               
+ 		
+ 		\begin{table}
+ 		\begin{center}
+ 		
+ 		\begin{tabular}{ | c | c | c |}
+ 		
+ 		\hline
+ 		Prob. $p$  & $F_1^{-1}(p)$ & $F_2^{-1}(p)$ \\
+ 		\hline
+ 		0.01 & $0.26974$ & $0.00558$ \\
+ 		\hline
+ 		0.02 &  $0.29341$& $0.0111$ \\
+ 		\hline
+ 		0.10 & $0.37851$ & $0.05308$ \\
+ 		\hline 
+ 		0.50 & $0.606$ & $0.21172$ \\
+ 		\hline
+ 		0.90 & $0.90484$ & $0.35899$ \\
+ 		\hline
+ 		
+ 		\end{tabular}
+ 		\label{res}
+ 		\caption{Distribution size for the largest two prime factors}  
+ 		\end{center}
+ 		\end{table}
+ 		
+
+ 		
+ 	
+	  	It follows from \cite{thesis} that in order to maintain the factorization hard for a number $n$ picked at random, it is necessary to have the following inequality: 
+	
+	  
+	   \begin{equation} 
+	   \label{eqsecn}
+		 \frac{C_{ECM}(x \cdot l)}{F_2(x)} \geq C_{GNFS}(L')
+	   \end{equation}
+	
+		\noindent where $|n|=l$, $C_{ECM}(\lambda)$ denotes the complexity of the elliptic curve method to find a factor of length $\lambda$
+		and $C_{GNFS}(\lambda)$ is the complexity of general number field sieve to factor an integer of length $\lambda$.  
+	
+			The inequality $(1)$ denotes the following. To have good security guarantees on factoring a randomly picked number $n$, the complexity of finding with ECM a factor of size $x \cdot l$, taking into account the 
+				probability of having the second largest factor smaller than $n^x$, needs to stay close to the complexity of factoring a number of size $L'$ bits. For instance, it is plausible to consider the factorization of $n$ to be hard if the inequality holds for $L' = 1024$, e.g. a 1024 	bits RSA modulus.
+
+		However, in the second  scheme presented in this report,  we do not take $n$ as a random number. Instead, $n$ is taken as a finite product of random numbers: 
+
+		\hspace{20mm} $n= p_1 p_2 \cdots p_k$, with $|p_i| =l$ for all $1 \leq i \leq k$, $|n| = k \cdot l$. 
+
+		The description of security guarantees in this case is given by the following modification of $(1)$:
+
+		\hspace{30mm} $min_{0 < x < 1}(C_{ECM}(x \cdot l), F_2(x)^{-k}) \geq C_{GNFS}(L')$.
+		
+		A sufficient condition for that consists of taking $x, y$ such that 
+		
+		$min [F_2(x)^{-k}, min_{x \leq u \leq y} \frac{C_{ECM}(ul)}{F_2(u)^k}, C_{ECM}(yl)]$ $\geq C_{GNFS}(L')$. 
+		
+		\bigskip
+		
+		For $x=y$ given, we can take $l$ and $k$ depending on $L'$ such that 
+
+		\hspace{30mm} $C_{ECM}(x \cdot l) = F_2(x)^{-k} = C_{GNFS}(L')$. 
+
+
+		With different values for $x$ we obtain an approximation for $l$ and $k$ that are illustrated in Table 2. 
+
+	  	\begin{table}
+ 		\begin{center}
+ 		
+ 		\begin{tabular}{ | c | c | c | c | c |}
+ 		
+ 		\hline
+ 		  $x$  & $F_2(x)$ & $l$ & $k$ & $|n| = k \cdot l$ \\
+ 		\hline
+ 		0.21172 & 0.5 &  1$\,$276 & 45 &  57\,420 \\
+ 		\hline
+ 		0.01110 & 0.02 & 24\,500& 8  & 196\,000 \\
+ 		\hline
+ 		0.40681 & 0.96 & 660 & 750 & 495\,000 \\
+ 		\hline 
+ 		
+ 		\end{tabular}
+ 		\label{table2}
+ 		\caption{Required size of $n$ for $L'= 1024$}  
+ 		\end{center}
+ 		\end{table}
+ 		
+
+		The primeless solution that we use, $n = p_1 p_2 \ldots p_k$ with $|p_i| =l$, requires to have a number $n$ of hundreds of thousands of bits. 
+ 		
+ 		
+ \clearpage	
+
+\section{Probabilistic Encryption Scheme}
+
+	The scheme illustrated by Algorithm \ref{keygen}, Algorithm \ref{enc} and Algorithm \ref{dec} is a probabilistic
+	encryption scheme, introduced in \cite{p}.
+    Based on the properties of the quartic residue 
+	symbol, the sender is encrypting a bit $b$ with the public key and 
+	the receiver is able to decrypt it using its secret key. We analyse here the security of this scheme.
+
+	
+	
+	\begin{algorithm}
+	\caption{Key generation}
+	\label{keygen}
+	\begin{algorithmic}
+	 \STATE \textbf{Input:} Security parameter $s$. \\
+	 \textbf{Output:} Public key: $(n, p)$;  Private key: $\gamma$.
+	 
+	\bigskip
+	 
+	\STATE	\quad 1. Select a big $\gamma \in \mathbb{Z}[i],$ $i.e.$ $\gamma = a' + b'i$, where $a', b' \in \mathbb{Z}$ and
+	the size of $a', b'$ depends on the security parameter $s$ . \\
+	\STATE \quad 2. Compute $n =\gamma \bar{\gamma}$ ($n \in \mathbb{Z}$). \\
+	\STATE \quad 3. Pick a $p \in \mathbb{Z}$ such that  $ \chi_{\gamma} (p) = i $. \\
+	\end{algorithmic}
+	\end{algorithm}
+	
+	
+    \begin{algorithm}
+	\caption{Encryption}
+	\label{enc}
+	\begin{algorithmic}
+	\STATE \textbf{Input:} a bit $b$. \\
+		 \textbf{Output:} the encryption $c$, $c  \in \mathbb{Z}_n$.  \\
+		 \textbf{Public key:} $(n,p)$.
+		 
+		 
+	\bigskip
+		 
+	\STATE
+	\quad  1. Pick an $a \in \mathbb{Z}$ such that \textbf{if} $b =0$ \textbf{then} $a \equiv 1 \pmod{4}$
+	\textbf{else}  $a \equiv 3 \pmod{4}$. \\
+    \quad 2. $c \equiv p^a \pmod{n}$. \\ 
+	\end{algorithmic}
+	\end{algorithm}
+	
+	
+	
+	\begin{algorithm}
+	\caption{Decryption}
+	\label{dec}
+	\begin{algorithmic}
+	
+	\STATE \textbf{Input:} the encryption $c$, $c \in \mathbb{Z}_n$. \\
+			 \textbf{Output:} a bit $b$. \\
+			 \textbf{Secret key:} $\gamma$.
+			 
+	\bigskip
+		
+		
+	\STATE \quad  1. Compute the quartic residue symbol $ \chi_{\gamma} (c)$  using Algorithm \ref{alg1}. \\   
+	\quad   2. \textbf{if} $\chi_{\gamma} (c) =i$ \textbf{then} $b = 0$  \textbf{else} {$b = 1$\;}.\\
+	\end{algorithmic}
+	\end{algorithm}
+	
+
+ 	\bigskip
+ 	
+	\subsection{Correctness}
+	
+		Given this probabilistic scheme, first we need to prove its correctness.
+		We formalize that as follows.By running the 
+		experiment $Exp^{correct}(s)$ (see Figure \ref{fig1}), 
+		
+		\hspace{30 mm} $Prob [ Exp^{correct}(s) \rightarrow 1]$  is 1.
+		
+		\begin{figure}[h!]
+	
+		    $\hspace{50 mm}$ \textbf{Experiment $Exp^{correct}(s)$:}  \\
+		    
+		    $\hspace{40 mm}$  $((n,p),\gamma)$ $\leftarrow$  Key Generation($1^s$)  
+		    
+		    $\hspace{40 mm}$ $b$ $\leftarrow_U$ $\{0,1\}$   
+		    
+		    $\hspace{40 mm}$  $c$ $\leftarrow$ Encryption($(n,p),b$)  
+		    
+		    $\hspace{40 mm}$ $b'$ $\leftarrow$ Decryption($\gamma,c$)  
+		    
+		    $\hspace{40 mm}$ Return ($b = b'$)  
+		    
+	    	
+	    \caption{Experiment defining the correctness of the probabilistic scheme.}
+		\label{fig1}
+		\end{figure}
+		
+		For this we can reuse a lemma from \cite{p}: 
+		\begin{lemma} \cite{p}
+		 	$\chi_{\gamma}(c) = i^a$, where $c \equiv p^a \pmod{n}$ and $(n,p)$ is the public 
+		 	key computed by Algorithm \ref{keygen}. 	
+		\end{lemma}
+		\begin{proof}
+			We have $c \equiv p^a \pmod{n}$ $\Rightarrow$
+			
+			\hspace{15mm} $n | c - p^a $, where $n =\gamma \bar{\gamma}$ $\Rightarrow$
+			
+			\hspace{15mm} $\gamma | c - p^a $ $\Rightarrow$ 	$c \equiv p^a  \pmod{\gamma} $  $(1)$
+			
+			Using the congruence $(1)$, from the definition of a character and the way $p$ is picked, we obtain that 
+			
+			\begin{center}
+			$\chi_{\gamma}(c) = \chi_{\gamma}(p^a) = \chi_{\gamma}(p)^a =  i^a$
+			\end{center}	 
+			
+		\end{proof}
+		
+		Running the experiment $Exp^{correct}(s)$, a private key $\gamma$ and a public key $(n,p)$ are computed. 
+		The bit $b$, chosen randomly, is encrypted as
+		$c \equiv p^a \pmod{n} $, where $a$ is picked according to the value of $b$. Using Lemma 1, we have that $\chi_{\gamma}(c) = i^a$. 
+		If $a \equiv 1 \pmod{4} $, then $\chi_{\gamma}(c_i) = i$ and $\chi_{\gamma}(c_i) = -i$ for  $a \equiv 3 \pmod{4} $. 
+		
+		From the way $a$ is chosen in Algorithm \ref{enc} and provided that the receiver of the encrypted message knows the value of
+		$\gamma$, with probability 1 the bit $b$ is revealed correctly at the decryption process. Thus, $Prob [ Exp^{correct}(s) \rightarrow 1]$ 
+		is 1 and the scheme is correct. 
+		
+		
+	\subsection{Security}
+	
+		In this subsection we present an algorithm which proves that the probabilistic encryption scheme illustrated above is not secure. 
+		A passive adversary $\mathcal{A}$ that runs Algorithm \ref{break} is able to decrypt the values $c$ that he intercepts with a 
+		non-negligible probability.   
+		
+		Notice that $\mathcal{A}$ does not know the value of $\gamma$ and that only with $n$ he cannot learn any information about an 
+		encrypted bit $c$ by computing $\chi_n(c)$ (For $\chi_n(p) = -1$, we have $\chi_n(c)= \chi_n(p)^a = (-1)^a = -1$.
+		 The same reasoning can be applied for $\chi_n(p)=1$. ). 
+		 
+		But we can see that if $n$ has a gaussian factor $\gamma' \in \mathbb{Z}[i]$ ( $i.e.$ $\gamma' | n$) and
+		$\chi_{\gamma'}(p) = \pm i$, then $\mathcal{A}$ is able to decrypt any message encrypted with 
+		the key $(n,p)$. Indeed, if $\chi_{\gamma'}(p) = \pm i$, Lemma 1 is valid for $\gamma'$. $\mathcal{A}$ can 
+		apply the same algorithm of decryption as the one described in Algorithm \ref{dec} for $\chi_{\gamma'}(p) = i$,
+		where for $\chi_{\gamma'}(p) = -i$ he changes the condition from \textbf{if} $\chi_{\gamma} (c) =i$ to  \textbf{if} $\chi_{\gamma} (c) = -i$. 
+		The number $\gamma'$ can be considered an \textit{equivalent} key to $\gamma$.
+		
+		Based on this value $\gamma'$, we introduce Algorithm \ref{break}, illustrated below.
+		
+	    \begin{algorithm}
+	    \caption{Breaking the scheme}
+	    	    	\label{break}
+	    	    	\begin{algorithmic}
+	    	    	\STATE \textbf{Input:} the encrypted bit $c$, $c \in \mathbb{Z}_n$. \\
+	    	    			 \textbf{Output:} a bit $b$.\\
+	    	    			 \textbf{Public key:} $(n,p)$.
+	    	    	\bigskip
+	    	    	
+	    	    	\STATE 
+	    	    	\quad  1. Find 2 small factors of $n$, $f_1, f_2 \in \mathbb{Z}$, such that $f_j \equiv 1 \pmod{4}$ for $1 \leq j \leq 2$. (See details below) \\
+	    	        \quad 2. For $f_1$ and $f_2$ run \textit{Cornacchia} and \textit{Tonelli} algorithms to find  \\
+	    	        \quad \quad $\gamma_{j} \in \mathbb{Z}[i]$ such that $\gamma_{j} \cdot \bar{\gamma_{j}} = f_j$, for  $1 \leq j \leq 2$. \\
+	    	         \quad 3. \textbf{if} $\chi_{\gamma_{j}} (p) =i$ or $\chi_{\gamma_{j}} (p) = -i$ \textbf{then} decrypt the value $c$ using the following rules:  \\
+	    	         \quad \quad for $\chi_{\gamma_{j}} (p) =i$:  \textbf{if} $\chi_{\gamma_{j}} (c) =i$ \textbf{then} $b=0$ \textbf{else} $b=1$ \\
+	    	         \quad \quad for $\chi_{\gamma_{j}} (p) = -i$:  \textbf{if} $\chi_{\gamma_{j}} (c) = -i$ \textbf{then} $b=0$ \textbf{else} $b=1$ \\ 
+	    	         \quad \quad \textbf{otherwise} abort.
+	    	    	\end{algorithmic}
+	    	    	\end{algorithm}
+	    
+	    
+	    
+	    
+	    
+	     
+		In this algorithm, $\mathcal{A}$ tries to find two small prime factors 
+		of $n$ by running a factorization algorithm, the complexity of which depends on the size of the smallest factor
+		found, e.g., elliptic curve factorization. These factors can be of the form $ f \equiv 1 \pmod{4} $ or
+		$ f \equiv 3 \pmod{4} $. As the quartic residue symbol is defined for any number
+		$\alpha \in \{ \alpha' \in \mathbb{Z}[i]$ $ | $ $ 1+i \not | \alpha' \} $, 
+		then the value $n$ in Algorithm \ref{break} is odd so it does not have a 
+		power of 2 as factor. Also, recall that $n = a'^2 + b'^2$, $a', b' \in \mathbb{Z}$, therefore we can use the following characterization of it: 
+		
+		\begin{theorem}
+		A positive integer n is a sum of two squares iff n is of the form $c \cdot d^2$ where c has no prime factor 
+		$f \equiv 3 \pmod{4} $. 
+		\end{theorem}
+		
+		From the characterization of the primes in $\mathbb{Z}[i]$, we know that given a prime $ f \equiv 1 \pmod{4} $, there exists a prime 
+		$\gamma \in \mathbb{Z}[i] $ such that $f =\gamma \bar{\gamma}$ and this value can be found with
+		 the Cornacchia and Tonneli algorithms. This number $\gamma$ could be a good candidate for an equivalent key. 
+		
+		We have that $\chi_f(p) = \chi_{\gamma}(p) \cdot \chi_{\bar{\gamma}}(p)$. Since $f,p \in \mathbb{Z}$, $\mathcal{A}$ knows that $\chi_f(p)= \pm 1$
+		and with probability $\frac{1}{2}$, $\chi_{\gamma}(p)$ and $\chi_{\bar{\gamma}}(p)$ are $\pm i$. Thus, $\mathcal{A}$ needs 2 small 
+		factors of the form $ f \equiv 1 \pmod{4} $ in order to be sure that he finds, with probability $\frac{3}{4}$, an equivalent key $\gamma'$ such that 
+		$\gamma' | n$ and $\chi_{\gamma'}(p) = \pm i$ . 
+		
+		Prime factors of the form $ f \equiv 3 \pmod{4} $ are also primes in $\mathbb{Z}[i]$ and they cannot be further used to find 
+		$\gamma$ with $\gamma \bar{\gamma} = f^{2k}$, $k \in \mathbb{Z}$, since $\mathbb{Z}[i]$ is a unique factorization domain. 
+		
+		
+		If we analyse the complexity of Algorithm \ref{break}, we can see that the most costly operations are the 
+		factorization and the Cornacchia $\&$ Tonelli algorithms. The factorization will run in polynomial time with respect to $s$ as we require to find small
+		factors, e.g. 5 or 13. Cornacchia and Tonelli algorithms also run in polynomial time with respect to the size of $f$. 
+	    Provided that $n$ has two small factors of the required form, the total complexity of the algorithm remains polynomial. The probability of this event is expressed by 
+	    
+	    \hspace{10 mm} $Prob_{n \in \mathbb{Z}, 2 \not | n}[ f_1 \equiv 1 \pmod{4}, f_2 \equiv 1 \pmod{4}, f_1 \not= f_2$  $ ] = \frac{1}{ 2^2 \cdot f_1 \cdot f_2}$, 
+		
+		\noindent which is non-negligible.
+		
+		Whenever $n$ has two small prime factors $f$ such that $ f \equiv 1 \pmod{4} $, the probability of success is $\frac{3}{4}$. 
+		%\bigskip
+	
+		Thus, the scheme is insecure ( i.e. not even one-way encryption secure). 
+		
+		Our goal is to be able to use $n$ which has \textit{some} large factors, rather than $n$ which has \textit{no} small factor. So, we have to change 
+		the scheme.
+
+\clearpage
+	
+\section{New Proposal}
+
+
+	In this section we propose an alternative to the first primeless scheme (i.e. it does not generate primes). We design a key agreement protocol that can be easily transformed in an 
+	encryption scheme, without loss of the security guaranty. We discuss the extension of the scheme to characters of order 4, making it more efficient.  
+	
+	\subsection{Key Agreement}
+		In the key agreement scenario we have two participants: $A$ (Alice) and $B$ (Bob) who want to agree on a secret key. In our scheme,
+		$A$ and $B$ agree on a bit value, $K$, but by running the protocol several times in parallel, we obtain a bitstring key agreement. The agreement
+		scheme is graphically illustrated in Figure \ref{agree}. 
+		
+		
+		\begin{figure}[h]
+		
+		\begin{equation*}
+		A \qquad  \qquad \qquad \qquad \qquad \qquad \qquad B
+		\end{equation*}
+		pick $\alpha = \prod_{i=1}^{i=k} \alpha_i,$ where $\alpha_i \in \mathbb{Z}$ \\
+		pick $\beta = \prod_{i=1}^{i=k} \beta_i,$ where $\beta_i \in \mathbb{Z}$ \\
+		compute $n = \alpha \cdot \beta $
+				
+		\bigskip
+				
+		\noindent 
+		pick $x_1, x_2, \ldots x_t \in \mathbb{Z}_n^*$ \\
+		compute $y_i = (\frac{x_i}{\alpha}), 1 \leq i \leq t$
+				 
+		\begin{equation*}
+		\qquad \xrightarrow[y_1,y_2, \ldots, y_t]{\hspace*{1.8cm} n,x_1,x_2,\ldots,x_t \qquad \qquad}  
+		\end{equation*}
+				
+ 
+				
+		\hspace{80mm} pick $b_1, b_2, \ldots, b_t \in \{ 0,1\}$ 
+				
+		\hspace{80mm} $z= x_1^{b_1} \cdots x_t^{b_t} \pmod{n}$
+				
+				
+		\begin{equation*}
+		\qquad \xleftarrow{\hspace*{1.8cm} z \qquad \qquad}  
+		\end{equation*}   
+				
+		$K = (\frac{z}{\alpha})$ \hspace{80mm} $K = y_1^{b_1} \cdots y_t^{b_t}$
+		
+		\begin{center}
+		\textbf{Scheme 2}
+		\end{center}		
+		\caption{Key agreement on a bit $K$}
+		\label{agree}
+		\end{figure}
+		
+	In the setup phase, $A$ is choosing randomly a list of large integers $\alpha_i$, $\beta_i$ and 
+	computes $n= \alpha \cdot \beta$. The value $n$ is made public and the value $\alpha$ is kept secret.
+	Jacobi symbol $(\frac{.}{\alpha})$ is a hard character of order 2.  
+	Then, $A$ picks randomly $t$ values, $x_1,x_2, \ldots , x_t$ from $\mathbb{Z}_n^*$ and computes, 
+	using the Jacobi symbol $(\frac{.}{\alpha})$, $y_i = (\frac{x_i}{\alpha})$ for all $1 \leq i \leq t$.
+	If all $y_i's$ are equal then $A$ drops all the $x_i's$  and restarts by choosing other 
+	values. Participant $B$ receives the $x_i$'s, $y_i$'s and the value $n$. He picks randomly $t$ bits, 
+	$b_1, b_2, \ldots, b_t$, computes $z = x_1^{b_1} \cdots x_t^{b_t}$ and sends this value to $A$. 
+	Again we require for $b_i's$ not to be all equal to 0. 
+	
+	Finally, the two participants can agree on a bit value $K$, where 
+	
+	$K = (\frac{z}{\alpha}) = (\frac{x_1^{b_1} \cdots x_t^{b_t}}{\alpha}) = (\frac{x_1}{\alpha})^{b_1} \cdots (\frac{x_t}{\alpha})^{b_t} = y_1^{b_1} \cdots y_t^{b_t}$.   	
+
+		\subsubsection{Choice of parameters}
+			Let $s \in \mathbb{Z}$ be the security parameter. 
+			 For the setup phase we require for $ \beta_i $ and $ \alpha_i$ to be of size $l$ for all $1 \leq i \leq t$. 
+			 In the Background section we looked at how the size of $n$ varies with the size of $l$ and the number $k$. We assume that these values 
+			 are large enough for the complete factorization to be hard.
+			In this key agreement we don't consider $\alpha$ as a long term key as, at each run of the scheme, we can change $\alpha$
+			and $n$. 
+			
+			We pick value $t$ such that, by Theorem 1, we obtain the uniqueness of the homomorphism. Also we require to have 
+			$t > s$ so that for an adversary $\mathcal{A}$ to be hard to try all $2^t$ combinations of $b_i$'s. 
+			
+			% discutie despre marimea lui t in comparatie cu marimea lui n
+		
+		\subsubsection{Complexity} 
+		
+			In the setup phase, $A$ generates randomly $2k$ numbers and performs $2k-1$ multiplications
+			to obtain value $n$. These operations are performed in $O(2kl + l^2(2k-1))$. 
+			
+			The choice of $x_i's$ from $\mathbb{Z}_n^*$ and the computation of $y_i's$ and $K$
+			are done in $O(2tkl+ t(2kl)^2)$. Thus, the total computation done by participant $A$ is
+			of order $O(tk^2l^2)$.
+			
+			Participant $B$ picks $t$ bits and performs at most $t-1$ multiplications 
+			to compute $z$, which takes $O(t (2kl)^2)$. Value $K$ is computed within a complexity of order
+			 $O(t)$ as $y_i's \in \{+1,-1\}$
+			and $b_i's \in \{0,1\}$, obtaining a total complexity of order $O(tk^2l^2)$.
+			
+			As it was shown in Background section, the total complexity varies with respect to $l$. For a 
+			big value $l$, e.g more than 10\,000, value $k$ is small and the complexity is of order $O(tl^2)$.
+			 On the other hand, 
+			for a smaller value $l$, e.g a few hundreds, $k$ is comparable with $l$, and Scheme 2 has a complexity 
+			of order $O(tl^4)$.  
+		
+		\subsubsection{Corectness}
+			
+			For the two participants of the key agreement, $A$ and $B$, it is necessary to have the following property: they agree on the same value 
+			$K$. 
+			
+			Given that both participants are honest, we have the following lemma;
+			
+			\begin{lemma}
+				$(\frac{z}{\alpha})= y_1^{b_1}y_2^{b_2} \cdots y_t^{b_t}$, where the values $z, \alpha, y_i's$, $b_i's$ are computed as in Scheme 2. 
+			\end{lemma}	
+			\begin{proof}
+				We have $z= x_1^{b_1} \cdots x_t^{b_t} \pmod{n}$ with $\alpha / n$ $\Rightarrow$
+				
+				\hspace{30mm} $z= x_1^{b_1} \cdots x_t^{b_t} \pmod{\alpha}$
+				
+				Using Proposition 1, we obtain:
+				
+				$(\frac{z}{\alpha})= (\frac{x_1^{b_1} \cdots x_t^{b_t}}{\alpha}) = (\frac{x_1^{b_1}}{\alpha}) \cdots (\frac{x_t^{b_t}}{\alpha})=
+				(\frac{x_1}{\alpha})^{b_1} \cdots (\frac{x_t}{\alpha})^{b_t} = y_1^{b_1}y_2^{b_2} \cdots y_t^{b_t}$
+				
+			\end{proof}
+			
+			Thus, Scheme 2 is correct and in the end both $A$ and $B$ will share the same secret value $K$. 
+			
+		\subsubsection{Security}
+			Here we analyse the security of the new proposed key agreement. In this context, we can see that a passive adversary $\mathcal{A}$
+			observes the messages sent by $A$ and $B$ and in the end he can try to guess bit $K$. Thus, $\mathcal{A}$ has 
+			access to $t$ pairs $(x_i, (\frac{x_i}{\alpha}))$ and value $n$, which corresponds to an instance of the 
+			MOVA$^2$ problem. 
+			We say that the key agreement Scheme 2
+			is secure if, after the run of it,
+			
+			\hspace{10mm} $Adv_{\mathcal{A}}(s) = Prob_{x,b} [K = K'] - \frac{1}{2}$,  \\
+			is negligible in terms of $s$, where $K'$ is the bit guessed by $\mathcal{A}$, $K$ is the agreed key
+			, $x$ and $b$ denote the values $x_i's$ and $b_i's$ that are generated during the run of the key agreement. 
+			
+			For our security proof, we use the following theorem from \cite{mova} :
+			
+			\begin{theorem} 
+				Let $\varphi: G  \rightarrow \mathbb{Z}_d$ be a group homomorphism. If one can compute a $f$ such that 
+				$Prob_{z \in G}(f(z) \not= \varphi(z)) \leq \frac{\xi}{12}$ \footnote{$\frac{\xi}{12}$ can be replaced with $1- \frac{1}{d}$ \cite{mova}.} with a constant $\xi < 1$, then one can compute
+				$\varphi$ in a number of calls to $f$ bounded by a polynomial in log$(\# G)$. 
+			\end{theorem} 
+			
+			This theorem states that if one is able to approximate $\varphi$ with a small probability of error, then 
+			one must know the homomorphism $\varphi$. We want to apply this to our proof as it would reduce the security to the 
+			MOVA$^d$ problem. If for an adversary $\mathcal{A}$, $Adv_{\mathcal{A}}(s)$ is non-negligible, then according to 
+			Theorem 2, $\mathcal{A}$ is able to compute $\varphi$ and thus solve the MOVA$^d$ problem. 
+			
+			For the proposed scheme, we take $\varphi$ to be the Jacobi symbol $(\frac{.}{\alpha})$: $\mathbb{Z}_n^* \rightarrow \{+1,-1\}$. 
+			Any adversary can build function $f(x)$ as follows: with the $x_i's$ and $y_i's$ from the MOVA$^d$ problem, he picks randomly 
+			a number of $p$ combinations of bits $b_1', b_2', \ldots b_t' \in \{0,1\}$ and computes 
+			$z'= x \cdot x_1^{b_1'} \cdots x_t^{b_t'} \pmod{n}$ and $K' = (\frac{x}{\alpha}) \cdot y_1^{b_1'} \cdots y_t^{b_t'}$ from which he deduces $(\frac{x}{\alpha})$. The value $p$
+			is bounded by a polynomial in log($\# \mathbb{Z}_n^*$) as it is required in Theorem 3. 
+			 
+			In order to apply Theorem 3 we only need to prove that the values $z=$$x_1^{b_1} \cdots x_t^{b_t} \pmod{n}$ generate uniformly $\mathbb{Z}_n^*$. 
+			There is a similar result presented in \cite{knapsack} for the generalized compact knapsack. We conjecture that value $z$ has a distribution
+			that is indistinguishable from the uniform distribution.    
+			
+			Thus, assuming that the Factorization and MOVA$^d$ problems are hard we obtain that Scheme 2 is secure, result expressed by Corollary 1.
+			 
+			\begin{corollary}
+				Assuming that MOVA$^d$ is hard, then no adversary $\mathcal{A}$ can guess the bit $K$ from one run of the agreement but with a probability bounded by 
+				$\frac{1}{2}$. 	
+			\end{corollary}
+
+				
+		 
+	\subsection{Probabilistic Encryption Scheme}
+		In this subsection we show how we can turn the key agreement Scheme 2 into an encryption scheme. With the small changes that we bring, we can maintain
+		the security. 
+		The new encryption scheme is illustrated bellow in Figure \ref{enc2}. 
+
+ 		\begin{figure}[th]
+		
+		\begin{equation*}
+		A \qquad  \qquad \qquad \qquad \qquad \qquad \qquad B
+		\end{equation*}
+			pick $\alpha = \prod_{i=1}^{i=k} \alpha_i,$ where $\alpha_i \in \mathbb{Z}$ \\
+			pick $\beta = \prod_{i=1}^{i=k} \beta_i,$ where $\beta_i \in \mathbb{Z}$ \\
+			compute $n = \alpha \cdot \beta $
+			
+		\bigskip		
+				
+		\noindent 
+		pick $x_1, x_2, \ldots x_t \in \mathbb{Z}_n^*$ \\
+		compute $y_i = (\frac{x_i}{\alpha}), 1 \leq i \leq t$
+				 
+		\begin{equation*}
+		\qquad \xrightarrow[y_1,y_2, \ldots, y_t]{\hspace*{1.8cm} n,x_1,x_2,\ldots,x_t \qquad \qquad}  
+		\end{equation*}
+				
+ 
+				
+		\hspace{80mm} pick $b_1, b_2, \ldots, b_t \in \{ 0,1\}$ 
+				
+		\hspace{80mm} $K = y_1^{b_1} \cdots y_t^{b_t}$ 			
+
+				
+						
+
+		\begin{equation*}
+		\qquad \xleftarrow{\hspace*{1.8cm} z= x_1^{b_1} \cdots x_t^{b_t} \pmod{n}  \qquad \qquad}  
+		\end{equation*}   
+				
+		$K = (\frac{z}{\alpha})$ 
+		
+		\begin{center}
+		\textbf{Scheme 3}
+		\end{center}
+				
+		\caption{Encryption of a bit $K$}
+		\label{enc2}
+		\end{figure}
+		
+ 	Participant $A$ proceeds with the same steps as before. He picks value $n$, $\alpha$ and sends to $B$ the values $x_i's$, 
+	$y_i's$ and $n$. The only difference appears in the choices that participant $B$ makes. He first selects
+	an index $i$ for a pair 
+	$(x_i, y_i)$, with $y_i = -1$, from what he receives. With the rest of the values, he selects randomly $t-1$ bits, 
+	$b_1, \ldots, b_{i-1}, b_{i+1}, \ldots, b_{t-1}$, selects $b_i$ such that 
+	$\prod y_j^{b_j} = K = (-1)^b$ and computes $z=x_1^{b_1} \cdots x_{t}^{b_{t}} \pmod{n}$.
+
+	Then, he sends $z$ to be the ciphertext for $K$. Knowing value $\alpha$, $A$ is able to decrypt $z$ and to obtain plaintext bit $K$. 
+  
+  		\subsubsection{Corectness}
+  			Because in Scheme 3 value $K$ is computed in the same manner as in Scheme 2, we can use Lemma 2. The encryption scheme is correct and 
+  			participant $A$ decrypts correctly $z$, provided that he knows the secret value $\alpha$.  
+		\subsubsection{Security}  
+ 			Concerning the security of this encryption scheme we can use the same results as for the key agreement as the goal of the adversary 
+			is the same: to guess whether $K$ is 0 or 1. 
+
+	\begin{corollary}
+		Assuming that MOVA$^d$ is hard, then no adversary $\mathcal{A}$ can guess the bit $K$ from the run of the encryption scheme but with a probability bounded by 
+		$\frac{1}{2}$ and the scheme is IND-CPA secure. 	
+	\end{corollary}
+
+	\subsection{Using characters of order 4}
+	
+	It is possible to improve the scheme presented in this section by using characters of order 4. With the quartic residue symbol, the two participants 
+	agree on a 2 bit value $K$ (or encrypt two bits) with each run of the protocol. In this scenario, participant $A$ is choosing $\beta_i$ and $\alpha_i$ 
+	to be Gaussian integers and computes $n$ as $ \prod_i \alpha_i \cdot \bar{\alpha_i} \cdot \beta_i \cdot \bar{\beta_i}$. $B$ is now choosing the 
+	$b_i's$ from $\{0,1,2,3\}$. The correctness and the security proof of the scheme are maintained.  
+	
+\clearpage
+
+	\section{Conclusions}
+	
+		In this project we have introduced a key  agreement and an encryption scheme that uses primeless cryptography. It was shown that by using only random 
+		numbers and the notion of a character, it is possible to build cryptographic primitives that are proven to be secure. As we are not generating 
+		prime numbers, we compute a value $n$ as a product of random numbers. We use this approach in order to maintain the hardness of factorization. Because
+		of that, the size of $n$ is of hundreds of thousands of bits. 
+		
+		One improvement, when using primeless cryptography, is the fact that the complexity of generating value $n$, in the setup, is lower than the complexity
+		of generating prime numbers. On the other hand, randomness has in this case drawbacks. In practice it may be difficult to work with big 
+		values as $n$. Also, once we use in a primitive these big numbers, the complexity of every operation (multiplication, addition, exponentiation) 
+		is higher. This may lead to a total complexity, for a primitive that uses primeless cryptography, bigger than one that uses 
+		prime numbers. 
+		
+		As a future work we need to do a more detailed analysis on the required size of $l$ and $k$. With such a result we can obtain the  
+		size of $n$, not only some approximations.
+		
+		An extension of this project might be the following: construct a cryptographic primitive, using characters of order 4, that is more efficient than the 
+		schemes presented in here. So far, he are able to send or encrypt only 2 bits at each run.
+		  
+	
+	
+\clearpage				
+
+\bibliographystyle{plain}
+\bibliography{biblio}
+	
+\end{document}

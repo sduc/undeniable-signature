@@ -1,0 +1,785 @@
+\documentclass[a4paper, 11pt]{article} 
+ \usepackage{amssymb, amsfonts, amsthm, amsmath, algorithm, algorithmic, verbatim, epsfig} 
+ 
+ \author{Yvonne Anne Oswald} 
+ \title{Generic Homomorphic Undeniable Signature Scheme: Optimizations} 
+ 
+ 
+ \newtheorem{defi}{Definition}[section] 
+ \newtheorem{fact}[defi]{Fact} 
+ \newtheorem{thm}[defi]{Theorem} 
+ 
+ \setlength{\parindent}{0pt} 
+ 
+ \begin{document} 
+ \input{cover} 
+ 
+ \tableofcontents 
+ \listoftables 
+ \newpage 
+ 
+ \section{Introduction} 
+ Undeniable signatures, which have been introduced by Chaum and van Antwerpen in \cite{chaum}, differ from classical digital signatures in the verification process. Contrary to classical digital signatures, where anyone holding the public key of the signer is able to verify whether a given signature is valid or not, one has to interact with the signer to be convinced of the validity of the signature. This interaction, the confirmation protocol, gives the signer the control over the distribution of the verification, as no entity can verify a signature without the signer. 
+ To prevent a dishonest signer from falsely claiming a signature to be invalid, we need a second interactive protocol, the denial protocol. With this protocol, a honest signer can prove that a forged signature is not valid. A complete undeniable signature scheme therefore consists of a key generation and signature algorithm, as well as an interactive confirmation and denial protocol. 
+ 
+ A new undeniable signature scheme called MOVA was proposed in 
+ \cite{howMOVA} and generalized to a generic homomorphic undeniable 
+ signature scheme in \cite{genMOVA}. These signature schemes allow 
+ signatures to be arbitrarily short (typically around 20--30 bits), depending on the required security level. 
+ 
+ In 2004, a demonstrator for MOVA signatures has been implemented. The aim of this project is to optimize the existing implementation and to implement 3 additional homomorphisms and compare them with each other. 
+ 
+ The mathematical techniques used are based on group homomorphisms. One can transform a private 
+ group homomorphism from public groups $G$ and $H$ into an undeniable signature scheme. The homomorphism used in the 
+ demonstrator is the quartic residue symbol. We tried to optimize the computation of the quartic residue 
+ symbol as well as trying out different algorithms. Furthermore we implemented the variant of the generalized 
+ signature scheme involving an homomorphism based on the discrete logarithm. 
+ 
+ As the demonstrator was implemented in C, all our optimizations and new implementations are written in C as well. The main algorithms of the signature scheme are based on operations with large integers which are up to 1024 bits long. To handle numbers that large we used the GNU Multiple Precision Arithmetic Library (GMP) \cite{gmp}. This library provides highly optimized basic and number theoretic functions. 
+ 
+ We begin with a survey of the mathematical theory necessary for the scheme in Section 2. Section 3 contains the description of algorithms for the quartic residue symbol and their implementation. Details regarding the variant using discrete logarithms are provided in Section 4, Section  5 is dealing with the RSA homomorphism. Our results of comparing the different variants and 
+ implementations are discussed in Section 6. 
+ 
+ 
+ \section{Notation and Background} 
+ \subsection{GHI--Problem} 
+ \begin{defi} 
+ \emph{Given two groups $G$, $H$, a mapping $\phi : G \to H$ is called a \emph{ 
+ homomorphism} if $~\forall~ x,y \in G: ~\phi (xy) = \phi (x) \phi (y)$.} 
+ \end{defi} 
+ 
+ The following definitions are taken from \cite{genMOVA}. 
+ \begin{defi} 
+ \emph{Let $G, H$ be Abelian groups and $S := \{(x_{1},y_{1}),\ldots,(x_{s},y_{s})\}$ $ \subseteq G\times H$. We say that $S$ \emph{interpolates in a group homomorphism} 
+ if there exists a homomorphism $\phi : G \to H$ such that $\phi (x_{i}) = y_{i}$ for $i = 1, \ldots, s$.\\  
+ Given two sets $A,B\subseteq G\times H$, we say $B$ \emph{interpolates in a group homomorphism with $A$} if $A \cup B$ interpolates in a group homomorphism. 
+ }\end{defi} 
+ 
+ \begin{defi} 
+ \emph{$\mathbf{GHI-Problem}$ \big(Group Homomorphism Interpolation Problem\big)\\ 
+ $\mathbf{Parameters:}$ two Abelian Groups $G$ and $H$, a set of $s$ points $S \subseteq G \times H$. 
+ $\mathbf{Input:} ~x \in G$\\ 
+ $\mathbf{Problem:}$ find $y \in H$ such that $\big( x,y\big)$ interpolates with $S$ in a group 
+ homomorphism.}\end{defi} 
+ 
+ The GHI-Problem is a generalization of many problems in cryptography, e.g. the discrete logarithm problem, the Diffie-Hellman problem or the RSA decryption problem. The security of the generic homomorphic signature scheme is based  on the difficulty of solving the GHI-Problem. 
+ 
+ \subsection{Generic Homomorphic Undeniable Signature Scheme} 
+ $\mathbf{Key ~Generation:}$\\ 
+ The signer chooses two Abelian groups $G, H$ and a group homomorphism $\phi : G \to H$. 
+ To construct the public key he computes the order $d$ of $H$ and a set $K := \{(x_{key1},\phi(x_{key1}),\ldots,(x_{keyk},\phi(x_{keyk}))\} \subseteq G \times H$, where  the $x_{i}$ are generated from a seed $\rho$ using a deterministic pseudorandom generator. More precisely, we need that K interpolates in unique group homomorphism with high probability. The private key consists of the homomorphism.\\ 
+ 
+ $\mathbf{Signature ~and ~Protocols:}$\\ 
+ To sign a message $m$, the signer generates $(x_1, \ldots, x_s)$ from $m$, using a deterministic pseudorandom generator , $m$ serving as a seed. The set 
+ $S:= \{(x_{sig1},\phi(x_{sig1}),\ldots,(x_{sigs},\phi(x_{sigs}))\}$ constitutes the signature. 
+ The signature is valid if $K$ interpolates with $S$ in a group homomorphism. 
+ Proving this interactively forms the confirmation protocol. The denial protocol is composed of proving that $S$ and $K$ do not interpolate in a group homomorphism.\\ 
+ 
+ The values of $s$ and $k$ depend on the security level we want to ensure.
+ For details regarding the confirmation and denial protocols, additional setup variants and proofs we refer to \cite{howMOVA} 
+ and \cite{genMOVA}. 
+ 
+ \subsection{Quartic Residue Symbol} 
+ We saw that the signer can choose a homomorphism according to his needs. As a next step, we will have a closer look at some homomorphisms. We begin with the introduction of the quartic (biquadratic) 
+ residue symbol $\chi$. This homomorphism is set in the ring of Gaussian Integers $\mathbb{Z}\bigl[{i}\bigr]=\{a + bi|a,b \in 
+ \mathbb{Z}\}$. Here is a sketch of the necessary facts of $\mathbb{Z}\bigl[{i}\bigr]$ 
+ (for more details and proofs see \cite{rosen}): 
+ 
+ \begin{itemize} 
+ \item[-] units: $\pm 1, \pm i, ~~$ 
+ \item[-] norm: $\alpha \in \mathbb{Z}[{i}]$, $N(\alpha) = Re(\alpha)^2 + Im(\alpha)^2$ 
+ \item[-] $1 + i$ is a prime, $N(1+i) = 2$ 
+ \item[-] $\alpha \in \mathbb{Z}[{i}]$  is called primary iff either 
+ \[Re(\alpha) \equiv 1 \pmod 4,~ Im(\alpha) \equiv 0 \pmod 4 \] or 
+ \[Re(\alpha) \equiv 3 \pmod 4,~ Im(\alpha) \equiv 2 \pmod 4 \] 
+ %$~~~~~~~~~~~~~~~~~~~~Re(\alpha) \equiv 1 \pmod4,~~ Im(\alpha) \equiv 0 \pmod 4 $ \\
+ %or\\ 
+ %$~~~~~~~~~~~~~~~~~~~~Re(\alpha) \equiv 3 \pmod4,~~ Im(\alpha) \equiv 2 \pmod 4 $ 
+ \item[-] if $\alpha \in \mathbb{Z}[{i}]$ is not divisible by $1+i$, then $\alpha$ is 
+ associated to a primary number 
+ \item[-] $\forall ~\alpha \in \mathbb{Z}[{i}]$ there is a unique representation of the 
+ form $i^j \cdot (1+i)^k \cdot \alpha'$, with $~\alpha'$ primary 
+         %\item[-] if $\pi$ is a prime in $\mathbb{Z}[{i}]$ and $\alpha$ is not associated to $1+i$ then $N(\pi) \equiv 1 \bmod 4$ 
+ \item[-] $\pi \in \mathbb{Z}[{i}]$ is prime iff either $\pi$ or one of its associates fulfills one of the following conditions: 
+ \[\pi = 1+i~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\] 
+ \[        \pi \textrm{ is a prime in } \mathbb{Z} \textrm{ and } \pi \equiv 3\pmod 4~~~~~~~~\] 
+ \[        \pi\bar{\pi} \textrm{ is a prime in } \mathbb{Z} \textrm{ and } \pi\bar{\pi} \equiv 1\pmod 4~~~~~        \] \\
+ 
+ \end{itemize} 
+ 
+ 
+ \begin {defi} 
+ \emph{Let $\alpha,\beta \in \mathbb{Z}[{i}]$ be such that $(1+i) \nmid \beta$ and $\gcd(\beta,\alpha) = 1$. 
+ The \emph{quartic residue symbol} is defined as $ 
+ \mathbf{\chi}_{\beta} : \mathbb{Z}[{i}] \to \{ 0,\pm 1, \pm i\}$ 
+ \begin{displaymath} 
+ \mathbf{\chi}_{\beta}(\alpha) = \left\{ 
+ \begin{array}{ll} 
+     \big(\alpha^{\frac{N(\beta)-1}{4}}\big)\bmod \beta & 
+         \textrm{if $\beta$ prime}\\ 
+     \prod _{i} ~\mathbf{\chi}_{\beta _{i}}(\alpha) & 
+         \textrm{if $\beta = \prod _ {i} \beta _{i},~ \beta_{i}$ prime} 
+ \end{array} \right. 
+ \end{displaymath} 
+ } 
+ \end{defi} 
+ 
+ \newpage
+ 
+ $~\\~\\~$In addition, the quartic residue symbol satisfies 
+ \begin{itemize} 
+ \item[-] Modularity: $\chi_{\beta}(\alpha) = \chi_{\beta}(\alpha \bmod \beta)$ 
+ \item[-] Multiplicativity: $\chi_{\beta}(\alpha\alpha') = \chi_{\beta}(\alpha)\chi_{\beta}(\alpha')$ 
+ \item[-] Reciprocity Law:  ~if $\alpha,~\beta$ primary:\\ $~~~~~~~~~~~~~\chi_{\beta}(\alpha) = \chi_{\alpha}(\beta)\cdot 
+     (-1)^{\frac{N(\alpha)-1}{4}\cdot \frac{N(\beta)-1}{4}}~~~$ 
+ \item[-] Complementary Laws:  ~if $\beta$ primary:\\ $~~~~~~~~~~~~~\chi_{\beta}(i) = i^{\frac{N(\beta)-1}{4}}~~~$  and 
+     $~~~\chi_{\beta}(1+i) = i^{\frac{Re(\beta)- Im(\beta) - Im(\beta)^2 -1}{4}}~~~$ 
+ \end{itemize} 
+
+If we want to use the quartic residue symbol $\chi_{\beta}$ as a homomorphism for the undeniable signature scheme, we have different setup variants to choose from. Let $p,q$ be two rational primes such that $p\equiv q\equiv 1 \pmod 4$. There exist $\pi,\sigma$ such that $p=\pi\bar{\pi}$ and $q = \sigma\bar{\sigma}$. $\pi$ and $\sigma$ can be computed with the help of the algorithms by Tonelli and Cornacchia (For more details see \cite{cohen}). If we select $G := \mathbb{Z}[i]/\beta\mathbb{Z}[i],~ G \cong \mathbb{Z}_n^*$ when $\beta= \pi \sigma$ or $G \cong \mathbb{Z}_p^*$ when $\beta= \pi$, we can adapt the size of $p$ and $q$ to fulfill our security requirements. 
+ 
+ \subsection{Discrete Logarithm} 
+ Another homomorphism suitable for the generic homomorphic signature scheme is based on the discrete logarithm. 
+
+ Let $n$ be such that $n = pq$ with $p = rd + 1$,~ $q$,~ $d$ prime, $~\gcd(q-1,d)=1,$\\$~\gcd(r,d)= 1$ and $g$ generating a subgroup of $\mathbb{Z}^{*}_{p}$. 
+ We obtain $g$ by choosing a random element $h \in \mathbb{Z}^{*}_{n}$ until $h$ satisfies $h^r \bmod p \neq 1$ and we set $g=h^r \bmod p$. 
+ Like this we find a homomorphism suitable for the generic homomorphic signature scheme by computing a discrete logarithm in a small subgroup of $\mathbb{Z}^{*}_{n}$: 
+ \begin{displaymath} 
+     \phi : \mathbb{Z}^{*}_{n} \to \mathbb{Z}_{d} ~~~\phi (x) = \log_g(x^r \bmod~ p) 
+ \end{displaymath} 
+ 
+ 
+ 
+ 
+ \section{Quartic Residue Symbol} 
+ 
+ \subsection{Basic Algorithm} 
+ \subsubsection{Description} 
+ To compute the quartic residue symbol directly, one has to know the factorization of $\beta$ into primes over $\mathbb{Z}[{i}]$ and the computation contains an exponentiation. To avoid this factorization as well as the exponentiation we apply the properties of the quartic residue symbol iteratively. 
+ First we find the unique representation $ i^j \cdot (1+i)^k \cdot \alpha', ~\alpha'$ primary, of $\alpha$ and employ the multiplicativity property and the complementary laws of the quartic. 
+ Next, we use the modularity property and interchange $\alpha$ and $\beta$ according to the law of 
+ reciprocity and start again. We stop the iteration process when $\alpha$ or $\beta$ is a unit.  
+ 
+ \begin{algorithm}[htb] 
+ \caption{Basic Algorithm Quartic Residuosity in $\mathbb{Z}[{i}]$} 
+ \label{alg1} 
+ \begin{algorithmic}[1] 
+ \REQUIRE $\alpha,\beta \in \mathbb{Z}[{i}] \setminus \{0\}$, $\gcd(\alpha,\beta)=1$ 
+ and $(1 + i) \nmid \beta$\\ 
+ \ENSURE $c = \chi_{\beta}(\alpha)~~(c=0 \Leftrightarrow \chi_{\beta}(\alpha)$ is not defined$)$ 
+ \STATE $\alpha \gets \alpha \bmod \beta~$ 
+ \STATE $\mathbf{if} ~\alpha = 0 \mathbf{~~then~}~c=0~\mathbf{~end ~if}$ 
+ \STATE let primary $\alpha_1, \beta_1 \in \mathbb{Z}[{i}]$ be defined by\newline 
+     $\alpha = (i)^{i_1} \cdot (1 + i)^{j_1}\cdot \alpha_1$ and\newline 
+     $ \beta = (i)^{i_2} \cdot \beta_1$ 
+ \STATE let $m, n \in \mathbb{Z}$ be defined by $\beta_1 = m + ni$ 
+ \STATE $t\gets {\frac{m-n-n^{2}-1}{4}} {j_1}  +  {\frac{m^{2}+ n^{2} - 1}{4}}{i_1} \bmod 4$ 
+ \STATE replace $\alpha$ with $\beta_1, ~\beta$ with $\alpha_1$ 
+ \STATE $t \gets t +  \frac{(N(\alpha)-1)(N(\beta)-1)}{8}\bmod 4$ 
+ \WHILE{$N(\alpha) > 1$} 
+ \STATE $($LOOP INVARIANT: $\alpha, \beta$ are primary$)$ 
+ \STATE let primary $\alpha_1$ be defined by $\alpha \bmod \beta = (i)^{i_1}\cdot (1 + i)^{j_1}\cdot \alpha_1$ 
+ \STATE let $m, n \in \mathbb{Z}$ be defined by $\beta = m + ni$ 
+ \STATE $t\gets t + {\frac{m-n-n^{2}-1}{4}} {j_1}  +  {\frac{m^{2}+ n^{2} - 1}{4}}{i_1} \bmod 4$ 
+ \STATE replace $\alpha$ with $\beta, \beta$ with $\alpha_1$ 
+ \STATE $t \gets t +  \frac{(N(\alpha)-1)(N(\beta)-1)}{8}\bmod 4$ 
+ \ENDWHILE 
+ \STATE $\mathbf{if} { ~N(\alpha) \ne 1 }  \mathbf{~~then~}~c \gets 0~\mathbf{~else~~} c \gets i^t ~\mathbf{end~ if}$ 
+ 
+ \end{algorithmic} 
+ \end{algorithm} 
+ 
+ \subsubsection{Implementation} 
+ For this algorithm we have to implement a few functions for calculating basic operations in the ring of Gaussian Integers as they are not provided by gmp (let $\alpha, \beta \in \mathbb{Z}[{i}]$): 
+ 
+ \begin{enumerate} 
+ \item Multiplication: $\alpha \cdot \beta$ 
+ \item Modulo: $\alpha \bmod \beta$ 
+ \item Norm: $N(\alpha)$ 
+ \item Division by $(1+i)^r$ 
+ \item Primarization: transforms $\alpha$ into its primary associate if possible 
+ \end{enumerate} 
+ Some of these functions existed already in the implementation of the demonstrator, but there was a considerable amount of speed to be gained. 
+ 
+ First of all, we scrutinized every line of the existing code closely and checked if there is a faster algorithm we could apply. Our next steps were to remove unnecessary function calls, use some of the more sophisticated gmp functions, reduce the number of \ttfamily mpz\_t \normalfont variables used whenever possible, examine different implementation variants and apply general optimization techniques described e.g. in \cite{opt1},\cite{opt2}. We tested carefully where it is better to work with \ttfamily int \normalfont instead of \ttfamily mpz\_t\normalfont. In addition, we used profiling and tried out different compiler optimization levels. 
+ 
+ In two cases we reimplemented the functions completely: 
+ 
+ The division of $\alpha$ by $(1+i)^r$  was done by first raising $(1+i)$ to the power of $r$ and then dividing $\alpha$ by the result. We found a way of achieving the same by only using shift operations, additions and interchanging the imaginary and real part if necessary. The following equations demonstrate our procedure: 
+
+ \[\frac{\alpha }{(1+i)} = \frac{Re(\alpha)+Im(\alpha)}{2} + \frac{Im(\alpha)- Re(\alpha)}{2} i\] 
+ \[ \frac{\alpha}{(1+i)^r} = \frac{i^{3k}\Big(\frac{Re(\alpha)}{2{^k}} + \frac{Im(\alpha)}{2{^k}}i\Big) }{(1+i)^b}~~,~~r = 2k + b\] \\  
+ If $r=2k,~k \in \mathbb{N}$ we shift the real and the imaginary parts of $\alpha$ by $k$ to the right and multiply them by $-1$ and/or interchange them  depending on the value of $3k$. If $r$ is odd, there is an additional subtraction and addition to perform. 
+ 
+ For the primarization function we discovered a much simpler and faster method as well. It consists of a few congruency tests and it also determines the number of times we have to multiply $\alpha$ by $i$ to get the primary associate of $\alpha$. 
+ 
+ The calculation of $\alpha \bmod \beta$ is done according to \cite{lefevre} using an Euclidean division and rounding appropriately. 
+ 
+ To find the representation of $\alpha$ we proceed as follows: First calculate the norm of 
+ $\alpha, ~N(\alpha)$. Then find $j$ maximal such that $2^{j} \mid N(\alpha)$. Divide $\alpha$ by $(1+i)^j$ and transform  the result into its  primary associate. 
+ 
+ In the implementation of the algorithm we need to ensure that $(1 + i) \nmid \beta$ and $\gcd(\alpha,\beta)=1$. The first requirement is taken care of by applying the primarization function on $\beta$. If we cannot find a primary associate, $\beta$ is divisible by $(1+i)$ and we terminate. 
+ For the second condition we check in every iteration if $\alpha \bmod \beta = 0~$. This would imply $\gcd(\alpha,\beta) 
+ \ne 1$ and we terminate. 
+ 
+ \subsection{Damg\aa rd's Algorithm} 
+ \subsubsection{Description} 
+ The most expensive operation used in the algorithm described above is $\alpha \bmod \beta$. Damg\aa rd and Frandsen present 
+ in \cite{damgard} an efficient algorithm for computing the cubic residue symbol in the ring of Eisenstein integers 
+ $\mathbb{Z}[{\zeta}]$. Their algorithm can be transformed into an algorithm for the quartic residue symbol in the ring 
+ of Gaussian integers. 
+ 
+  \begin{algorithm}[htb] 
+ \caption{Damg\aa rd's Algorithm Quartic Residuosity in $\mathbb{Z}[{i}]$} 
+ \label{alg2} 
+ \begin{algorithmic}[1] 
+ \REQUIRE $\alpha,\beta \in \mathbb{Z}[{i}] \setminus \{0\}$, $\gcd(\alpha,\beta)=1$ 
+ and $(1 + i) \nmid \beta$\\ 
+ \ENSURE $c = \chi_{\beta}(\alpha)~~(c=0 \Leftrightarrow \chi_{\beta}(\alpha)$ is not defined$)$ 
+ 
+ \STATE let primary $\alpha_1, \beta_1 \in \mathbb{Z}[{i}]$ be defined by\newline 
+     $\alpha = (i)^{i_1} \cdot (1 + i)^{j_1}\cdot \alpha_1$ and\newline 
+     $ \beta = (i)^{i_2} \cdot \beta_1$ 
+ \STATE let $m, n \in \mathbb{Z}$ be defined by $\beta_1 = m + ni$ 
+ \STATE $t\gets {\frac{m-n-n^{2}-1}{4}} {j_1}  +  {\frac{m^{2}+ n^{2} - 1}{4}}{i_1} \bmod 4$ 
+ \STATE replace $\alpha$ with $\alpha_1, ~\beta$ with $\beta_1$ 
+ \IF {$\tilde{N}(\alpha) < \tilde{N}(\beta)$} 
+ \STATE interchange $\alpha$ and $\beta$ and adjust $t$ 
+     \newline$t \gets t +  \frac{({N}(\alpha)-1)({N}(\beta)-1)}{8}\bmod 4$ 
+ \ENDIF 
+ \WHILE {$\alpha \ne \beta$ } 
+ \STATE $($LOOP INVARIANT: $\alpha, \beta$ are primary$)$ 
+ \STATE let primary $\alpha_1$ be defined by $\alpha - \beta = (i)^{i_1}\cdot (1 + i)^{j_1}\cdot \alpha_1$ 
+ \STATE let $m, n \in \mathbb{Z}$ be defined by $\beta = m + ni$ 
+ \STATE $t\gets t + {\frac{m-n-n^{2}-1}{4}} {j_1}  +  {\frac{m^{2}+ n^{2} - 1}{4}}{i_1} \bmod 4$ 
+ \STATE replace $\alpha$ with $\alpha_1$ 
+ \IF {$\tilde{N}(\alpha) < \tilde{N}(\beta)$} 
+ \STATE interchange $\alpha$ and $\beta$ and adjust $t$ 
+     \newline$t \gets t +  \frac{({N}(\alpha)-1)({N}(\beta)-1)}{8}\bmod 4$ 
+ \ENDIF 
+ \ENDWHILE 
+ \STATE $\mathbf{if} { ~\alpha \ne 1 }  \mathbf{~~then~}~c \gets 0~\mathbf{~else~~} c \gets i^t ~\mathbf{end~ if}$ 
+ 
+ \end{algorithmic} 
+ \end{algorithm} 
+ 
+ There are three main differences to the basic algorithm: Instead of using 
+ $\alpha \bmod \beta$ to reduce $\alpha$, they suggest using $\alpha - \beta$. This takes much less time 
+ but increases the number of iterations needed. Furthermore they only interchange $\alpha$ and $\beta$, if 
+ $N(\alpha) < N(\beta)$. It is not necessary to calculate $N(\cdot)$ exactly for this purpose, 
+ an approximation $\tilde{N}(\cdot)$ suffices. They demonstrate how one can compute an approximate norm $\tilde{N}(\alpha)$ in linear time: Instead of adding up the squares of the real and the imaginary part of $\alpha$, one replaces all but the 8 most significant bits of the real and the imaginary part of $\alpha$ with zeroes and computes the norm of the resulting Gaussian number. 
+ 
+ Their algorithm takes $O(\log^{2}N(\alpha\beta))$ time to compute $\chi_{\beta}(\alpha)$ 
+ 
+ \subsubsection{Implementation} 
+ The structure of the algorithm is similar to the basic algorithm so we were able to reuse parts of our previous work. 
+ 
+ We implemented both the standard norm and the norm Damg\aa rd and Frandsen suggest. The standard norm consists of only two gmp functions: one multiplication and one combined addition/multiplication whereas the approximate norm involves one bit scan to determine the size of the real part, one shift operation to extract the 8 most significant bits, one multiplication for the squaring of these 8 bits and another shift operation to put the result back to its correct position. We apply the same procedure on the imaginary part and we add the two approximate squarings up. In short, we need four additional operations to reduce the size of the numbers we have to multiply. 
+ 
+ As gmp is a highly optimized library, computing the standard norm takes little time and the additional operations of the approximate norm only amortize if the real and the imaginary part are larger than 2048 bits. This and the fact that the norm of $\alpha$ and $\beta$ decreases with each iteration convinced us to use the standard norm instead. 
+ 
+ \subsection{Other Algorithms} 
+ In addition to the above, we studied papers concerning algorithms for the quartic residue symbol by Weilert. In \cite{weilert1},\cite{weilert2} he presents fast gcd algorithms for Gaussian integers. Based on these gcd algorithms and using some properties of the Hilbert symbol he demonstrates in \cite{weilert3} how to construct an algorithm for the quartic residue symbol. This algorithm involves calculating an Euclidean descent and storing some intermediate results for later use. 
+ 
+ Another algorithm we considered adapting to the computation of the quartic residue symbol, is the k-ary right/left shift algorithm for the Jacobi symbol presented by Meyer and Sorendson in \cite{sorendson}. Their algorithm involves performing an extended gcd computation in each iteration. 
+ 
+ When we timed our implementations of the quartic residue symbol we found that they are much slower than e.g. the computation of the Jacobi symbol for input of the same size. This is mostly due to the fact that basic functions in $\mathbb{Z}[i]$ are more time consuming  than their equivalent in $\mathbb{Z}$. For example multiplication in $\mathbb{Z}[i]$ consists of four multiplications in $\mathbb{Z}$. Moreover, they are not optimized on assembly level, unlike gmp functions. 
+ 
+ Therefore we decided not to implement neither Weilert's nor Meyer's and Sorendson's algorithms. %gcd function for elements of $\mathbb{Z}[i]$. 
+ Even if their asymptotic running time is very fast, we probably would not be able to achieve a significant speed up of the computation of the quartic residue symbol. 
+ 
+ \section{Discrete Logarithm} 
+ As mentioned in Section 2.3, a suitable homomorphism for the generic homomorphic signature scheme is the following: 
+ \begin{displaymath} 
+     \phi : \mathbb{Z}^{*}_{n} \to \mathbb{Z}_{d} ~~~\phi (x) = \log_g(x^r \bmod~ p) 
+ \end{displaymath} 
+ 
+ There already exists a function in gmp for exponentiation modulo a prime, \ttfamily mpz\_powm\normalfont. Our task remained to provide a fast method for computing the discrete logarithm. We implemented three algorithms of different speed and different requirements for storage. Depending on the platform where the signature scheme is used, one of them will be preferable to the others. 
+ 
+ The algorithms described are adaptations of the algorithms in \cite{handbook}. 
+ 
+ 
+ \subsection{Precomputed Table} 
+ \subsubsection{Description} 
+ The simplest and fastest way of computing the discrete logarithm uses a table with precomputed 
+ entries. Given  $p$ prime, $g$ a generator of a cyclic group $G$, subgroup of $ \mathbb{Z}^{*}_p$, and $d = |G|$, we construct a table with entries $(g^j,j)$ for $0 \le j \le d$. Building this table is a very time and memory consuming task, but once the table exists, finding the discrete logarithm consists of a simple look up operation. 
+ 
+ There are several ways of constructing such a table. One can use a two dimensional array and sorting it by the first component. Finding the discrete logarithm is then reduced to a binary search. Alternatively, one can use conventional hashing on the first component to store the 
+ entries in a hash table, in which case placing an entry and searching for an entry in the table takes constant time. Another advantage is the fact, that we do not need space for $g^i$. Especially when $p \gg d$, this can save an enormous amount of memory. The only difficulties are finding a suitable hash function and dealing with collisions without losing too much time. 
+ 
+ Time complexity of the construction of the table is $O(d)$ multiplications 
+ (plus $O(d \log d )$ comparisons to sort). Space complexity is $O(d(\log d + \log p))$ for the sorted table, resp $O(d \log d)$ for the hash table. The running time for the sorted table is $O(\log d)$, for the hash table O(1). 
+ 
+ \subsubsection{Implementation} 
+ In this suggested variant of the generic homomorphic signature scheme, $p$ is typically a 512 bit and $d$ a 20 bit prime. Creating a table with $d$ entries of size 532 bits is impossible on a usual desktop computer. 
+ Therefore we decided to use a hash table $($key 512 bits, data 20 bits,$~ 2^{20}$ entries$)$. We found some existing hash table data structures written in C, but they do not fulfill our requirements. They are either too slow, support C types only, do not allow tables that large and/or they store the key as well. 
+ 
+ To avoid problems, we did not adapt any of the existing data structures, but implemented a hash table ourselves providing enough storage and a collision handling mechanism suitable for our needs. Our solution is a hash table consisting of an array of unsigned integers. This array is of maximal length $(2^{24})$ to reduce collisions. 
+ 
+ An unsigned integer is 32 bits long, so it was possible to store the data for the logarithm as well as using one of the higher order bits as a flag for collisions.  Because the key is large and we wanted to avoid any unnecessary computation, we chose to use the 24 least significant bits of the key 
+ as the index into the hash table, in case of collision the next 24 bits, etc. By selecting 24 bits instead of the possible 20 bits, we minimize the occurrence of collisions. Tests have shown that most collisions are resolved by choosing the next 24 bits. We tried out other hash functions, but 
+ we did not achieve a gain of speed. This way, the size of the table is 64 MB. 
+ 
+ To find the correct discrete logarithm for $y \in G$, one has to check if the collision flag at the corresponding array field is set, to decide if one can return the logarithm stored in the field or if one has to continue 
+ with the next field. 
+ 
+ If we want to adapt the developed data structure to $d$ being a 30 bit prime, we meet quite a hard problem, as our environment does not allow us to allocate an integer array containing more than $2^{24}$ elements. For any $d$ smaller than $2^{24}$ we can reduce the size of the hash table easily by adjusting the putEntry, getEntry and hash function dynamically. 
+ 
+ \subsection{Baby Step Giant Step Algorithm} 
+ \subsubsection{Description} 
+ One can write $y=g^x=g^{im+j}$, where $m = \lceil \sqrt d \rceil,~ 0 \le i,j < m$, which implies $y(g^{-m})^i = g^{j}$. This suggests the following algorithm (BSGS) for computing the discrete logarithm $x$  of $y$.
+ 
+ \begin{algorithm}[htb] 
+ \caption{Baby Step Giant Step Discrete Logarithm} 
+ \label{alg3} 
+ \begin{algorithmic}[1] 
+ \REQUIRE $p$ prime, $g$ generator of cyclic group $G$, subgroup of $\mathbb{Z}^{*}_p$,\\$d = |G|, ~y \in G$\\ 
+ \ENSURE $x = \log_g(y)$ 
+ \STATE set $m \gets \lceil \sqrt d \rceil$ 
+ \STATE construct a hash table with entries $(g^j,j)$ for $0 \le j \le m$ 
+ \STATE compute $ g^{-m}$, set $\gamma \gets y$ 
+ \FOR {$i$ from $0$ to $m-1$ } 
+ \STATE check if there is an entry $j$ for $\gamma$ 
+ \IF{$\gamma = g^j$} 
+ \STATE set $x \gets im + j$ 
+ \STATE return x
+ \ENDIF
+ \STATE set $\gamma \gets \gamma \cdot g^{-m}$ 
+ \ENDFOR 
+ \end{algorithmic} 
+ \end{algorithm}  
+ Instead of storing all powers of $g$ in a table, storing the results of $O(\sqrt d)$  multiplications by $g$ (baby steps) 
+ followed by a maximum $O(\sqrt d)$ of table look ups and multiplications by $\gamma$ (giant steps)  suffice (see Algorithm 3). We need less time and memory for constructing the table, but more time for computing the discrete logarithm. 
+ This algorithm requires storage for $O(\sqrt d)$ group elements. The asymptotic running time of the the baby step giant step algorithm is $O(\sqrt d)$.
+ 
+ \subsubsection{Implementation} 
+ While implementing the BSGS algorithm no problems occurred and we were even able to use the hash table of the previous implementation. As we place less entries in the table, collisions hardly ever occur. In all the tests we performed, there was never a collision. 
+ %, which speeds up the table look up by a significant amount of time. 
+ 
+ 
+ \subsection{Pollard's Rho Algorithm} 
+ \subsubsection{Overview} 
+ In environments with restricted memory we need an algorithm which requires an negligible amount of memory. 
+ Pollard's rho algorithm has this property and its asymptotic running time is the same as for the baby step giant step algorithm. For this reason it is far more preferable to the baby step giant step algorithm for many problems of practical interest. 
+ 
+ The group G is partitioned into three sets $S_0, S_1, S_2$ of roughly  equal size, based on some easily testable property. Some care must be exercised in selecting the partition; for example, $1 \notin S_1$. 
+ \begin{algorithm} 
+ \caption{ Pollard's Rho Discrete Logarithm} 
+ \label{alg4} 
+ \begin{algorithmic}[1] 
+ \REQUIRE $p$ prime, $g$ generator of cyclic group $G$, subgroup of $\mathbb{Z}^{*}_p$,\\ $d = |G|, y \in G$\\ 
+ \ENSURE $x = \log_g(y)$ 
+ \STATE set $x_0 \gets 1,~ a_0 \gets 0,~ b_0 \gets 0$ 
+ \FOR{ $i = 1,2,\ldots $ } 
+ \STATE compute $x_i,a_i,b_i$  using $x_{i-1},a_{i-1},b_{i-1},x_{2i-2},a_{2i-2},b_{2i-2}$ 
+ \[(x_{i+1},a_{i+1},b_{i+1}) = \left\{\begin{array}{lr} 
+         (y x_i \bmod p,~~~~~~~~~~~~a_i,~~b_i + 1 \bmod d) & \textrm{if } x_i \in S_0\\ 
+         (~x_i^2 \bmod p,~2 a_i \bmod d,~2 b_i + 1 \bmod d) & \textrm{if } x_i \in S_1\\ 
+         (g x_i \bmod p,~~a_i \bmod d,~~~~~~~~b_i \bmod d) & \textrm{if } x_i \in S_2\\ 
+     \end{array} \right. \]\IF{ $ x_i = x_2$ } 
+ \STATE set $r\gets b_i - b_{2i}~ \bmod~ d$ 
+ \IF{$r \ne 0 $} 
+ \STATE set $x \gets r^{-1}(a_{2i} - a_i) \bmod d$   
+ \ELSE 
+ \STATE terminate algorithm with failure 
+ \ENDIF 
+ \ENDIF 
+ \ENDFOR 
+ \end{algorithmic} 
+ \end{algorithm} 
+ 
+ We define a sequence of group elements $x_0, x_1, x_2, \ldots$ and integers $a_0, a_1, a_2, \ldots$ and $b_0, b_1, b_2, \ldots$ satisfying $x_i = g^{a_i}y^{b_i}$ for $i \ge 0$ by $x_0 = 1, ~a_0 = 0, ~b_0 = 0,$ and for $i \ge 0$  \[(x_{i+1},a_{i+1},b_{i+1}) = \left\{\begin{array}{lr} 
+         (y x_i \bmod p,~~~~~~~~~~~~a_i,~~b_i + 1 \bmod d) & \textrm{if } x_i \in S_0\\ 
+         (~x_i^2 \bmod p,~2 a_i \bmod d,~2 b_i + 1 \bmod d) & \textrm{if } x_i \in S_1\\ 
+         (g x_i \bmod p,~~a_i \bmod d,~~~~~~~~b_i \bmod d) & \textrm{if } x_i \in S_2\\ 
+     \end{array} \right. \] 
+      
+ In every iteration of the algorithm we compute $x_i$ and $x_{2i}$ using the previously computed values until $x_i = x_{2i}$. Hence $g^{a_i}y^{b_i} = g^{a_{2i}}y^{b_{2i}}$ and so $y^{b_i - b_{2i}} = g^{a_{2i} - a_i}$. Taking logarithms to the base $g$ of both sides of the last equation yields 
+ \[ (b_i - b_{2i}) \cdot \log_g(y) \equiv (a_{2i} - a_i)\pmod d \] 
+ Provided $b_i \not\equiv b_{2i} \pmod d$, this equation can be efficiently solved to determine $\log_g(y)$. 
+ In the rare case that the algorithm terminates with failure ($b_i \equiv b_{2i} \pmod d$ occurs with negligible probability), the procedure can be repeated by selecting $a_0, b_0$ randomly in the interval $[1,d-1]$ and starting with $x_0 = 
+  g^{a_0}y^{b_0}$. 
+ 
+ \subsubsection{Implementation} 
+ This algorithm was straightforward to implement. For the partition we examined two variants: 
+ \[ 
+ S_i = \{x \in G|x-1 \bmod 3 = i\} \textrm{ and } 
+ ~S_i = \{\lceil (ip)/3 \rceil, \ldots, \lceil (2ip)/3 \rceil\} 
+ %\textrm{ for } i \in \{1,2,3\}  
+ \] 
+ We did not find any significant differences comparing the running times. 
+ 
+ In addition to this, we measured the running time when selecting random numbers $a_0, b_0$ in the interval $[1,d-1]$ and starting with $x_0 = g^{a_0}y^{b_0}$.  It proved to be slower than choosing $x_0 = 1,~a_0 = 0,~b_0 = 0$. 
+ Termination with failure occurred hardly ever in any of the cases and did not deteriorate the average running time. 
+ 
+ \section{RSA} 
+ \subsection{Description} 
+ In \cite{gennaro} R. Gennaro, T. Rabin and H. Krawczyk propose an undeniable signature scheme based on RSA. As mentioned when introducing the GHI problem, the RSA problem is an example of the GHI problem. Therefore we can use the RSA exponentiation as a homomorphism for the generic homomorphic signature scheme. 
+ 
+ By implementing this scheme we were able to compare the implementations of the homomorphic undeniable signature scheme based on the quartic residue symbol and the discrete logarithm with a well known signature scheme, which in turn is also an example of a homomorphic signature scheme. We followed the description of the algorithm for the RSA homomorphism in \cite{handbook}. 
+ 
+ \begin{comment} 
+ \begin{algorithm}[htb] 
+ \caption{Generate Public and Private Key for RSA Signature Scheme} 
+ \label{alg5} 
+ \begin{algorithmic}[1] 
+ \ENSURE Public key $pk = (n,e)$, secret key $sk= (p,q,\phi,d)$ 
+ \STATE generate large primes $p$ and $q$ 
+ \STATE compute $n=pq$ and $\phi = (p-1)(q-1)$ 
+ \STATE select random integer e, $1 < e < \phi$, such that $ \gcd(e,\phi)=1$ 
+ \STATE compute integer $ d=e^{-1}\bmod \phi $ 
+ \STATE $pk = (n,e)$, $sk= (p,q,\phi,d)$ 
+ \end{algorithmic} 
+ \end{algorithm} 
+ 
+ \begin{algorithm}[htb] 
+ \caption{Compute RSA Signature} 
+ \label{alg6} 
+ \begin{algorithmic}[1] 
+ \REQUIRE $pk = (n,e)$, $sk= (p,q,\phi,d),~ m \in \mathbb{Z}_n$ message to sign 
+ \ENSURE $s$ is RSA signature for $m$ 
+ \STATE $s = m^d \bmod n$ 
+ \end{algorithmic} 
+ \end{algorithm} 
+ 
+ \end{comment} 
+ 
+ \subsection{Implementation} 
+ We implemented the RSA exponentiation using gmp functions \ttfamily{mpz\_nextprime, mpz\_invertmod, mpz\_powm} \normalfont without any optimizations. 
+ 
+ \section{Results} 
+ In this section we present the results of the timing measurements we conducted to determine how well the different 
+ algorithms perform. We implemented the algorithms using Visual Studio 2003 and we tested  and timed them 
+ under Linux and Windows. 
+ 
+ In order to measure the running time precisely under both operating systems, we used functionalities offered by \ttfamily frequence\_cpu.h \normalfont by Victor Stinner \cite{stinner} 
+ 
+ Our Windows platform is an Intel(R)4 1.4 GHz Desktop Computer with 256 MB RAM running Windows XP. We will only 
+ present the results obtained under Windows here. 
+ 
+ Unless otherwise stated all our results are average values produced by test series of 1000 tests, each using 512 bit random numbers generated with the gmp function 
+ \ttfamily mpz\_urandomb\normalfont. When dealing with Gaussian integers, both the real and the imaginary part are 512 bit random numbers. 
+ 
+ %Our Linux platform is a 1.6 GHz Laptop with 512 MB RAM running RedHat Linux Version 
+ %... We used the GNU g++ compiler with different optimization levels. 
+ 
+ \subsection{Homomorphisms} 
+ \subsubsection{Quartic Residue Symbol} 
+ We start with comparing the improved subfunctions needed for the computation of the quartic residue symbol. Optimizing and/or reimplementing them cut the running time to a fraction of their original running time. We managed to reduce the running time for the calculation of $\alpha \cdot \beta$ and $\alpha \bmod \beta$, ~ 
+ $\alpha, \beta \in \mathbb{Z}[i]$, by more than a third. 
+ 
+ The functions for the division by $(1+i)^r$ and the primarization were also changed algorithmically. This lead to a remarkable speed up, especially in the latter case, which is now more than ten times faster. 
+ \begin{table}[htb] 
+ \centering 
+ \begin{tabular}{l r @{.} l} 
+ \hline 
+ \multicolumn{3}{l}{Subfunctions}\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ Multiplication in $\mathbb{Z}[i]$ & \multicolumn{2} {c} { time in ms}\\ 
+ \hline 
+ Not optimized & 0 & 078\\ 
+ Optimized & 0 & 049\\ 
+ gmp \ttfamily mpz\_mul \normalfont & 0 & 010\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ Modulo in $\mathbb{Z}[i]$ & \multicolumn{2} {c} { time in ms}\\ 
+ \hline 
+ Not optimized & 0 & 141\\ 
+ Optimized & 0 & 104\\ 
+ gmp \ttfamily mpz\_mod \normalfont & 0 & 001\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ Division by $(1+i)^r$  & \multicolumn{2} {c} { time in ms}\\ 
+ \hline 
+ Not optimized & 0 & 061\\ 
+ Optimized & 0 & 015\\ 
+ gmp \ttfamily mpz\_tdiv\_q\_2exp \normalfont & 0 & 001\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ Primarization & \multicolumn{2} {c} { time in ms}\\ 
+ \hline 
+ Not optimized & 0 & 071\\ 
+ Optimized & 0 & 006\\ 
+ \hline 
+ \end{tabular} 
+ \caption{Results Subfunctions} 
+ \label{tab:sub} 
+ \end{table} 
+ 
+ As a reference we timed the equivalent gmp functions. Take into account that they operate in $\mathbb{Z}$ not $\mathbb{Z}[i]$ when regarding Table \ref{tab:sub}. 
+ 
+ We tested our implementations with input of different size as well and they showed the expected behaviour. \\ 
+ \begin{table}[htb] 
+ \centering 
+ \begin{tabular}{l r @{.} l} 
+ \hline 
+ \multicolumn{3}{l}{Quartic Residue Symbol}\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ Running time & \multicolumn{2} {c} { time in ms}\\ 
+ \hline 
+ Basic algorithm & 62 & 79\\ 
+ Basic algorithm optimized & 31 & 57\\ 
+ Damg\aa rd's algorithm & 24 & 22\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ \multicolumn{3}{l}{Iterations}\\ 
+ \hline 
+ Basic algorithm & 249 & 27\\ 
+ Damg\aa rd's algorithm & 512 & 84\\ 
+ \hline 
+ \end{tabular} 
+ \caption{Results Quartic Residue Symbol} 
+         \label{tab:quart} 
+ \end{table} 
+ 
+
+ For $\alpha, \beta$ being random numbers of the same size we stated the following behaviour: 
+ The version of the basic algorithm using the improved basic functions is twice as fast as it was before. The implementation of Damg\aa rd's algorithm is on average about a third faster than the optimized version of the basic algorithm. See Table \ref{tab:quart}.
+ 
+ \begin{table}[htb] 
+ \centering 
+ \begin{tabular}{l l l} 
+ \hline 
+ \multicolumn{3}{l}{Parameter Choices}\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ \multicolumn{3}{l}{$\alpha$: 1024 bits, random number, $\beta$: 512 bits, random number}\\ 
+ \hline 
+  & time in ms & iterations\\ 
+ \hline 
+ Basic algorithm & 32.77 & 249.66\\ 
+ Damg\aa rd's algorithm  & 51.18  & 76.18\\ 
+ Mixed algorithm & 24.86 & 510.19\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ \multicolumn{3}{l}{$\alpha$: 1024 bits, random number, $\beta = \pi \sigma$: 512 bits}\\ 
+ \hline 
+  & time in ms&iterations\\ 
+ \hline 
+ Basic algorithm & 32.12 & 248.81\\ 
+ Damg\aa rd's algorithm  & 50.63 & 766.12\\ 
+ Mixed algorithm &24.65& 511.92\\ 
+ \hline\multicolumn{3}{l}{}\\ 
+ \multicolumn{3}{l}{$\alpha$: 1024 bits, random number, $\beta = \pi$: 256 bits}\\ 
+ \hline 
+  & time in ms&iterations\\ 
+ \hline 
+ Basic algorithm & 14.31 & 123.87\\ 
+ Damg\aa rd's algorithm~~~~~~~~~~~~~~~~  & 38.59 & 640.71\\ 
+ Mixed algorithm & ~9.03 & 255.95\\ 
+ \hline 
+ \end{tabular} 
+ \caption{Results Parameter Choices} 
+         \label{tab:mova} 
+ \end{table} 
+ 
+ The average number of iterations performed by the basic algorithm is 249.30, whereas Damg\aa rd's algorithm needs 512.84 iterations. These numbers grow linearly with the size of $\alpha$ and $\beta$, if we change both, $\alpha$ and $\beta$. However, by changing only the size of either   $\alpha$ or $\beta$ we find the following dependencies: Concerning the basic algorithm the number of iterations is linearly related with the smaller of the two arguments. In the case of Damg\aa rd's algorithm the larger argument is mainly responsible for the number of iterations. This is natural, as the reduction of $\alpha$ by modulo $\beta$ guarantees a number with a norm smaller or equal to $N(\beta)$, which is not the case for a reduction by subtraction. 
+ 
+ In the MOVA signature scheme, the real and the imaginary parts of $\alpha$ and $\beta$ are typically 1024, 512 bits long respectively. Unfortunately, this implies that Damg\aa rd's algorithm is less suitable for the MOVA signature scheme. However, if we construct a mixed algorithm by first computing  $\alpha' =  \alpha \bmod \beta$ and then calculating $\chi_{\beta}(\alpha')$ using Damg\aa rd's algorithm, we obtain the same running time Damg\aa rd's algorithm achieves when $\alpha$ and $\beta$ are of the same size. The fact that the MOVA signature scheme demands $\beta$ to be of the form $\beta = \pi \sigma$, with $\pi,\sigma$ prime numbers in $\mathbb{Z}[i]$ has no influence on the running time. An illustration of the above can be found in Table \ref{tab:mova} (100 tests per Setup variant).\\ 
+ 
+As a reference problem we compared the running time of \ttfamily mpz\_jacobi\normalfont, the gmp function for calculating the Jacobi symbol $(\frac{a}{b})$, with our own implementation of the ordinary algorithm for computing the Jacobi symbol (gmp uses the binary algorithm). The Jacobi symbol is the equivalent of the quartic residue symbol in $\mathbb{Z}$ and the structure of the ordinary algorithm is the same as the structure of the basic algorithm for the quartic residue symbol. It also uses modularity to reduce the size of the arguments and applies iteratively multiplicativity and a reciprocity law very similar to the one of the quartic residue symbol. For our measurements we chose $a,b$ to be random integers of 1024, 512 bits respectively. 
+
+ \begin{table}[htb] 
+ \centering 
+ \begin{tabular}{l r @{.} l} 
+ \hline 
+ \multicolumn{3}{l}{Jacobi Symbol}\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ Running time & \multicolumn{2} {c} { time in ms}\\ 
+ \hline 
+ Jacobi & 1 & 261\\ 
+ \ttfamily mpz\_jacobi \normalfont & 0 & 116\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ \multicolumn{3}{l}{Iterations}\\ 
+ \hline 
+ Jacobi main loop & 187 & 71\\ 
+ \hline 
+ \end{tabular} 
+ \caption{Results Jacobi Symbol} 
+         \label{tab:jac} 
+ \end{table} 
+ 
+ Our implementation is about ten times slower than gmp's but roughly twenty times faster than the quartic residue symbol. The number of iterations performed is 187.71 on average, about three quarters of the respective number for the quartic residue symbol. See Table \ref{tab:jac}. 
+  
+The fact that the arguments for the computation of the quartic residue symbol are in $\mathbb{Z}[i]$, entails that we cannot use the available and optimized gmp functions for integers. This prevents our implementation from being competitive with implementations of functions in $\mathbb{Z}$.
+ 
+ 
+ \subsubsection{Discrete Logarithm} 
+ The homomorphism based on the discrete logarithm consists of one exponentiation modulo a large prime and computing the discrete logarithm in a small subgroup. The exponentiation is a very time consuming operation, so the running time of this homomorphism is dominated by the running time of the gmp function \ttfamily mpz\_powm\normalfont. 
+ 
+ \begin{table}[htb] 
+ \centering 
+ \begin{tabular}{l r @{.} l} 
+ \hline 
+ \multicolumn{3}{l}{Discrete Logarithm}\\ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ Construction & \multicolumn{2} {c} { time in s}\\ 
+ \hline 
+ %Key generation & 0 & 820\\ 
+ Logarithm table construction & 16 & 616\\ 
+ BSGS table construction & 6 & 023\\ 
+ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ Running time & \multicolumn{2} {c} { time in ms}\\ 
+ \hline 
+ Logarithm table & 9 & 66\\ 
+ BSGS & 19 & 47\\ 
+ Pollard's rho & 74 & 92\\ 
+ (\ttfamily mpz\_powm\normalfont & 9 & 44 )\\ 
+ 
+ \hline 
+ \multicolumn{3}{l}{}\\ 
+ \multicolumn{3}{l}{Iterations}\\ 
+ \hline 
+ Logarithm table look up & 1 & 04\\ 
+ BSGS main loop & 388 & 36\\ 
+ Pollard's rho main loop & 1037 & 49\\ 
+ \hline 
+ \end{tabular} 
+ \caption{Results Discrete Logarithm} 
+         \label{tab:log} 
+ \end{table} 
+ 
+ 
+ 
+ As expected the version using a precomputed table very fast, once the table is constructed. It is only marginally slower than \ttfamily mpz\_powm\normalfont. The construction of the hash table takes rather much time which is also due to the collision handling procedure. There are about 14 000 collisions when constructing a table for $p,q,d$ being 512 bits respectively 20 bits long primes. 
+ 
+ While filling the BSGS table no collisions occurred during our tests. Computing the homomorphism with the BSGS implementation took about twice as long as with the precomputed table. 
+ 
+ Pollard's rho algorithm, which has the same asymptotic running time as BSGS but requires almost no storage, is about 4 times slower than 
+ BSGS. This is due to the fact that there are more iterations of the main loop and we need to perform more steps per iteration. 
+ 
+ In addition, we conducted tests to determine the average number of table look ups for the first algorithm and the numbers of main loop iterations for the BSGS and Pollard's rho algorithm. For details see Table \ref{tab:log}. 
+ 
+ \subsubsection{RSA}  
+ With $p,q$ of size 512 bits, our implementation of RSA exponentiation takes 33.87 ms. 
+  \begin{table}[htb] 
+ \centering 
+ \begin{tabular}{l r @{.} l} 
+ \hline 
+ \multicolumn{3}{l}{RSA}\\ 
+ \hline 
+  & \multicolumn{2} {c} { time in ms}\\ 
+ \hline 
+ %key generation & 1068 & 91\\ 
+ Running time & 33 & 87\\ 
+ \hline 
+ \end{tabular} 
+ \caption{Results RSA} 
+         \label{tab:rsa} 
+ \end{table} 
+  
+ 
+ \subsection{Signature Generation} 
+ So far we only considered the time the preprocessing and the computation of one homomorphism takes. In this section we present our results from comparing the time to compute a complete signature. 
+ 
+ In the generic homomorphic signature scheme a signature consists of the set $S:= \{(x_{sig1},\phi(x_{sig1}),\ldots,(x_{sigs},\phi(x_{sigs}))\}$. The size $s = |S|$ depends on the homomorphism $\phi$ we choose and the level of security we want to offer. 
+ Typical values would be $s=20$ in the case of the quartic residue symbol with $\beta =\pi \sigma ~(\beta=\pi), ~\alpha \in \mathbb{Z}_n^*,~n$ 1024 bits long and the Jacobi symbol $(\frac{a}{p})$ with $n=pq$,~ $p,~q$ prime and $a \in \mathbb{Z}_n^*$, or $s=1$ when using the homomorphism based on the discrete logarithm with $d$ 20 bits, $n$ 1024 bits long or RSA with $n$ 1024 bits long. For this comparison, we only use the mixed algorithm to calculate the quartic residue symbol and we do not take into consideration the time it takes to generate the $x_i$ from the message $m$. 
+ 
+ \begin{table}[htb] 
+ \centering 
+ \begin{tabular}{l r @{.} l} 
+ \hline 
+ \multicolumn{3}{l}{Signature Generation Time}\\ 
+ \hline 
+  & \multicolumn{2} {c} { time in ms}\\ 
+ \hline 
+ Quartic Residue Symbol $(\beta=\pi\sigma)$ & 493 & 01\\ 
+ Quartic Residue Symbol $(\beta=\pi)$ & 180 & 64\\ 
+ Jacobi Symbol $($ordinary algorithm$)$ & 25 & 22\\ 
+ Jacobi Symbol $($\ttfamily mpz\_jacobi\normalfont$)$ & 2 & 32\\ 
+ 
+ Discrete Logarithm (Precomputed Table) & 9 & 66\\ 
+ Discrete Logarithm (BSGS) & 19 & 47\\ 
+ Discrete Logarithm (Pollard's rho) & 74 & 93\\ 
+ RSA & 33 & 87\\ 
+ \hline 
+ \end{tabular} 
+ \caption{Results Comparison Signature Schemes} 
+         \label{tab:comp} 
+ \end{table} 
+ 
+ When examining Table \ref{tab:comp}, we observe that the  variant using the quartic residue symbol is much slower than any of the implementations of the homomorphism based on the discrete logarithm or RSA. The reason for this result is mainly the fact that the computation of the quartic residue symbol is in $\mathbb{Z}[i]$, which is discussed in detail above. 
+ 
+ The running time of the variant using the homomorphism based on the discrete logarithm is in the same order as RSA, the implementation using the precomputed table and BSGS are even considerably faster than RSA. The implementation with the precomputed table takes less than $1/3$, BSGS $2/3$ of the time needed by RSA. Pollard's rho algorithm is slower than RSA, but it has the advantage over the other two of neither requiring a large amount of storage nor time for constructing a data structure. 
+ 
+ By far the fastest running time has the version using the gmp function \ttfamily mpz\_jacobi\normalfont ~for the computation of the Jacobi symbol. Even though we have to calculate 20 Jacobi symbols, it takes less than  $1/4$ of the time the fastest implementation of the homomorphism based on the discrete logarithm needs. When using our own implementation, the running time is comparable to the running time of BSGS. Furthermore, neither of the two functions require a large amount of storage or preprocessing. 
+ 
+ \section{Conclusion} 
+ In the course of the project we achieved to gain insight in the field of the GHI--Problem and its applications, especially undeniable signatures. We studied some of the group homomorphisms suitable for the generic homomorphic undeniable signature scheme proposed in \cite{genMOVA} and implemented and/or improved them. 
+ 
+ We successfully decreased the running time of the computation of the quartic residue symbol by trying out different algorithms and applying general optimization techniques. The calculation takes now less than half of the time it used to. We compared the results with the running time of the computation of the Jacobi symbol and we state that due to the fact that the quartic residue symbol is in $\mathbb{Z}[i]$, we will not be able to achieve a similar running time. 
+ 
+ Furthermore we implemented the variant of the generic homomorphic undeniable signature scheme based on the discrete logarithm and compared it with the quartic residue symbol and RSA. We found that our version using a table with precomputed values for the discrete logarithm is much faster than the others including RSA. We verified that BSGS and Pollard's rho algorithm also perform very well with the advantage of requiring less storage and preparation time. 
+ 
+ During the implementation process of the homomorphism based on the discrete logarithm we developed a reusable hash table data structure capable of containing a large number of entries without any key overhead. Moreover, it is possible to have arbitrarily long keys and collision information is stored together with the data. 
+ 
+ As a future improvement concerning the Demonstrator for the MOVA signature scheme one could apply multi-exponentiation optimization methods to accelerate the confirmation and denial protocol for the verifier. 
+ 
+ 
+ \section{Acknowledgments} 
+ We wish to thank I. Suarez for the helpful discussions concerning the algorithms for the quartic residue symbol and J. Monnerat and S. Vaudenay for the support during this project.
+
+ 
+ \begin{thebibliography}{20} 
+ \bibitem{howMOVA} J. Monnerat and S. Vaudenay, \emph{Undeniable Signatures Based on Characters: 
+     How to Sign with One Bit}, PKC '04, LNCS {2947}, pp.69--85, Springer, 2004. 
+ \bibitem{genMOVA} J. Monnerat and S. Vaudenay, \emph{Generic Homomorphic Undeniable Signatures}, Asiacrypt 2004, LNCS 3329, pp. 354 -- 371, Springer, 2004. 
+ \bibitem{chaum} D.Chaum and H. van Antwerpen, \emph{Undeniable Signatures}, Advances in Cryptology - Crypto '89, LNCS, 435, pp. 212 -- 217, Springer, 1989. 
+ \bibitem{rosen} K. Ireland and M. Rosen, \emph{A Classical Introduction to modern Number Theory: 
+     Second Edition}, Graduate Texts in Mathematics {84}, Springer, 1990. 
+ \bibitem{cohen} H. Cohen, \emph{A Course in Computational Algebraic Number Theory}, Graduate Texts in Mathematics 138, Springer, 2000. 
+ %\bibitem{zhi} Z.H. Sun, \emph{Supplements to the theory of quartic residues}, Acta America97, pp. 361-377, 2001. 
+ \bibitem{lefevre} V. Lef\`evre, \emph{Entiers de Gauss (sujet d'\'etude XM')}, 1993. 
+ \bibitem{gmp} The GNU multiple precision arithmetic library, http://www.swox.com/gmp/ 
+ \bibitem{stinner} V. Stinner, {\ttfamily frequence\_cpu.h, frequence\_cpu.c\normalfont}, http://www.haypocalc.com/, 2003. 
+ \bibitem{opt1} M.E. Lee, \emph{Optimization of Computer Programs in C}, http://vision.eng.shu.ac.uk/bala/c/c/optimisation/l/optimization.html, 2001. 
+ \bibitem{opt2} S. Garg, \emph{How to optimize C/C++ Source - Performance Programming}, 
+ http://bdn.borland.com/article/0,1410,28278,00.html, 2002. 
+ \bibitem{damgard} I.B. Damg\aa rd and G.S. Frandsen \emph{Efficient Algorithms for GCD and Cubic Residuosity in the Ring of Eisenstein Integers}, FCT 2003, LNCS {2751}, pp. 109--117, Springer, 2003. 
+ \bibitem{weilert1} A.Weilert, \emph{(1+i)-ary GCD Computation in Z[i] is an 
+ ue to the Binary GCD Algorithm}, J. Symbolic  Comput. {30}(5), pp. 605--617, 2000. 
+ \bibitem{weilert2} A.Weilert, \emph{Asymptotically fast GCD Computation in Z[i]}, Algorithmic Number Theory, LNCS {1838}, pp.595--613, Springer, 2000. 
+ \bibitem{weilert3} A. Weilert, \emph{Fast Computation of the Biquadratic Residue Symbol}, Journal of Number Theory {96}, pp. 133--151, 2002. 
+ \bibitem{sorendson} S.M. Meyer and J.P. Sorendson \emph{Efficient Algortihms for Computing the Jacobi Symbol} J. Symbolic Comput. 26(4), pp. 509--523, 1998. 
+ \bibitem{gennaro} R. Gennaro, T. Rabin, H. Krawczyk, \emph{RSA-Based Undeniable Signatures}, Journal of Cryptology, 13, pp. 397 -- 416, Springer, 2000. 
+ \bibitem{handbook} A.Menezes, P. van Oorschot, and S Vanstone, \emph{Handbook of Applied Cryptography}, CRC Press, 1996. 
+ 
+ \end{thebibliography} 
+ \newpage
+ 
+  \appendix 
+ \section{User Manuals} 
+ \subsection{Tester} 
+ This program allows you to execute the test series described above and many more. You can chose what sort of tests and how many you want to perform as well as how large the random numbers used shall be. It works under Linux and Windows. 
+ \subsubsection{Windows} 
+ \begin{enumerate} 
+ \item To start the program double click on "tester.exe". A console window opens and asks you to enter the filename where the results of your tests are written to. 
+ \item Type "filename.txt", where "filename" is any chain of chars allowed in filenames and press ENTER. 
+ \item Enter the number of tests you want to execute and the size of the random numbers to be generated in bits. The default values are 100 tests, 512 bits. 
+ \item Choose between the test options by entering the respective value. Depending on the test you have more options to choose from or the test series start. If you want more information concerning the options, enter "999" for help. There is no output on the console during the test, the results will be written to the file chosen previously. 
+ \item After running the tests, you can select if you would like to continue testing or if you want to end the program. 
+ \item To look at your test results open "filename.txt" with you favourite text editor. 
+ \end{enumerate} 
+ \subsubsection{Linux} 
+ \begin{enumerate} 
+ \item Open a terminal, go to the directory "tester". 
+ \item Compile the program by typing "make". 
+ \item Type "./run" to start the program. 
+ \item Continue at the description for Windows at 2. 
+ \end{enumerate} 
+ 
+ 
+ \subsection{Demonstrator for the MOVA Signature Scheme} 
+ M. Hammout\`ene has developed a software which implements the MOVA signature scheme based on the quartic residue symbol. We replaced its computation of the quartic residue symbol by our optimized version. With the help of this program you can generate public and private keys of your desired length as well as construct signatures for any file and execute the confirmation and denial protocol. To run it, simply double click on "crypt1.exe" and follow the instructions. When generating a public and private key pair, observe that secret key files have the ending ".smova" , public key files ".pmova". This software is currently only available under Windows. 
+ 
+ 
+ \end{document} 
+ 
+ 
